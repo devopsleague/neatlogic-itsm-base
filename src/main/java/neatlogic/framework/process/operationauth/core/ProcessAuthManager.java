@@ -1,19 +1,14 @@
 package neatlogic.framework.process.operationauth.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.dao.mapper.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentTargetVo;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentVo;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
-import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.process.exception.processtask.ProcessTaskNoPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -21,9 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.exception.processtask.ProcessTaskNoPermissionException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -371,6 +365,7 @@ public class ProcessAuthManager {
                                 /** 如果当前用户接受了其他用户的授权，查出其他用户拥有的权限，叠加当前用户权限里 **/
                                 List<String> fromUuidList = getFromUuidListByChannelUuid(processTaskVo.getChannelUuid());
                                 if (CollectionUtils.isNotEmpty(fromUuidList)) {
+                                    result = null;
                                     for (String fromUuid : fromUuidList) {
                                         if (handler != null) {
                                             result = handler.getOperateMap(processTaskVo, processTaskStepVo, fromUuid, operationType, operationTypePermissionDeniedExceptionMap, extraParam);
