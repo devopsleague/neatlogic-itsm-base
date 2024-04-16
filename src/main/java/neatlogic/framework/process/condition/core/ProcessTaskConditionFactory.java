@@ -15,12 +15,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.condition.core;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.applicationlistener.core.ModuleInitializedListenerBase;
 import neatlogic.framework.bootstrap.NeatLogicWebApplicationContext;
 import neatlogic.framework.common.RootComponent;
 import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
-import com.alibaba.fastjson.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +70,6 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
 
     @Override
     protected void myInit() {
-        // TODO Auto-generated method stub
 
     }
 
