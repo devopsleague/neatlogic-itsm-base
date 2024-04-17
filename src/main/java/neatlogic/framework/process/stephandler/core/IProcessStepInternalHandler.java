@@ -28,14 +28,14 @@ public interface IProcessStepInternalHandler {
      * @param @return
      * @return Object
      * @Time: 2020年7月27日
-     * @Description: 处理器特有的步骤信息（作为开始节点获取开始节点信息）
+     * @Description: 该步骤特有的步骤信息（当该步骤是开始节点时调用该方法）
      */
     public Object getHandlerStepInfo(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
      *
      * @Time: 2020年8月12日
-     * @Description: 处理器特有的步骤初始化信息 （作为当前处理节点获取开始节点信息）
+     * @Description: 该步骤特有的步骤初始化信息 （当该步骤不是开始节点时调用该方法）
      * @param @return
      * @return Object
      */
@@ -44,7 +44,7 @@ public interface IProcessStepInternalHandler {
     /**
      * @Author: chenqiwei
      * @Time: Feb 10, 2020
-     * @Description: 组装步骤节点信息
+     * @Description: 组装步骤节点信息，将步骤stepConfig配置信息中的字段值写入到ProcessStepVo对象对应属性中
      * @param @param
      *            processStepVo
      * @param @param
@@ -65,7 +65,7 @@ public interface IProcessStepInternalHandler {
     /**
      *
      * @Time: 2020年6月30日
-     * @Description: 构造节点管理配置数据
+     * @Description: 构造节点管理配置数据，初始化节点管理中各个节点的全局配置信息，设置默认值，校正节点的全局配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      * @param configObj
      * @return JSONObject
      */
@@ -77,7 +77,7 @@ public interface IProcessStepInternalHandler {
     }
 
     /**
-     * 校正流程步骤配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补全。
+     * 初始化流程步骤的默认配置信息，校正流程步骤配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      * @param configObj 配置数据
      * @return
      */
@@ -104,7 +104,7 @@ public interface IProcessStepInternalHandler {
     public Map<String, String> getCustomButtonMapByConfigHashAndHandler(String configHash, String handler);
 
     /**
-     * @Description: 根据步骤configHash和handler、status获取自定义按钮文案
+     * @Description: 根据步骤configHash和handler、status获取状态自定义按钮文案
      * @Author: linbq
      * @Date: 2020/9/15 12:17
      * @Params:[configHash, handler, status]
@@ -151,11 +151,16 @@ public interface IProcessStepInternalHandler {
      */
     String getFormSceneUuidByConfigHash(String configHash);
 
+    /**
+     * 向processtask_step_in_operation表中插入步骤正在操作记录，等到该步骤操作完成时会删除这条记录
+     * @param processTaskStepInOperationVo
+     * @return
+     */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     int insertProcessTaskStepInOperation(ProcessTaskStepInOperationVo processTaskStepInOperationVo);
 
     /**
-     * 获取组件步骤中的附件id列表
+     * 获取该步骤中的附件id列表
      * @param currentProcessTaskStepVo
      * @return
      */

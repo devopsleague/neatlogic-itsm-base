@@ -239,10 +239,11 @@ public interface IProcessStepHandler {
      * 保存工单草稿，将会创建一个工单，工单状态为草稿状态
      *
      * @param currentProcessTaskStepVo 步骤信息
+     * @param newProcessTaskId 第一次暂存时可以传递一个值，作为工单id
      * @return 1代表成功
      */
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-    int saveDraft(ProcessTaskStepVo currentProcessTaskStepVo);
+    int saveDraft(ProcessTaskStepVo currentProcessTaskStepVo, Long newProcessTaskId);
 
     /**
      * 开始流程，将会创建一个作业
@@ -304,7 +305,7 @@ public interface IProcessStepHandler {
     String getMinorName();
 
     /**
-     * 正向输入路径数量
+     * 正向输入路径数量(该字段前端已经不用了)
      * -1代表不限制
      * @return
      */
@@ -312,7 +313,7 @@ public interface IProcessStepHandler {
         return -1;
     }
     /**
-     * 正向输出路径数量
+     * 正向输出路径数量(该字段前端已经不用了)
      * -1代表不限制
      * @return
      */
@@ -320,7 +321,7 @@ public interface IProcessStepHandler {
         return -1;
     }
     /**
-     * 回退输入路径数量
+     * 回退输入路径数量(该字段前端已经不用了)
      * -1代表不限制
      * @return
      */
@@ -328,7 +329,7 @@ public interface IProcessStepHandler {
         return -1;
     }
     /**
-     * 回退输出路径数量
+     * 回退输出路径数量(该字段前端已经不用了)
      * -1代表不限制
      * @return
      */
@@ -337,7 +338,7 @@ public interface IProcessStepHandler {
     }
 
     /**
-     * 是否隐藏
+     * 是否隐藏组件，组件隐藏后，编辑流程图时不能新增该组件，对于旧流程图中已存在的该组件可以继续修改设置，上报工单可以正常处理。
      * @return
      */
     default boolean isHidden() {
