@@ -166,6 +166,10 @@ public interface IProcessStepHandlerUtil {
      */
     void saveProcessTaskOperationContent(ProcessTaskVo currentProcessTaskVo, ProcessTaskOperationType action);
 
+    /**
+     * 流转操作时检查回复信息是否必填
+     * @param currentProcessTaskStepVo
+     */
     void checkContentIsRequired(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
@@ -187,11 +191,8 @@ public interface IProcessStepHandlerUtil {
     void saveFocusUserList(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
-     * @Description: 保存表单属性值
-     * @Author: linbq
-     * @Date: 2021/1/27 11:42
-     * @Params:[currentProcessTaskStepVo]
-     * @Returns:void
-     **/
+     * 保存表单属性值
+     * @param currentProcessTaskStepVo 当前步骤信息
+     */
     void saveForm(ProcessTaskStepVo currentProcessTaskStepVo);
 }

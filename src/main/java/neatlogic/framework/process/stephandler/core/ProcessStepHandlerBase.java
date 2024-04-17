@@ -1755,12 +1755,15 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     protected abstract int myBack(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException;
 
     @Override
-    public final int saveDraft(ProcessTaskStepVo currentProcessTaskStepVo) {
+    public final int saveDraft(ProcessTaskStepVo currentProcessTaskStepVo, Long newProcessTaskId) {
         JSONObject paramObj = currentProcessTaskStepVo.getParamObj();
         Long processTaskId = currentProcessTaskStepVo.getProcessTaskId();
         ProcessTaskVo processTaskVo;
         if (processTaskId == null) {// 首次保存
             processTaskVo = new ProcessTaskVo();
+            if (newProcessTaskId != null) {
+                processTaskVo.setId(newProcessTaskId);
+            }
             processTaskVo.setTitle(paramObj.getString("title"));
             processTaskVo.setOwner(paramObj.getString("owner"));
             processTaskVo.setChannelUuid(paramObj.getString("channelUuid"));
