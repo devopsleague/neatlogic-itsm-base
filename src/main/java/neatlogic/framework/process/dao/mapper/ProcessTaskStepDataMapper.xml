@@ -28,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         FROM
         `processtask_step_data`
         <where>
-            <if test="processTaskId != null and processTaskId != ''">
+            <if test="processTaskId != null">
                 AND `processtask_id` = #{processTaskId}
             </if>
-            <if test="processTaskStepId != null and processTaskStepId != ''">
+            <if test="processTaskStepId != null">
                 AND `processtask_step_id` = #{processTaskStepId}
             </if>
             <if test="type != null and type != ''">
