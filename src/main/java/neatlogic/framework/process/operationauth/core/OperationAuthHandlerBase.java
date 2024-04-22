@@ -1,29 +1,29 @@
 package neatlogic.framework.process.operationauth.core;
 
-import java.util.*;
-
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
-import neatlogic.framework.dto.AuthenticationInfoVo;
-import neatlogic.framework.process.constvalue.*;
-import neatlogic.framework.process.dto.*;
-import neatlogic.framework.service.AuthenticationInfoService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
-
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.constvalue.UserType;
+import neatlogic.framework.dto.AuthenticationInfoVo;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dao.mapper.ProcessStepHandlerMapper;
 import neatlogic.framework.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.IProcessStepHandler;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerFactory;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
+import neatlogic.framework.service.AuthenticationInfoService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class OperationAuthHandlerBase implements IOperationAuthHandler {
     protected static AuthenticationInfoService authenticationInfoService;
@@ -46,8 +46,7 @@ public abstract class OperationAuthHandlerBase implements IOperationAuthHandler 
     }
     /**
      * 
-    * @Time:2020年12月21日
-    * @Description: 判断当前用户是不是工单任意一个步骤的待处理人 
+    * @Description: 判断当前用户是不是工单任意一个步骤的待处理人
     * @param processTaskVo 工单信息
     * @param userType 处理人类型，major主处理人或minor协助处理人
     * @param userUuid 用户

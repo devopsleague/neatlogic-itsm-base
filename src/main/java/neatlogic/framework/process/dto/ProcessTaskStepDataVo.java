@@ -1,14 +1,11 @@
 package neatlogic.framework.process.dto;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.util.SnowflakeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcessTaskStepDataVo {
     static Logger logger = LoggerFactory.getLogger(ProcessTaskStepDataVo.class);
@@ -71,7 +68,7 @@ public class ProcessTaskStepDataVo {
 
     public void setData(String data) {
         try {
-            this.data = JSONObject.parseObject(data);
+            this.data = JSON.parseObject(data);
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
