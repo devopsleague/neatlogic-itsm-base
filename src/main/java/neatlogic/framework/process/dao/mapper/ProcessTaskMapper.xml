@@ -300,6 +300,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         WHERE a.`processtask_id` = #{value}
     </select>
 
+    <select id="getProcessTaskFormExtendAttributeListByProcessTaskId" parameterType="java.lang.Long" resultType="neatlogic.framework.process.dto.ProcessTaskFormAttributeVo">
+        SELECT
+            `processtask_id` AS processTaskId,
+            `form_uuid` AS formUuid,
+            `parent_uuid` AS parentUuid,
+            `tag`,
+            `key`,
+            `uuid`,
+            `label`,
+            `type`,
+            `handler`,
+            `config_hash` AS configHash
+        FROM `processtask_form_extend_attribute`
+        WHERE `processtask_id` = #{value}
+    </select>
+
     <select id="getProcessTaskFormListByProcessTaskIdList" parameterType="java.util.List"
             resultType="neatlogic.framework.process.dto.ProcessTaskFormVo">
         SELECT a.`processtask_id` as processTaskId,
@@ -315,6 +331,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
 
     <select id="getProcessTaskFormAttributeDataIdListByProcessTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT `form_attribute_data_id` FROM `processtask_formattribute` WHERE `processtask_id` = #{value}
+    </select>
+
+    <select id="getProcessTaskExtendFormAttributeDataIdListByProcessTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT `form_attribute_data_id` FROM `processtask_extend_formattribute` WHERE `processtask_id` = #{value}
+    </select>
+
+    <select id="getProcessTaskExtendFormAttributeDataListByProcessTaskId" parameterType="java.util.HashMap" resultType="neatlogic.framework.form.dto.AttributeDataVo">
+        SELECT
+            b.`id`,
+            b.`form_uuid` AS formUuid,
+            b.`handler`,
+            b.`tag`,
+            b.`attribute_label` AS attributeLabel,
+            b.`attribute_uuid` AS attributeUuid,
+            b.`data`
+        FROM `processtask_extend_formattribute` a
+        JOIN `form_extend_attribute_data` b ON b.`id` = a.`form_attribute_data_id`
+        WHERE a.`processtask_id` = #{processTaskId}
+          <if test="tag != null and tag != ''">
+          AND b.`tag` = #{tag}
+          </if>
     </select>
 
     <select id="getProcessTaskStepContentByProcessTaskStepId" parameterType="java.lang.Long"
@@ -2998,6 +3035,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         VALUES (#{processTaskId}, #{id})
     </insert>
 
+    <insert id="insertProcessTaskExtendFormAttribute"
+            parameterType="neatlogic.framework.process.dto.ProcessTaskFormAttributeDataVo">
+        INSERT ignore INTO `processtask_extend_formattribute` (`processtask_id`, `form_attribute_data_id`, `tag`)
+        VALUES (#{processTaskId}, #{id}, #{tag})
+    </insert>
+
     <insert id="insertIgnoreProcessTaskConverge" parameterType="neatlogic.framework.process.dto.ProcessTaskConvergeVo">
         INSERT IGNORE INTO `processtask_converge` (`converge_id`,
                                                    `processtask_step_id`,
@@ -3585,6 +3628,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         VALUES (#{processTaskId}, #{source}, #{sourceType}, #{invokeId});
     </insert>
 
+    <insert id="insertProcessTaskFormExtendAttribute" parameterType="neatlogic.framework.process.dto.ProcessTaskFormAttributeVo">
+        INSERT INTO `processtask_form_extend_attribute` (
+            `processtask_id`,
+            `form_uuid`,
+            `parent_uuid`,
+            `tag`,
+            `key`,
+            `uuid`,
+            `label`,
+            `type`,
+            `handler`,
+            `config_hash`
+        )
+        VALUES
+            (
+                #{processTaskId},
+                #{formUuid},
+                #{parentUuid},
+                #{tag},
+                #{key},
+                #{uuid},
+                #{label},
+                #{type},
+                #{handler},
+                #{configHash}
+            )
+    </insert>
+
     <update id="updateProcessTaskStepUserStatus" parameterType="neatlogic.framework.process.dto.ProcessTaskStepUserVo">
         UPDATE
         `processtask_step_user`
@@ -3758,6 +3829,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
     <delete id="deleteProcessTaskFormAttributeByProcessTaskId" parameterType="java.lang.Long">
         DELETE
         FROM `processtask_formattribute`
+        WHERE `processtask_id` = #{value}
+    </delete>
+
+    <delete id="deleteProcessTaskExtendFormAttributeByProcessTaskId" parameterType="java.lang.Long">
+        DELETE
+        FROM `processtask_Extend_formattribute`
         WHERE `processtask_id` = #{value}
     </delete>
 
