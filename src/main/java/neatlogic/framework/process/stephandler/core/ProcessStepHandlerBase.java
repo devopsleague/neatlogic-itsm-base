@@ -32,6 +32,7 @@ import neatlogic.framework.dto.RoleTeamVo;
 import neatlogic.framework.dto.TeamVo;
 import neatlogic.framework.dto.UserVo;
 import neatlogic.framework.form.dao.mapper.FormMapper;
+import neatlogic.framework.form.dto.FormAttributeVo;
 import neatlogic.framework.form.dto.FormVersionVo;
 import neatlogic.framework.fulltextindex.core.FullTextIndexHandlerFactory;
 import neatlogic.framework.fulltextindex.core.IFullTextIndexHandler;
@@ -1837,6 +1838,30 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     processTaskFormVo.setFormName(formVersionVo.getFormName());
                     processTaskMapper.insertProcessTaskForm(processTaskFormVo);
                     processTaskMapper.insertIgnoreProcessTaskFormContent(processTaskFormVo);
+
+                    List<FormAttributeVo> formAttributeList = formMapper.getFormExtendAttributeListByFormUuidAndFormVersionUuid(formVersionVo.getFormUuid(), formVersionVo.getUuid());
+                    if (CollectionUtils.isNotEmpty(formAttributeList)) {
+                        for (FormAttributeVo formAttributeVo : formAttributeList) {
+                            ProcessTaskFormAttributeVo processTaskFormAttributeVo = new ProcessTaskFormAttributeVo();
+                            processTaskFormAttributeVo.setProcessTaskId(processTaskId);
+                            processTaskFormAttributeVo.setFormUuid(formAttributeVo.getFormUuid());
+                            processTaskFormAttributeVo.setParentUuid(formAttributeVo.getParentUuid());
+                            processTaskFormAttributeVo.setTag(formAttributeVo.getTag());
+                            processTaskFormAttributeVo.setKey(formAttributeVo.getKey());
+                            processTaskFormAttributeVo.setUuid(formAttributeVo.getUuid());
+                            processTaskFormAttributeVo.setLabel(formAttributeVo.getLabel());
+                            processTaskFormAttributeVo.setType(formAttributeVo.getType());
+                            processTaskFormAttributeVo.setHandler(formAttributeVo.getHandler());
+
+                            ProcessTaskFormVo processTaskFormAttributeConfigVo = new ProcessTaskFormVo();
+                            processTaskFormAttributeConfigVo.setFormContent(formAttributeVo.getConfig().toJSONString());
+
+                            processTaskFormAttributeVo.setConfigHash(processTaskFormAttributeConfigVo.getFormContentHash());
+
+                            processTaskMapper.insertIgnoreProcessTaskFormContent(processTaskFormAttributeConfigVo);
+                            processTaskMapper.insertProcessTaskFormExtendAttribute(processTaskFormAttributeVo);
+                        }
+                    }
                 }
             }
 

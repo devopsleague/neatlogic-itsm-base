@@ -17,6 +17,7 @@ package neatlogic.framework.process.dao.mapper;
 
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.file.dto.FileVo;
+import neatlogic.framework.form.dto.AttributeDataVo;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.automatic.ProcessTaskStepAutomaticRequestVo;
 import org.apache.ibatis.annotations.Param;
@@ -69,9 +70,15 @@ public interface ProcessTaskMapper {
 
     ProcessTaskFormVo getProcessTaskFormByProcessTaskId(Long processTaskId);
 
+    List<ProcessTaskFormAttributeVo> getProcessTaskFormExtendAttributeListByProcessTaskId(Long processTaskId);
+
     List<ProcessTaskFormVo> getProcessTaskFormListByProcessTaskIdList(List<Long> existsProcessTaskIdList);
 
     List<Long> getProcessTaskFormAttributeDataIdListByProcessTaskId(Long processTaskId);
+
+    List<Long> getProcessTaskExtendFormAttributeDataIdListByProcessTaskId(Long processTaskId);
+
+    List<AttributeDataVo> getProcessTaskExtendFormAttributeDataListByProcessTaskId(@Param("processTaskId") Long processTaskId, @Param("tag") String tag);
 
     List<ProcessTaskStepContentVo> getProcessTaskStepContentByProcessTaskStepId(Long processTaskStepId);
 
@@ -408,6 +415,8 @@ public interface ProcessTaskMapper {
 
     int insertProcessTaskFormAttribute(ProcessTaskFormAttributeDataVo processTaskFromAttributeDataVo);
 
+    int insertProcessTaskExtendFormAttribute(ProcessTaskFormAttributeDataVo processTaskFormAttributeDataVo);
+
     int insertProcessTaskStepFile(ProcessTaskStepFileVo processTaskStepFileVo);
 
     int insertProcessTaskAssignWorker(ProcessTaskAssignWorkerVo processTaskAssignWorkerVo);
@@ -455,6 +464,8 @@ public interface ProcessTaskMapper {
 
     int insertProcessTaskInvoke(@Param("processTaskId") Long processTaskId, @Param("source") String invoke, @Param("sourceType") String invokeType, @Param("invokeId") Long invokeId);
 
+    int insertProcessTaskFormExtendAttribute(ProcessTaskFormAttributeVo processTaskFormAttributeVo);
+
     int updateProcessTaskStepStatus(ProcessTaskStepVo processTaskStepVo);
 
     int updateProcessTaskStatus(ProcessTaskVo processTaskVo);
@@ -498,6 +509,8 @@ public interface ProcessTaskMapper {
     int updateProcessTaskIsDeletedById(@Param("id") Long id, @Param("isDeleted") Integer isDeleted);
 
     int deleteProcessTaskFormAttributeByProcessTaskId(Long processTaskId);
+
+    int deleteProcessTaskExtendFormAttributeByProcessTaskId(Long processTaskId);
 
     int deleteProcessTaskStepWorker(ProcessTaskStepWorkerVo processTaskStepWorkerVo);
 
@@ -561,5 +574,4 @@ public interface ProcessTaskMapper {
     int deleteProcessTaskTimeCostByProcessTaskId(Long processTaskId);
 
     int deleteProcessTaskFormContentByHash(String hash);
-
 }
