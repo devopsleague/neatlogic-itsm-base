@@ -1843,7 +1843,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     if (CollectionUtils.isNotEmpty(formAttributeList)) {
                         for (FormAttributeVo formAttributeVo : formAttributeList) {
                             ProcessTaskFormAttributeVo processTaskFormAttributeVo = new ProcessTaskFormAttributeVo();
-                            processTaskFormAttributeVo.setProcessTaskId(processTaskId);
+                            processTaskFormAttributeVo.setProcessTaskId(processTaskVo.getId());
                             processTaskFormAttributeVo.setFormUuid(formAttributeVo.getFormUuid());
                             processTaskFormAttributeVo.setParentUuid(formAttributeVo.getParentUuid());
                             processTaskFormAttributeVo.setTag(formAttributeVo.getTag());
