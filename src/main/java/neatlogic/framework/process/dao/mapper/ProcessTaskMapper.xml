@@ -300,7 +300,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         WHERE a.`processtask_id` = #{value}
     </select>
 
-    <select id="getProcessTaskFormExtendAttributeListByProcessTaskId" parameterType="java.lang.Long" resultType="neatlogic.framework.process.dto.ProcessTaskFormAttributeVo">
+    <select id="getProcessTaskFormExtendAttributeListByProcessTaskIdAndTag" parameterType="java.util.HashMap" resultType="neatlogic.framework.process.dto.ProcessTaskFormAttributeVo">
         SELECT
             `processtask_id` AS processTaskId,
             `form_uuid` AS formUuid,
@@ -313,7 +313,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
             `handler`,
             `config_hash` AS configHash
         FROM `processtask_form_extend_attribute`
-        WHERE `processtask_id` = #{value}
+        WHERE `processtask_id` = #{processTaskId}
+          <if test="tag != null">
+              AND `tag` = #{tag}
+          </if>
     </select>
 
     <select id="getProcessTaskFormListByProcessTaskIdList" parameterType="java.util.List"
@@ -331,6 +334,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
 
     <select id="getProcessTaskFormAttributeDataIdListByProcessTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT `form_attribute_data_id` FROM `processtask_formattribute` WHERE `processtask_id` = #{value}
+    </select>
+
+    <select id="getProcessTaskFormAttributeDataListByProcessTaskId" parameterType="java.lang.Long" resultType="neatlogic.framework.form.dto.AttributeDataVo">
+        SELECT a.`id`,
+               a.`form_uuid`       AS formUuid,
+               a.`handler`,
+               a.`attribute_label` AS attributeLabel,
+               a.`attribute_uuid`  AS attributeUuid,
+               a.`data`
+        FROM `form_attribute_data` a
+                 join processtask_formattribute b on a.id = b.form_attribute_data_id
+        where b.processtask_id = #{value}
     </select>
 
     <select id="getProcessTaskExtendFormAttributeDataIdListByProcessTaskId" parameterType="java.lang.Long" resultType="java.lang.Long">

@@ -10,6 +10,7 @@ public class ActionVo {
 	private String integrationName;
 	private boolean isSucceed;
 	private String statusText;
+	private String error;
 	public Long getProcessTaskStepId() {
 		return processTaskStepId;
 	}
@@ -57,5 +58,13 @@ public class ActionVo {
 	}
 	public void setStatusText(String statusText) {
 		this.statusText = statusText;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
 	}
 }
