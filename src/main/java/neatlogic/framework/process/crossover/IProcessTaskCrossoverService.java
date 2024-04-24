@@ -124,10 +124,26 @@ public interface IProcessTaskCrossoverService extends ICrossoverService {
     List<FormAttributeVo> getFormAttributeListByProcessTaskId(Long processTaskId);
 
     /**
+     * 根据工单id获取工单绑定的表单信息
+     * @param processTaskId 工单ID
+     * @param tag 标签
+     * @return
+     */
+    List<FormAttributeVo> getFormAttributeListByProcessTaskIdAngTag(Long processTaskId, String tag);
+
+    /**
      * 根据工单id获取表单属性数据列表
      * @param processTaskId 工单id
      * @return
      */
     List<ProcessTaskFormAttributeDataVo> getProcessTaskFormAttributeDataListByProcessTaskId(Long processTaskId);
+
+    /**
+     * 根据工单id获取表单属性数据列表
+     * @param processTaskId 工单id
+     * @param tag 标签
+     * @return
+     */
+    List<ProcessTaskFormAttributeDataVo> getProcessTaskFormAttributeDataListByProcessTaskIdAndTag(Long processTaskId, String tag);
 }
 

@@ -70,11 +70,13 @@ public interface ProcessTaskMapper {
 
     ProcessTaskFormVo getProcessTaskFormByProcessTaskId(Long processTaskId);
 
-    List<ProcessTaskFormAttributeVo> getProcessTaskFormExtendAttributeListByProcessTaskId(Long processTaskId);
+    List<ProcessTaskFormAttributeVo> getProcessTaskFormExtendAttributeListByProcessTaskIdAndTag(@Param("processTaskId") Long processTaskId, @Param("tag") String tag);
 
     List<ProcessTaskFormVo> getProcessTaskFormListByProcessTaskIdList(List<Long> existsProcessTaskIdList);
 
     List<Long> getProcessTaskFormAttributeDataIdListByProcessTaskId(Long processTaskId);
+
+    List<AttributeDataVo> getProcessTaskFormAttributeDataListByProcessTaskId(Long processTaskId);
 
     List<Long> getProcessTaskExtendFormAttributeDataIdListByProcessTaskId(Long processTaskId);
 
