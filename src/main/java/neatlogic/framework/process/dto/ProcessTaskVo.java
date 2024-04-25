@@ -193,6 +193,9 @@ public class ProcessTaskVo extends BasePageVo {
     @EntityField(name = "common.needscore", type = ApiParamType.INTEGER)
     private Integer needScore;
 
+    @EntityField(name = "nmtar.searchregionteamapi.input.param.desc.regionid", type = ApiParamType.LONG)
+    private Long regionId;
+
     public ProcessTaskVo() {
 
     }
@@ -828,5 +831,13 @@ public class ProcessTaskVo extends BasePageVo {
 
     public void setNeedScore(Integer needScore) {
         this.needScore = needScore;
+    }
+
+    public Long getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(Long regionId) {
+        this.regionId = regionId;
     }
 }
