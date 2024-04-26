@@ -3180,7 +3180,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         `worktime_uuid`,
         `serial_number`,
         `need_score`,
-        `source`
+        `source`,
+        `region_id`
         )
         VALUES
         (
@@ -3198,7 +3199,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         #{worktimeUuid},
         #{serialNumber},
         #{needScore},
-        #{source}
+        #{source},
+        #{regionId}
         )
     </insert>
 
@@ -3217,7 +3219,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         `reporter`,
         `expire_time`,
         `serial_number`,
-        `worktime_uuid`
+        `worktime_uuid`,
+        `region_id`
         )
         VALUES
         (
@@ -3233,7 +3236,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         #{reporter},
         #{expireTime},
         #{serialNumber},
-        #{worktimeUuid}
+        #{worktimeUuid},
+        #{regionId}
         )
     </insert>
 

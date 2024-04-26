@@ -1772,6 +1772,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             processTaskVo.setProcessUuid(currentProcessTaskStepVo.getProcessUuid());
             processTaskVo.setReporter(paramObj.getString("reporter"));
             processTaskVo.setStatus(ProcessTaskStatus.DRAFT.getValue());
+            processTaskVo.setRegionId(paramObj.getLong("regionId"));
             String source = paramObj.getString("source");
             if (StringUtils.isNotBlank(source)) {
                 processTaskVo.setSource(source);

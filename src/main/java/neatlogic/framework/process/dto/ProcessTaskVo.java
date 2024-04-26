@@ -196,6 +196,9 @@ public class ProcessTaskVo extends BasePageVo {
     @EntityField(name = "nmtar.searchregionteamapi.input.param.desc.regionid", type = ApiParamType.LONG)
     private Long regionId;
 
+    @EntityField(name = "nfpd.processtaskvo.entityfield.name.processdispatcherlist", type = ApiParamType.STRING)
+    private List<String> processDispatcherList;
+
     public ProcessTaskVo() {
 
     }
@@ -839,5 +842,13 @@ public class ProcessTaskVo extends BasePageVo {
 
     public void setRegionId(Long regionId) {
         this.regionId = regionId;
+    }
+
+    public List<String> getProcessDispatcherList() {
+        return processDispatcherList;
+    }
+
+    public void setProcessDispatcherList(List<String> processDispatcherList) {
+        this.processDispatcherList = processDispatcherList;
     }
 }
