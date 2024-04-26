@@ -1770,7 +1770,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             processTaskVo.setChannelUuid(paramObj.getString("channelUuid"));
             processTaskVo.setPriorityUuid(paramObj.getString("priorityUuid"));
             processTaskVo.setProcessUuid(currentProcessTaskStepVo.getProcessUuid());
-            processTaskVo.setReporter(UserContext.get().getUserUuid(true));
+            processTaskVo.setReporter(paramObj.getString("reporter"));
             processTaskVo.setStatus(ProcessTaskStatus.DRAFT.getValue());
             String source = paramObj.getString("source");
             if (StringUtils.isNotBlank(source)) {
@@ -2014,6 +2014,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             /* 更新工单信息 **/
             processTaskVo.setTitle(paramObj.getString("title"));
             processTaskVo.setOwner(paramObj.getString("owner"));
+            processTaskVo.setReporter(paramObj.getString("reporter"));
             processTaskVo.setPriorityUuid(paramObj.getString("priorityUuid"));
             processTaskMapper.updateProcessTaskTitleOwnerPriorityUuid(processTaskVo);
             processTaskMapper.deleteProcessTaskStepContentByProcessTaskStepId(currentProcessTaskStepVo.getId());

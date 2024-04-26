@@ -3717,7 +3717,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
             `processtask`
         SET `title`         = #{title},
             `priority_uuid` = #{priorityUuid},
-            `owner`         = #{owner}
+            `owner`         = #{owner},
+            `reporter`      = #{reporter}
         WHERE `id` = #{id}
     </update>
 
