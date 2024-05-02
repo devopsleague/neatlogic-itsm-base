@@ -15,9 +15,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.condition.core;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.Expression;
 import neatlogic.framework.common.constvalue.GroupSearch;
+import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.dao.mapper.UserMapper;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.dto.condition.ConditionVo;
@@ -25,21 +29,18 @@ import neatlogic.framework.process.constvalue.ConditionConfigType;
 import neatlogic.framework.process.constvalue.ProcessTaskStatus;
 import neatlogic.framework.process.constvalue.ProcessTaskStepStatus;
 import neatlogic.framework.process.constvalue.ProcessWorkcenterField;
-import neatlogic.framework.process.dao.mapper.ProcessTaskAgentMapper;
-import neatlogic.framework.process.dao.mapper.ProcessTaskMapper;
+import neatlogic.framework.process.crossover.IProcessTaskAgentCrossoverMapper;
+import neatlogic.framework.process.crossover.IProcessTaskAgentCrossoverService;
+import neatlogic.framework.process.crossover.IProcessTaskCrossoverMapper;
 import neatlogic.framework.process.dto.SqlDecoratorVo;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentTargetVo;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentVo;
-import neatlogic.framework.process.service.ProcessTaskAgentService;
 import neatlogic.framework.process.workcenter.dto.JoinTableColumnVo;
 import neatlogic.framework.process.workcenter.table.ProcessTaskSqlTable;
 import neatlogic.framework.process.workcenter.table.ProcessTaskStepSqlTable;
 import neatlogic.framework.process.workcenter.table.ProcessTaskStepWorkerSqlTable;
 import neatlogic.framework.service.AuthenticationInfoService;
 import neatlogic.framework.util.TimeUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,32 +58,11 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
         userMapper = _userMapper;
     }
 
-    protected static ProcessTaskAgentMapper processTaskAgentMapper;
-
-    @Resource
-    public void setProcessTaskAgentMapper(ProcessTaskAgentMapper _processTaskAgentMapper) {
-        processTaskAgentMapper = _processTaskAgentMapper;
-    }
-
-    protected static ProcessTaskMapper processTaskMapper;
-
-    @Resource
-    public void setProcessTaskMapper(ProcessTaskMapper _processTaskMapper) {
-        processTaskMapper = _processTaskMapper;
-    }
-
     protected static AuthenticationInfoService authenticationInfoService;
 
     @Resource
     public void setAuthenticationInfoService(AuthenticationInfoService _authenticationInfoService) {
         authenticationInfoService = _authenticationInfoService;
-    }
-
-    protected ProcessTaskAgentService processTaskAgentService;
-
-    @Resource
-    public void setProcessTaskAgentService(ProcessTaskAgentService _processTaskAgentService) {
-        processTaskAgentService = _processTaskAgentService;
     }
 
     protected void getSimpleSqlConditionWhere(ConditionVo condition, StringBuilder sqlSb, String tableShortName, String columnName) {
@@ -222,17 +202,20 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
      * @return 工单idList
      */
     private List<Long> getAgentProcessTaskId() {
+        IProcessTaskAgentCrossoverMapper processTaskAgentCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskAgentCrossoverMapper.class);
+        IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         Set<Long> allProcessTaskIdSet = new HashSet<>();
         //1 找出所有当前用户授权记录
-        List<ProcessTaskAgentVo> taskAgentVos = processTaskAgentMapper.getProcessTaskAgentDetailListByToUserUuid(UserContext.get().getUserUuid(true));
+        List<ProcessTaskAgentVo> taskAgentVos = processTaskAgentCrossoverMapper.getProcessTaskAgentDetailListByToUserUuid(UserContext.get().getUserUuid(true));
         //2 循环记录 找出给个授权记录对应的taskIdList 并append
         for (ProcessTaskAgentVo taskAgentVo : taskAgentVos) {
             List<ProcessTaskAgentTargetVo> taskAgentTargetVos = taskAgentVo.getProcessTaskAgentTargetVos();
             if (CollectionUtils.isNotEmpty(taskAgentTargetVos)) {
+                IProcessTaskAgentCrossoverService processTaskAgentCrossoverService = CrossoverServiceFactory.getApi(IProcessTaskAgentCrossoverService.class);
                 //根据channelUuid找到formUser 所有能处理的工单idList
-                List<String> channelUuidList = processTaskAgentService.getChannelUuidListByProcessTaskAgentId(taskAgentVo.getId());
+                List<String> channelUuidList = processTaskAgentCrossoverService.getChannelUuidListByProcessTaskAgentId(taskAgentVo.getId());
                 AuthenticationInfoVo authenticationInfoVo = authenticationInfoService.getAuthenticationInfo(taskAgentVo.getFromUserUuid());
-                Set<Long> processTaskIdSet = processTaskMapper.getProcessTaskIdSetByChannelUuidListAndAuthenticationInfo(channelUuidList, authenticationInfoVo);
+                Set<Long> processTaskIdSet = processTaskCrossoverMapper.getProcessTaskIdSetByChannelUuidListAndAuthenticationInfo(channelUuidList, authenticationInfoVo);
                 allProcessTaskIdSet.addAll(processTaskIdSet);
             }
         }

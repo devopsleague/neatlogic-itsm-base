@@ -6,10 +6,11 @@ import com.alibaba.fastjson.JSONPath;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.constvalue.UserType;
+import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.constvalue.*;
-import neatlogic.framework.process.dao.mapper.ProcessStepHandlerMapper;
-import neatlogic.framework.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.framework.process.crossover.IProcessStepHandlerCrossoverMapper;
+import neatlogic.framework.process.crossover.ISelectContentByHashCrossoverMapper;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.IProcessStepHandler;
@@ -27,23 +28,12 @@ import java.util.Objects;
 
 public abstract class OperationAuthHandlerBase implements IOperationAuthHandler {
     protected static AuthenticationInfoService authenticationInfoService;
-    protected static ProcessStepHandlerMapper processStepHandlerMapper;
-    protected static SelectContentByHashMapper selectContentByHashMapper;
 
     @Autowired
     public void setAuthenticationInfoService(AuthenticationInfoService _authenticationInfoService) {
         authenticationInfoService = _authenticationInfoService;
     }
 
-    @Autowired
-    public void setProcessStepHandlerMapper(ProcessStepHandlerMapper _processStepHandlerMapper) {
-        processStepHandlerMapper = _processStepHandlerMapper;
-    }
-    
-    @Autowired
-    public void setSelectContentByHashMapper(SelectContentByHashMapper _selectContentByHashMapper) {
-        selectContentByHashMapper = _selectContentByHashMapper;
-    }
     /**
      * 
     * @Description: 判断当前用户是不是工单任意一个步骤的待处理人
@@ -236,7 +226,8 @@ public abstract class OperationAuthHandlerBase implements IOperationAuthHandler 
     protected boolean checkOperationAuthIsConfigured(ProcessTaskVo processTaskVo, ProcessTaskStepVo processTaskStepVo,
         ProcessTaskOperationType operationType, String userUuid) {
         JSONArray authorityList = null;
-        String stepConfig = selectContentByHashMapper.getProcessTaskStepConfigByHash(processTaskStepVo.getConfigHash());
+        ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
+        String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(processTaskStepVo.getConfigHash());
         Integer enableAuthority = (Integer) JSONPath.read(stepConfig, "enableAuthority");
         if (Objects.equals(enableAuthority, 1)) {
             authorityList = (JSONArray) JSONPath.read(stepConfig, "authorityList");
@@ -246,7 +237,8 @@ public abstract class OperationAuthHandlerBase implements IOperationAuthHandler 
             if (processStepUtilHandler == null) {
                 throw new ProcessStepUtilHandlerNotFoundException(handler);
             }
-            String processStepHandlerConfig = processStepHandlerMapper.getProcessStepHandlerConfigByHandler(handler);
+            IProcessStepHandlerCrossoverMapper processStepHandlerCrossoverMapper = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverMapper.class);
+            String processStepHandlerConfig = processStepHandlerCrossoverMapper.getProcessStepHandlerConfigByHandler(handler);
             JSONObject globalConfig = null;
             if (StringUtils.isNotBlank(processStepHandlerConfig)) {
                 globalConfig = JSONObject.parseObject(processStepHandlerConfig);

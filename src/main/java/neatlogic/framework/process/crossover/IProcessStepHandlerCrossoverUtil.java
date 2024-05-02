@@ -1,19 +1,23 @@
-/*Copyright (C) 2024  深圳极向量科技有限公司 All Rights Reserved.
+/*
+ * Copyright (C) 2024  深圳极向量科技有限公司 All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+package neatlogic.framework.process.crossover;
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
-package neatlogic.framework.process.stephandler.core;
-
+import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.notify.core.INotifyTriggerType;
 import neatlogic.framework.process.audithandler.core.IProcessTaskAuditType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
@@ -21,9 +25,7 @@ import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.stepremind.core.IProcessTaskStepRemindType;
 
-import java.util.List;
-
-public interface IProcessStepHandlerUtil {
+public interface IProcessStepHandlerCrossoverUtil extends ICrossoverService {
     /**
      * @Description: 触发动作
      * @Author: linbq
@@ -49,15 +51,6 @@ public interface IProcessStepHandlerUtil {
      * @Params:[currentProcessTaskVo, isAsync]
      * @Returns:void
      **/
-    void calculateSla(ProcessTaskVo currentProcessTaskVo, boolean isAsync);
-
-    /**
-     * @Description: 计算时效
-     * @Author: linbq
-     * @Date: 2021/1/20 16:17
-     * @Params:[currentProcessTaskVo, isAsync]
-     * @Returns:void
-     **/
     void calculateSla(ProcessTaskVo currentProcessTaskVo);
 
     /**
@@ -68,15 +61,6 @@ public interface IProcessStepHandlerUtil {
      * @Returns:void
      **/
     void calculateSla(ProcessTaskStepVo currentProcessTaskStepVo);
-
-    /**
-     * @Description: 计算时效
-     * @Author: linbq
-     * @Date: 2021/1/20 16:17
-     * @Params:[currentProcessTaskVo, isAsync]
-     * @Returns:void
-     **/
-    void calculateSla(ProcessTaskVo currentProcessTaskVo, ProcessTaskStepVo currentProcessTaskStepVo, boolean isAsync);
 
     /**
      * @Description: 记录操作时间
@@ -97,15 +81,6 @@ public interface IProcessStepHandlerUtil {
     void audit(ProcessTaskStepVo currentProcessTaskStepVo, IProcessTaskAuditType action);
 
     /**
-     * @Description: 自动评分
-     * @Author: linbq
-     * @Date: 2021/1/20 16:22
-     * @Params:[currentProcessTaskVo]
-     * @Returns:void
-     **/
-    void autoScore(ProcessTaskVo currentProcessTaskVo);
-
-    /**
      * @Description: 获取验证基本信息数据是否合法，并验证
      * @Author: linbq
      * @Date: 2021/1/20 16:21
@@ -115,15 +90,6 @@ public interface IProcessStepHandlerUtil {
     boolean baseInfoValidFromDb(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
-     * @Description: 验证基本信息数据是否合法
-     * @Author: linbq
-     * @Date: 2021/1/20 16:21
-     * @Params:[currentProcessTaskStepVo, processTaskVo]
-     * @Returns:boolean
-     **/
-    boolean baseInfoValid(ProcessTaskStepVo currentProcessTaskStepVo, ProcessTaskVo processTaskVo);
-
-    /**
      * @Description: 验证前置步骤指派处理人是否合法
      * @Author: linbq
      * @Date: 2021/1/20 16:21
@@ -131,15 +97,6 @@ public interface IProcessStepHandlerUtil {
      * @Returns:boolean
      **/
     boolean assignWorkerValid(ProcessTaskStepVo currentProcessTaskStepVo);
-
-    /**
-     * 找出流转到哪些步骤时，需要指定targetStepId步骤的处理人
-     * @param processTaskId 工单id
-     * @param currentStepId 当前流转步骤id
-     * @param targetStepId 配置了由当前步骤处理人指定处理人的步骤id
-     * @return
-     */
-    List<Long> getNextStepIdList(Long processTaskId, Long currentStepId, Long targetStepId);
 
     /**
      * @Description: 保存步骤提醒
