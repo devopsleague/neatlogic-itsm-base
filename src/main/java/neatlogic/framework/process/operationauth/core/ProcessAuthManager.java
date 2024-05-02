@@ -2,8 +2,9 @@ package neatlogic.framework.process.operationauth.core;
 
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.dao.mapper.*;
+import neatlogic.framework.process.crossover.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentTargetVo;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentVo;
@@ -13,8 +14,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,27 +24,8 @@ import java.util.stream.Collectors;
  * @ClassName: ProcessOperateManager
  * @Description: 权限判断管理类，给步骤操作页面返回操作按钮列表，校验操作是否有权限
  */
-@Component
 public class ProcessAuthManager {
     private final static Logger logger = LoggerFactory.getLogger(ProcessAuthManager.class);
-    private static ProcessTaskMapper processTaskMapper;
-    private static ProcessTaskAgentMapper processTaskAgentMapper;
-    private static SelectContentByHashMapper selectContentByHashMapper;
-    private static ChannelMapper channelMapper;
-    private static CatalogMapper catalogMapper;
-    @Autowired
-    private ProcessAuthManager(
-            ProcessTaskAgentMapper _processTaskAgentMapper,
-            ProcessTaskMapper _processTaskMapper,
-            SelectContentByHashMapper _selectContentByHashMapper,
-            ChannelMapper _channelMapper,
-            CatalogMapper _catalogMapper) {
-        processTaskAgentMapper = _processTaskAgentMapper;
-        processTaskMapper = _processTaskMapper;
-        selectContentByHashMapper = _selectContentByHashMapper;
-        channelMapper = _channelMapper;
-        catalogMapper = _catalogMapper;
-    }
 
     /** 需要校验的工单id列表 **/
     private Set<Long> processTaskIdSet;
@@ -202,7 +182,7 @@ public class ProcessAuthManager {
         if (CollectionUtils.isEmpty(processTaskIdSet) && CollectionUtils.isEmpty(processTaskStepIdSet)) {
             return resultMap;
         }
-
+        IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         if (processTaskStepIdSetMap == null) {
             processTaskStepIdSetMap = new HashMap<>();
         }
@@ -211,7 +191,7 @@ public class ProcessAuthManager {
                 processTaskIdSet = new HashSet<>();
             }
             List<ProcessTaskStepVo> processTaskStepList =
-                    processTaskMapper.getProcessTaskStepListByIdList(new ArrayList<>(processTaskStepIdSet));
+                    processTaskCrossoverMapper.getProcessTaskStepListByIdList(new ArrayList<>(processTaskStepIdSet));
             for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
                 processTaskIdSet.add(processTaskStepVo.getProcessTaskId());
                 processTaskStepIdSetMap.computeIfAbsent(processTaskStepVo.getProcessTaskId(), k -> new HashSet<>())
@@ -221,7 +201,7 @@ public class ProcessAuthManager {
         if (CollectionUtils.isNotEmpty(processTaskIdSet)) {
             List<Long> processTaskIdList = new ArrayList<>(processTaskIdSet);
             List<ProcessTaskStepWorkerVo> processTaskStepWorkerList =
-                    processTaskMapper.getProcessTaskStepWorkerListByProcessTaskIdList(processTaskIdList);
+                    processTaskCrossoverMapper.getProcessTaskStepWorkerListByProcessTaskIdList(processTaskIdList);
             Map<Long, List<ProcessTaskStepWorkerVo>> processTaskStepWorkerListMap = new HashMap<>();
             for (ProcessTaskStepWorkerVo processTaskStepWorkerVo : processTaskStepWorkerList) {
                 processTaskStepWorkerListMap
@@ -229,17 +209,17 @@ public class ProcessAuthManager {
                         .add(processTaskStepWorkerVo);
             }
             List<ProcessTaskStepUserVo> processTaskStepUserList =
-                    processTaskMapper.getProcessTaskStepUserListByProcessTaskIdList(processTaskIdList);
+                    processTaskCrossoverMapper.getProcessTaskStepUserListByProcessTaskIdList(processTaskIdList);
             Map<Long, List<ProcessTaskStepUserVo>> processTaskStepUserListMap = new HashMap<>();
             for (ProcessTaskStepUserVo processTaskStepUserVo : processTaskStepUserList) {
                 processTaskStepUserListMap
                         .computeIfAbsent(processTaskStepUserVo.getProcessTaskStepId(), k -> new ArrayList<>())
                         .add(processTaskStepUserVo);
             }
-            List<ProcessTaskStepAgentVo> processTaskStepAgentList = processTaskMapper.getProcessTaskStepAgentListByProcessTaskIdList(processTaskIdList);
+            List<ProcessTaskStepAgentVo> processTaskStepAgentList = processTaskCrossoverMapper.getProcessTaskStepAgentListByProcessTaskIdList(processTaskIdList);
             Map<Long, ProcessTaskStepAgentVo> processTaskStepAgentMap = processTaskStepAgentList.stream().collect(Collectors.toMap(e -> e.getProcessTaskStepId(), e -> e));
             List<ProcessTaskStepVo> processTaskStepList =
-                    processTaskMapper.getProcessTaskStepListByProcessTaskIdList(processTaskIdList);
+                    processTaskCrossoverMapper.getProcessTaskStepListByProcessTaskIdList(processTaskIdList);
             Map<Long, List<ProcessTaskStepVo>> processTaskStepListMap = new HashMap<>();
             for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
                 processTaskStepVo.setWorkerList(
@@ -254,7 +234,7 @@ public class ProcessAuthManager {
                         .add(processTaskStepVo);
             }
             List<ProcessTaskStepRelVo> processTaskStepRelList =
-                    processTaskMapper.getProcessTaskStepRelListByProcessTaskIdList(processTaskIdList);
+                    processTaskCrossoverMapper.getProcessTaskStepRelListByProcessTaskIdList(processTaskIdList);
             Map<Long, List<ProcessTaskStepRelVo>> processTaskStepRelListMap = new HashMap<>();
             for (ProcessTaskStepRelVo processTaskStepRelVo : processTaskStepRelList) {
                 processTaskStepRelListMap
@@ -262,10 +242,11 @@ public class ProcessAuthManager {
                         .add(processTaskStepRelVo);
             }
 
-            List<ProcessTaskVo> processTaskList = processTaskMapper.getProcessTaskListByIdList(processTaskIdList);
+            List<ProcessTaskVo> processTaskList = processTaskCrossoverMapper.getProcessTaskListByIdList(processTaskIdList);
             Set<String> hashSet = processTaskList.stream().map(ProcessTaskVo::getConfigHash).collect(Collectors.toSet());
 //            long startTime3 = System.currentTimeMillis();
-            List<ProcessTaskConfigVo> processTaskConfigList = selectContentByHashMapper.getProcessTaskConfigListByHashList(new ArrayList<>(hashSet));
+            ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
+            List<ProcessTaskConfigVo> processTaskConfigList = selectContentByHashCrossoverMapper.getProcessTaskConfigListByHashList(new ArrayList<>(hashSet));
 //            logger.error("D:" + (System.currentTimeMillis() - startTime3));
             Map<String, String> processTaskConfigMap = processTaskConfigList.stream().collect(Collectors.toMap(e->e.getHash(), e -> e.getConfig()));
 //            logger.error("A:" + (System.currentTimeMillis() - startTime));
@@ -403,7 +384,8 @@ public class ProcessAuthManager {
             fromUserUuidList = new ArrayList<>();
             List<ProcessTaskAgentVo> processTaskAgentList = processTaskAgentListMap.get(UserContext.get().getUserUuid(true));
             if (processTaskAgentList == null) {
-                processTaskAgentList = processTaskAgentMapper.getProcessTaskAgentDetailListByToUserUuid(UserContext.get().getUserUuid(true));
+                IProcessTaskAgentCrossoverMapper processTaskAgentCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskAgentCrossoverMapper.class);
+                processTaskAgentList = processTaskAgentCrossoverMapper.getProcessTaskAgentDetailListByToUserUuid(UserContext.get().getUserUuid(true));
                 processTaskAgentListMap.put(UserContext.get().getUserUuid(true), processTaskAgentList);
             }
             if (CollectionUtils.isNotEmpty(processTaskAgentList)) {
@@ -427,9 +409,11 @@ public class ProcessAuthManager {
                         }
                     }
                     if (!flag && CollectionUtils.isNotEmpty(catalogUuidList)) {
-                        ChannelVo channelVo = channelMapper.getChannelByUuid(channelUuid);
-                        CatalogVo catalogVo = catalogMapper.getCatalogByUuid(channelVo.getParentUuid());
-                        List<String> upwardUuidList = catalogMapper.getUpwardUuidListByLftRht(catalogVo.getLft(), catalogVo.getRht());
+                        IChannelCrossoverMapper channelCrossoverMapper = CrossoverServiceFactory.getApi(IChannelCrossoverMapper.class);
+                        ChannelVo channelVo = channelCrossoverMapper.getChannelByUuid(channelUuid);
+                        ICatalogCrossoverMapper catalogCrossoverMapper = CrossoverServiceFactory.getApi(ICatalogCrossoverMapper.class);
+                        CatalogVo catalogVo = catalogCrossoverMapper.getCatalogByUuid(channelVo.getParentUuid());
+                        List<String> upwardUuidList = catalogCrossoverMapper.getUpwardUuidListByLftRht(catalogVo.getLft(), catalogVo.getRht());
                         flag = catalogUuidList.removeAll(upwardUuidList);
                     }
                     if (flag) {

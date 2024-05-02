@@ -15,7 +15,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.sla.core;
 
-import neatlogic.framework.process.dao.mapper.ProcessTaskStepTimeAuditMapper;
+import neatlogic.framework.crossover.CrossoverServiceFactory;
+import neatlogic.framework.process.crossover.IProcessTaskStepTimeAuditCrossoverMapper;
 import neatlogic.framework.process.dto.ProcessTaskSlaTimeCostVo;
 import neatlogic.framework.process.dto.ProcessTaskStepTimeAuditVo;
 import neatlogic.framework.worktime.dao.mapper.WorktimeMapper;
@@ -31,14 +32,7 @@ import java.util.Map;
  **/
 public abstract class SlaCalculateHandlerBase implements ISlaCalculateHandler {
 
-    protected static ProcessTaskStepTimeAuditMapper processTaskStepTimeAuditMapper;
-
     protected static WorktimeMapper worktimeMapper;
-
-    @Resource
-    private void setProcessTaskStepTimeAuditMapper(ProcessTaskStepTimeAuditMapper _processTaskStepTimeAuditMapper) {
-        processTaskStepTimeAuditMapper = _processTaskStepTimeAuditMapper;
-    }
 
     @Resource
     public void setWorktimeMapper(WorktimeMapper _worktimeMapper) {
@@ -47,7 +41,8 @@ public abstract class SlaCalculateHandlerBase implements ISlaCalculateHandler {
 
     @Override
     public ProcessTaskSlaTimeCostVo calculateTimeCost(Long slaId, long currentTimeMillis, String worktimeUuid) {
-        List<ProcessTaskStepTimeAuditVo> timeAuditList =  processTaskStepTimeAuditMapper.getProcessTaskStepTimeAuditBySlaId(slaId);
+        IProcessTaskStepTimeAuditCrossoverMapper processTaskStepTimeAuditCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepTimeAuditCrossoverMapper.class);
+        List<ProcessTaskStepTimeAuditVo> timeAuditList =  processTaskStepTimeAuditCrossoverMapper.getProcessTaskStepTimeAuditBySlaId(slaId);
         if (CollectionUtils.isEmpty(timeAuditList)) {
             return new ProcessTaskSlaTimeCostVo();
         }
