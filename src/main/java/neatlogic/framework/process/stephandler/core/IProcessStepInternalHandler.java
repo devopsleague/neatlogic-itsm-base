@@ -18,11 +18,10 @@ import java.util.Map;
  * @Description: 处理流程组件内部业务逻辑
  * @Author: chenqiwei
  * @Date: 2021/1/20 15:55
-
  **/
 public interface IProcessStepInternalHandler {
 
-    public String getHandler();
+    String getHandler();
 
     /**
      * @param @return
@@ -30,46 +29,41 @@ public interface IProcessStepInternalHandler {
      * @Time: 2020年7月27日
      * @Description: 该步骤特有的步骤信息（当该步骤是开始节点时调用该方法）
      */
-    public Object getHandlerStepInfo(ProcessTaskStepVo currentProcessTaskStepVo);
+    Object getHandlerStepInfo(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
-     *
-     * @Time: 2020年8月12日
-     * @Description: 该步骤特有的步骤初始化信息 （当该步骤不是开始节点时调用该方法）
      * @param @return
      * @return Object
+     * @Time: 2020年8月12日
+     * @Description: 该步骤特有的步骤初始化信息 （当该步骤不是开始节点时调用该方法）
      */
-    public Object getHandlerStepInitInfo(ProcessTaskStepVo currentProcessTaskStepVo);
+    Object getHandlerStepInitInfo(ProcessTaskStepVo currentProcessTaskStepVo);
 
     /**
+     * @param @param processStepVo
+     * @param @param stepConfigObj
+     * @return void
      * @Author: chenqiwei
      * @Time: Feb 10, 2020
      * @Description: 组装步骤节点信息，将步骤stepConfig配置信息中的字段值写入到ProcessStepVo对象对应属性中
-     * @param @param
-     *            processStepVo
-     * @param @param
-     *            stepConfigObj
-     * @return void
      */
-    public void makeupProcessStep(ProcessStepVo processStepVo, JSONObject stepConfigObj);
+    void makeupProcessStep(ProcessStepVo processStepVo, JSONObject stepConfigObj);
 
     /**
-     * 
-     * @Description: 子任务状态发生变化后，对子任务处理人的在 processtask_step_worker表和processtask_step_user表的数据做对应的变化
      * @param processTaskId
      * @param processTaskStepId
      * @return void
+     * @Description: 子任务状态发生变化后，对子任务处理人的在 processtask_step_worker表和processtask_step_user表的数据做对应的变化
      */
-    public void updateProcessTaskStepUserAndWorker(Long processTaskId, Long processTaskStepId);
+    void updateProcessTaskStepUserAndWorker(Long processTaskId, Long processTaskStepId);
 
     /**
-     *
-     * @Time: 2020年6月30日
-     * @Description: 构造节点管理配置数据，初始化节点管理中各个节点的全局配置信息，设置默认值，校正节点的全局配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      * @param configObj
      * @return JSONObject
+     * @Time: 2020年6月30日
+     * @Description: 构造节点管理配置数据，初始化节点管理中各个节点的全局配置信息，设置默认值，校正节点的全局配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      */
-    public default JSONObject makeupConfig(JSONObject configObj) {
+    default JSONObject makeupConfig(JSONObject configObj) {
         if (configObj == null) {
             configObj = new JSONObject();
         }
@@ -78,21 +72,21 @@ public interface IProcessStepInternalHandler {
 
     /**
      * 初始化流程步骤的默认配置信息，校正流程步骤配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
+     *
      * @param configObj 配置数据
      * @return
      */
-    public default JSONObject regulateProcessStepConfig(JSONObject configObj) {
+    default JSONObject regulateProcessStepConfig(JSONObject configObj) {
         return configObj;
     }
 
     /**
-     * 
-     * @Time:2020年9月15日
-     * @Description: 根据工单步骤id获取自定义按钮文案映射
      * @param processTaskStepId
      * @return void
+     * @Time:2020年9月15日
+     * @Description: 根据工单步骤id获取自定义按钮文案映射
      */
-    public Map<String, String> getCustomButtonMapByProcessTaskStepId(Long processTaskStepId);
+    Map<String, String> getCustomButtonMapByProcessTaskStepId(Long processTaskStepId);
 
     /**
      * @Description: 根据步骤configHash和handler获取自定义按钮文案映射
@@ -101,7 +95,7 @@ public interface IProcessStepInternalHandler {
      * @Params:[configHash, handler]
      * @Returns:java.util.Map<java.lang.String,java.lang.String>
      **/
-    public Map<String, String> getCustomButtonMapByConfigHashAndHandler(String configHash, String handler);
+    Map<String, String> getCustomButtonMapByConfigHashAndHandler(String configHash, String handler);
 
     /**
      * @Description: 根据步骤configHash和handler、status获取状态自定义按钮文案
@@ -110,28 +104,27 @@ public interface IProcessStepInternalHandler {
      * @Params:[configHash, handler, status]
      * @Returns:java.lang.String
      **/
-    public String getStatusTextByConfigHashAndHandler(String configHash, String handler, String status);
+    String getStatusTextByConfigHashAndHandler(String configHash, String handler, String status);
 
     /**
-     * 
+     * @param configHash
+     * @return Integer
      * @Time:2020年11月23日
      * @Description: 获取步骤配置信息中isRequired(回复是否必填)字段值
-     * @param configHash
-     * @return Integer
      */
-    public Integer getIsRequiredByConfigHash(String configHash);
+    Integer getIsRequiredByConfigHash(String configHash);
 
     /**
-     * 
-     * @Time:2020年11月23日
-     * @Description: 获取步骤配置信息中isNeedContent(回复是否启用)字段值
      * @param configHash
      * @return Integer
+     * @Time:2020年11月23日
+     * @Description: 获取步骤配置信息中isNeedContent(回复是否启用)字段值
      */
-    public Integer getIsNeedContentByConfigHash(String configHash);
+    Integer getIsNeedContentByConfigHash(String configHash);
 
     /**
      * 获取步骤配置信息中isNeedUploadFile(是否启用上传文件)字段值
+     *
      * @param configHash
      * @return
      */
@@ -139,13 +132,15 @@ public interface IProcessStepInternalHandler {
 
     /**
      * 获取步骤配置信息中enableReapproval(启用重审)字段值
+     *
      * @param configHash
      * @return
      */
-    public Integer getEnableReapprovalByConfigHash(String configHash);
+    Integer getEnableReapprovalByConfigHash(String configHash);
 
     /**
      * 获取步骤配置信息中formSceneUuid(表单场景)字段值
+     *
      * @param configHash
      * @return
      */
@@ -153,6 +148,7 @@ public interface IProcessStepInternalHandler {
 
     /**
      * 向processtask_step_in_operation表中插入步骤正在操作记录，等到该步骤操作完成时会删除这条记录
+     *
      * @param processTaskStepInOperationVo
      * @return
      */
@@ -161,6 +157,7 @@ public interface IProcessStepInternalHandler {
 
     /**
      * 获取该步骤中的附件id列表
+     *
      * @param currentProcessTaskStepVo
      * @return
      */
@@ -170,6 +167,7 @@ public interface IProcessStepInternalHandler {
 
     /**
      * 获取可流转步骤列表
+     *
      * @param currentProcessTaskStepVo
      * @return
      */

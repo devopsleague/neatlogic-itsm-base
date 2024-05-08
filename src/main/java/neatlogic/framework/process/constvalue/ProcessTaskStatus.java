@@ -15,27 +15,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.constvalue;
 
-import neatlogic.framework.common.constvalue.IEnum;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import neatlogic.framework.util.I18n;
+import neatlogic.framework.common.constvalue.IEnum;
+import neatlogic.framework.util.$;
 
 import java.util.List;
 
 public enum ProcessTaskStatus implements IEnum {
-    RUNNING("running", new I18n("处理中"), "#2d84fb"),
-    ABORTED("aborted", new I18n("已取消"), "#F9A825"),
-    SUCCEED("succeed", new I18n("已完成"), "#25b865"),
-    FAILED("failed", new I18n("异常"), "#f71010"),
-    HANG("hang", new I18n("已挂起"), "#ffba5a"),
-    SCORED("scored", new I18n("已评分"), "#25b865"),
-    DRAFT("draft", new I18n("未提交"), "#8E949F");
+    RUNNING("running", "common.doing", "#2d84fb"),
+    ABORTED("aborted", "common.canceled", "#F9A825"),
+    SUCCEED("succeed", "common.done", "#25b865"),
+    FAILED("failed", "nfdt.status.error", "#f71010"),
+    HANG("hang", "common.hang", "#ffba5a"),
+    SCORED("scored", "common.rated", "#25b865"),
+    DRAFT("draft", "common.uncommited", "#8E949F");
 
     private final String status;
-    private final I18n text;
+    private final String text;
     private final String color;
 
-    ProcessTaskStatus(String _status, I18n _text, String _color) {
+    ProcessTaskStatus(String _status, String _text, String _color) {
         this.status = _status;
         this.text = _text;
         this.color = _color;
@@ -46,7 +46,7 @@ public enum ProcessTaskStatus implements IEnum {
     }
 
     public String getText() {
-        return text.toString();
+        return $.t(text);
     }
 
     public String getColor() {
