@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.applicationlistener.core.ModuleInitializedListenerBase;
 import neatlogic.framework.bootstrap.NeatLogicWebApplicationContext;
 import neatlogic.framework.common.RootComponent;
+import neatlogic.framework.process.constvalue.ConditionProcessTaskOptions;
 import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 
@@ -49,6 +50,34 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
             if (formObj != null) {
                 if (formObj instanceof JSONObject) {
                     resultObj.putAll((JSONObject) formObj);
+                }
+            }
+        }
+        return resultObj;
+    }
+
+    public static JSONObject getConditionParamData(ConditionProcessTaskOptions[] options, ProcessTaskStepVo processTaskStepVo) {
+        JSONObject resultObj = new JSONObject();
+        for (ConditionProcessTaskOptions option : options) {
+            IProcessTaskCondition handler = conditionComponentMap.get(option.getValue());
+            if (handler != null) {
+                Object object = handler.getConditionParamData(processTaskStepVo);
+                if (object != null) {
+                    resultObj.put(option.getValue(), object);
+                    resultObj.put(option.getText(), handler.getConditionParamDataForHumanization(processTaskStepVo));
+                }
+            }
+        }
+        IProcessTaskCondition handler = conditionComponentMap.get(ProcessFieldType.FORM.getValue());
+        if (handler != null) {
+            Object formObj = handler.getConditionParamData(processTaskStepVo);
+            if (formObj != null) {
+                if (formObj instanceof JSONObject) {
+                    resultObj.putAll((JSONObject) formObj);
+                }
+                Object formObjForHumanization = handler.getConditionParamDataForHumanization(processTaskStepVo);
+                if (formObjForHumanization instanceof JSONObject) {
+                    resultObj.putAll((JSONObject) formObjForHumanization);
                 }
             }
         }
