@@ -23,6 +23,7 @@ import neatlogic.framework.process.constvalue.ConditionProcessTaskOptions;
 import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,12 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
 
     public static IProcessTaskCondition getHandler(String name) {
         return conditionComponentMap.get(name);
+    }
+
+    private static final List<IProcessTaskCondition> conditionHandlerList = new ArrayList<>();
+
+    public static List<IProcessTaskCondition> getConditionHandlerList() {
+        return conditionHandlerList;
     }
 
     public static JSONObject getConditionParamData(List<String> options, ProcessTaskStepVo processTaskStepVo) {
@@ -83,13 +90,13 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
         }
         return resultObj;
     }
-
     @Override
     public void onInitialized(NeatLogicWebApplicationContext context) {
         Map<String, IProcessTaskCondition> myMap = context.getBeansOfType(IProcessTaskCondition.class);
         for (Map.Entry<String, IProcessTaskCondition> entry : myMap.entrySet()) {
             IProcessTaskCondition column = entry.getValue();
             conditionComponentMap.put(column.getName(), column);
+            conditionHandlerList.add(column);
         }
     }
 

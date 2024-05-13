@@ -15,22 +15,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.workcenter.dto;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.constvalue.DeviceType;
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.util.CommonUtil;
-import neatlogic.framework.condition.core.ConditionHandlerFactory;
 import neatlogic.framework.dto.AuthorityVo;
 import neatlogic.framework.dto.condition.ConditionVo;
 import neatlogic.framework.process.condition.core.IProcessTaskCondition;
+import neatlogic.framework.process.condition.core.ProcessTaskConditionFactory;
 import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.constvalue.ProcessWorkcenterType;
 import neatlogic.framework.process.dto.SqlDecoratorVo;
 import neatlogic.framework.restful.annotation.EntityField;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -492,7 +492,7 @@ public class WorkcenterVo extends SqlDecoratorVo implements Serializable {
         if (conditionVo.getType().equals(ProcessFieldType.FORM.getValue())) {
             handler = ProcessFieldType.FORM.getValue();
         }
-        IProcessTaskCondition sqlCondition = (IProcessTaskCondition) ConditionHandlerFactory.getHandler(handler);
+        IProcessTaskCondition sqlCondition = ProcessTaskConditionFactory.getHandler(handler);
         sqlCondition.getSqlConditionWhere(conditionVoList, conditionIndex, sqlSb);
     }
 }
