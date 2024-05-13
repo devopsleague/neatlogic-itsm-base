@@ -10,6 +10,11 @@ import java.util.List;
 
 public interface IProcessTaskCondition extends IConditionHandler {
 
+    @Override
+    default String getBelong() {
+        return "processtask";
+    }
+
     /**
      * @Description: 根据conditionVo 转成对应的sql
      * @Author: 89770
