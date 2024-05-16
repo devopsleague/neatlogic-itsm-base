@@ -1,19 +1,19 @@
 package neatlogic.framework.process.constvalue;
 
 import neatlogic.framework.process.stepremind.core.IProcessTaskStepRemindType;
-import neatlogic.framework.util.I18n;
 
 public enum ProcessTaskStepRemindType implements IProcessTaskStepRemindType {
 
-    BACK("back", new I18n("回退提醒"), new I18n("回退了【processTaskStepName】，原因")),
-    REDO("redo", new I18n("回退提醒"), new I18n("回退了工单，原因")),
-    TRANSFER("transfer", new I18n("转交提醒"), new I18n("转交提醒")),
-    ERROR("error", new I18n("异常提醒"), new I18n("异常提醒"));
+    BACK("back", "回退提醒", "回退了【processTaskStepName】，原因"),
+    REDO("redo", "回退提醒", "回退了工单，原因"),
+    TRANSFER("transfer", "转交提醒", ""),
+    ERROR("error", "异常提醒", ""),
+    AUTOMATIC_ERROR("automaticerror", "自动处理异常提醒", "");
     private String value;
-    private I18n text;
-    private I18n title;
+    private String text;
+    private String title;
 
-    private ProcessTaskStepRemindType(String value, I18n text, I18n title) {
+    ProcessTaskStepRemindType(String value, String text, String title) {
         this.value = value;
         this.text = text;
         this.title = title;
@@ -26,12 +26,12 @@ public enum ProcessTaskStepRemindType implements IProcessTaskStepRemindType {
 
     @Override
     public String getText() {
-        return text.toString();
+        return text;
     }
 
     @Override
     public String getTitle() {
-        return title.toString();
+        return title;
     }
 
 
