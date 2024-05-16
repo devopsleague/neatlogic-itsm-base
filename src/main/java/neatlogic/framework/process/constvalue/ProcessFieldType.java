@@ -7,10 +7,10 @@ public enum ProcessFieldType {
     FORM("form", "表单属性"),
     CUSTOM("custom", "自定义属性"),
     CONSTANT("constant", "常量属性");
-    private String value;
-    private String name;
+    private final String value;
+    private final String name;
 
-    private ProcessFieldType(String _value, String _name) {
+    ProcessFieldType(String _value, String _name) {
         this.value = _value;
         this.name = _name;
     }
