@@ -1,9 +1,10 @@
 package neatlogic.framework.process.audithandler.core;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.reflections.Reflections;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 /**
  * 
 * @Time:2020年8月11日
@@ -39,7 +40,7 @@ public class ProcessTaskAuditTypeFactory {
 	}
 	public static String getDescription(String _value) {
 		for(IProcessTaskAuditType type : getAuditTypeList()) {
-			if(type.getValue().equals(_value)) {
+			if(Objects.equals(type.getValue(), _value)) {
 				return type.getDescription();
 			}
 		}

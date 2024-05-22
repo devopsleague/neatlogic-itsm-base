@@ -193,11 +193,14 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     @Override
     public final int active(ProcessTaskStepVo currentProcessTaskStepVo) {
+        logger.warn("开始激活步骤: " + currentProcessTaskStepVo.getName() + ", time: " + System.currentTimeMillis());
         IProcessStepHandlerCrossoverUtil processStepHandlerCrossoverUtil = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverUtil.class);
         try {
             IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+            logger.warn("激活步骤: " + currentProcessTaskStepVo.getName() + ", 获取Lock startTime: " + System.currentTimeMillis());
             /* 锁定当前流程 **/
             processTaskCrossoverMapper.getProcessTaskLockById(currentProcessTaskStepVo.getProcessTaskId());
+            logger.warn("激活步骤: " + currentProcessTaskStepVo.getName() + ", 获取Lock endTime: " + System.currentTimeMillis());
             boolean canFire = false;
             /* 获取当前步骤的所有前置步骤 **/
             /* 获取当前步骤的所有前置连线 **/
@@ -228,18 +231,22 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             } else {
                 canFire = true;
             }
-
+            logger.warn("a Time: " + System.currentTimeMillis());
             if (canFire) {
                 /* 设置当前步骤状态为未开始 **/
                 currentProcessTaskStepVo.setStatus(ProcessTaskStepStatus.PENDING.getValue());
                 currentProcessTaskStepVo.setUpdateActiveTime(1);
+                logger.warn("a1 Time: " + System.currentTimeMillis());
                 /* 遍历后续节点所有步骤，写入汇聚步骤数据 **/
                 resetConvergeInfo(currentProcessTaskStepVo);
-
+                logger.warn("a2 Time: " + System.currentTimeMillis());
                 /* 如果当前步骤是二次进入(后续路径已经走过)，则需要对所有后续流转过的步骤都进行挂起操作 **/
                 hangPostStep(currentProcessTaskStepVo);
+                logger.warn("a3 Time: " + System.currentTimeMillis());
                 resetPostStepRelIsHit(currentProcessTaskStepVo.getId());
+                logger.warn("a4 Time: " + System.currentTimeMillis());
                 if (this.getMode().equals(ProcessStepMode.MT)) {
+                    logger.warn("b Time: " + System.currentTimeMillis());
                     /* 分配处理人 **/
                     assign(currentProcessTaskStepVo);
 
@@ -270,6 +277,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 执行动作 **/
                     processStepHandlerCrossoverUtil.action(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.ACTIVE);
                 } else if (this.getMode().equals(ProcessStepMode.AT)) {
+                    logger.warn("c Time: " + System.currentTimeMillis());
                     myActive(currentProcessTaskStepVo);
                     currentProcessTaskStepVo.setIsActive(1);
                     updateProcessTaskStepStatus(currentProcessTaskStepVo);
@@ -281,6 +289,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                             handler.handle(currentProcessTaskStepVo);
                         }
                     });
+                    logger.warn("d Time: " + System.currentTimeMillis());
                 }
             }
         } catch (ProcessTaskException e) {
@@ -304,6 +313,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 });
             }
+            logger.warn("结束激活步骤: " + currentProcessTaskStepVo.getName() + ", time: " + System.currentTimeMillis());
             // deleteProcessTaskStepInOperationByProcessTaskStepId(currentProcessTaskStepVo.getId(),
             // ProcessTaskOperationType.ACTIVE);
         }
@@ -799,10 +809,13 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     @Override
     public final int complete(ProcessTaskStepVo currentProcessTaskStepVo) {
+        logger.warn("开始完成步骤: " + currentProcessTaskStepVo.getName() + ", time: " + System.currentTimeMillis());
         IProcessStepHandlerCrossoverUtil processStepHandlerCrossoverUtil = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverUtil.class);
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+        logger.warn("完成步骤: " + currentProcessTaskStepVo.getName() + ", 获取Lock startTime: " + System.currentTimeMillis());
         /* 锁定当前流程 **/
         processTaskCrossoverMapper.getProcessTaskLockById(currentProcessTaskStepVo.getProcessTaskId());
+        logger.warn("完成步骤: " + currentProcessTaskStepVo.getName() + ", 获取Lock endTime: " + System.currentTimeMillis());
         ProcessTaskStepNotifyTriggerType notifyTriggerType = ProcessTaskStepNotifyTriggerType.SUCCEED;
         ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_COMPLETE;
         boolean canComplete = false;
@@ -901,6 +914,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 if (CollectionUtils.isEmpty(nextStepIdSet)) {
                     throw new ProcessTaskNotFoundNextStepException();
                 }
+                logger.warn("完成步骤: " + currentProcessTaskStepVo.getName() + ", nextStepIdSet: " + JSON.toJSONString(nextStepIdSet) + ", time: " + System.currentTimeMillis());
                 // 完成步骤时将所有后退路线重置为0
                 List<ProcessTaskStepRelVo> relList = processTaskCrossoverMapper.getProcessTaskStepRelByToId(currentProcessTaskStepVo.getId());
                 for (ProcessTaskStepRelVo processTaskStepRelVo : relList) {
@@ -909,9 +923,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                         processTaskCrossoverMapper.updateProcessTaskStepRelIsHit(processTaskStepRelVo);
                     }
                 }
+                logger.warn("完成步骤: " + currentProcessTaskStepVo.getName() + ", a time: " + System.currentTimeMillis());
                 //将不流转的步骤的正向输入连线的isHit设置为-1
                 identifyPostInvalidStepRelIsHit(currentProcessTaskStepVo.getId(), nextStepIdSet);
-
+                logger.warn("完成步骤: " + currentProcessTaskStepVo.getName() + ", b time: " + System.currentTimeMillis());
                 List<Long> nextStepIdList = new ArrayList<>(nextStepIdSet);
                 List<ProcessTaskStepVo> nextStepList = processTaskCrossoverMapper.getProcessTaskStepListByIdList(nextStepIdList);
                 for (ProcessTaskStepVo nextStep : nextStepList) {
@@ -978,6 +993,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 计算SLA **/
                     processStepHandlerCrossoverUtil.calculateSla(new ProcessTaskVo(currentProcessTaskStepVo.getProcessTaskId()));
                 }
+                logger.warn("结束完成步骤: " + currentProcessTaskStepVo.getName() + ", time: " + System.currentTimeMillis());
             }
         }
 
@@ -2169,6 +2185,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
      */
     private void identifyPostInvalidStepRelIsHit(Long currentProcessTaskStepId, Set<Long> activeStepIdSet) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+        ProcessTaskStepVo processTaskStep = processTaskCrossoverMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepId);
+        logger.warn("identifyPostInvalidStepRelIsHit currentProcessTaskStepId = " + processTaskStep.getName() + "(" + currentProcessTaskStepId + "), activeStepIdSet = " + JSON.toJSONString(activeStepIdSet));
         List<Long> unactiveStepIdList = null;
         List<Long> allNextStepIdList = processTaskCrossoverMapper.getToProcessTaskStepIdListByFromIdAndType(currentProcessTaskStepId, ProcessFlowDirection.FORWARD.getValue());
         if (CollectionUtils.isNotEmpty(activeStepIdSet)) {
@@ -2176,6 +2194,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         } else {
             unactiveStepIdList = allNextStepIdList;
         }
+        logger.warn("identifyPostInvalidStepRelIsHit currentProcessTaskStepId = " + processTaskStep.getName() + "(" + currentProcessTaskStepId + "), unactiveStepIdList = " + JSON.toJSONString(unactiveStepIdList));
         if (CollectionUtils.isNotEmpty(unactiveStepIdList)) {
             Map<Long, List<ProcessTaskStepRelVo>> toStepIdMap = new HashMap<>();
             List<ProcessTaskStepRelVo> processTaskStepRelList = processTaskCrossoverMapper.getProcessTaskStepRelListByToIdList(unactiveStepIdList);
@@ -2193,9 +2212,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 updateProcessTaskStepRelVo.setToProcessTaskStepId(unactiveStepId);
                 processTaskCrossoverMapper.updateProcessTaskStepRelIsHit(updateProcessTaskStepRelVo);
                 List<ProcessTaskStepRelVo> fromStepRelList = toStepIdMap.computeIfAbsent(unactiveStepId, k -> new ArrayList<>());
+                logger.warn("fromStepRelList = " + JSON.toJSONString(fromStepRelList));
                 for (ProcessTaskStepRelVo processTaskStepRelVo : fromStepRelList) {
-                    if (Objects.equals(currentProcessTaskStepId, processTaskStepRelVo.getFromProcessTaskStepId())
-                            || (Objects.equals(unactiveStepId, processTaskStepRelVo.getToProcessTaskStepId()))) {
+                    if (Objects.equals(currentProcessTaskStepId, processTaskStepRelVo.getFromProcessTaskStepId())) {
+                           // || (Objects.equals(unactiveStepId, processTaskStepRelVo.getToProcessTaskStepId()))
                         continue;
                     }
                     if (processTaskStepRelVo.getType().equals(ProcessFlowDirection.FORWARD.getValue())) {
@@ -2212,14 +2232,21 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             }
         }
     }
-
+    private void resetPostStepRelIsHit(Long currentProcessTaskStepId) {
+        resetPostStepRelIsHit(currentProcessTaskStepId, new ArrayList<>());
+    }
     /**
      * 将当前步骤的所有后续步骤间的连线的isHit设置为0
      *
      * @param currentProcessTaskStepId 当前步骤id
      */
-    private void resetPostStepRelIsHit(Long currentProcessTaskStepId) {
+    private void resetPostStepRelIsHit(Long currentProcessTaskStepId, List<Long> stepIdList) {
+        if (stepIdList.contains(currentProcessTaskStepId)) {
+            return;
+        }
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+        ProcessTaskStepVo step = processTaskCrossoverMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepId);
+        logger.warn("resetPostStepRelIsHit step = " + step.getName() + "(" + step.getId() + ")");
         List<Long> toStepIdList = processTaskCrossoverMapper.getToProcessTaskStepIdListByFromIdAndType(currentProcessTaskStepId, ProcessFlowDirection.FORWARD.getValue());
         if (CollectionUtils.isNotEmpty(toStepIdList)) {
             ProcessTaskStepRelVo processTaskStepRelVo = new ProcessTaskStepRelVo();
@@ -2227,8 +2254,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             processTaskStepRelVo.setIsHit(0);
             processTaskStepRelVo.setType(ProcessFlowDirection.FORWARD.getValue());
             processTaskCrossoverMapper.updateProcessTaskStepRelIsHit(processTaskStepRelVo);
+            stepIdList.add(currentProcessTaskStepId);
             for (Long toStepId : toStepIdList) {
-                resetPostStepRelIsHit(toStepId);
+                resetPostStepRelIsHit(toStepId, stepIdList);
             }
         }
     }
