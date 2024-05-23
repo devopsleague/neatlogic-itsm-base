@@ -72,7 +72,6 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     static Logger logger = LoggerFactory.getLogger(ProcessStepHandlerBase.class);
@@ -193,6 +192,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     @Override
     public final int active(ProcessTaskStepVo currentProcessTaskStepVo) {
+        long beforeTime = System.currentTimeMillis();
+        logger.warn("开始 active 步骤：" + currentProcessTaskStepVo.getName() + ", time：" + beforeTime);
         IProcessStepHandlerCrossoverUtil processStepHandlerCrossoverUtil = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverUtil.class);
         try {
             IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
@@ -302,6 +303,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 });
             }
+            logger.warn("结束激活步骤: " + currentProcessTaskStepVo.getName() + ", time: " + (System.currentTimeMillis() - beforeTime));
             // deleteProcessTaskStepInOperationByProcessTaskStepId(currentProcessTaskStepVo.getId(),
             // ProcessTaskOperationType.ACTIVE);
         }
@@ -797,6 +799,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     @Override
     public final int complete(ProcessTaskStepVo currentProcessTaskStepVo) {
+        long beforeTime = System.currentTimeMillis();
+        logger.warn("开始 complete 步骤: " + currentProcessTaskStepVo.getName() + ", time: " + beforeTime);
         IProcessStepHandlerCrossoverUtil processStepHandlerCrossoverUtil = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverUtil.class);
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         /* 锁定当前流程 **/
@@ -975,6 +979,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 计算SLA **/
                     processStepHandlerCrossoverUtil.calculateSla(new ProcessTaskVo(currentProcessTaskStepVo.getProcessTaskId()));
                 }
+                logger.warn("结束 complete 步骤: " + currentProcessTaskStepVo.getName() + ", time: " + (System.currentTimeMillis() - beforeTime));
             }
         }
 
@@ -1990,6 +1995,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     @Override
     public final int startProcess(ProcessTaskStepVo currentProcessTaskStepVo) {
+        long beforeTime = System.currentTimeMillis();
+        logger.warn("开始 startProcess 步骤: " + currentProcessTaskStepVo.getName() + ", time: " + beforeTime);
         IProcessStepHandlerCrossoverUtil processStepHandlerCrossoverUtil = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverUtil.class);
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         // 锁定当前流程
@@ -2113,7 +2120,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             } else {
                 processStepHandlerCrossoverUtil.audit(currentProcessTaskStepVo, ProcessTaskAuditType.STARTPROCESS);
             }
-
+            logger.warn("结束startProcess 步骤: " + currentProcessTaskStepVo.getName() + ", time: " + (System.currentTimeMillis() - beforeTime));
         }
         return 0;
     }
@@ -2416,6 +2423,70 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
     }
 
+//    private void resetConvergeInfo(ProcessTaskStepVo nextStepVo) {
+//        IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+//        List<ProcessTaskStepVo> stepList = processTaskCrossoverMapper.getProcessTaskStepByProcessTaskIdAndType(nextStepVo.getProcessTaskId(), ProcessStepType.END.getValue());
+//        ProcessTaskStepVo endStepVo = null;
+//        if (stepList.size() == 1) {
+//            endStepVo = stepList.get(0);
+//        }
+//        // 重新插入汇聚数据
+//        List<List<Long>> routeList = new ArrayList<>();
+//        List<Long> routeStepList = new ArrayList<>();
+//        routeList.add(routeStepList);
+//
+//        getAllRouteList(nextStepVo.getId(), routeList, routeStepList, endStepVo);
+//        // 如果最后一个步骤不是结束节点的路由全部删掉，因为这是回环路由
+//        Iterator<List<Long>> routeStepIt = routeList.iterator();
+//        List<Long> convergeIdList = new ArrayList<>();
+//        while (routeStepIt.hasNext()) {
+//            List<Long> rsList = routeStepIt.next();
+//            if (!rsList.get(rsList.size() - 1).equals(endStepVo.getId())) {
+//                routeStepIt.remove();
+//            } else {
+//                for (Long cid : rsList) {
+//                    if (!convergeIdList.contains(cid) && !cid.equals(nextStepVo.getId())) {
+//                        convergeIdList.add(cid);
+//                    }
+//                }
+//            }
+//        }
+//        if (convergeIdList.size() > 0) {
+//            for (Long convergeId : convergeIdList) {
+//                ProcessTaskConvergeVo processTaskStepConvergeVo = new ProcessTaskConvergeVo(nextStepVo.getProcessTaskId(), nextStepVo.getId(), convergeId);
+//                if (processTaskCrossoverMapper.checkProcessTaskConvergeIsExists(processTaskStepConvergeVo) == 0) {
+//                    processTaskCrossoverMapper.insertIgnoreProcessTaskConverge(processTaskStepConvergeVo);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void getAllRouteList(Long processTaskStepId, List<List<Long>> routeList, List<Long> routeStepList, ProcessTaskStepVo endStepVo) {
+//        if (!routeStepList.contains(processTaskStepId)) {
+//            routeStepList.add(processTaskStepId);
+//            List<Long> tmpRouteStepList = new ArrayList<>(routeStepList);
+//            if (!processTaskStepId.equals(endStepVo.getId())) {
+//                IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+//                List<ProcessTaskStepVo> convergeStepList = processTaskCrossoverMapper.getProcessTaskStepByConvergeId(processTaskStepId);
+//                List<Long> convergeStepIdList = convergeStepList.stream().map(ProcessTaskStepVo::getId).collect(Collectors.toList());
+//                List<Long> toProcessTaskStepIdList = processTaskCrossoverMapper.getToProcessTaskStepIdListByFromIdAndType(processTaskStepId, ProcessFlowDirection.FORWARD.getValue());
+//                for (int i = 0; i < toProcessTaskStepIdList.size(); i++) {
+//                    Long toProcessTaskStepId = toProcessTaskStepIdList.get(i);
+//                    /* 当前节点不是别人的汇聚节点时，才记录进路由，这是为了避免因为出现打回路径而产生错误的汇聚数据 **/
+//                    if (!convergeStepIdList.contains(toProcessTaskStepId)) {
+//                        if (i > 0) {
+//                            List<Long> newRouteStepList = new ArrayList<>(tmpRouteStepList);
+//                            routeList.add(newRouteStepList);
+//                            getAllRouteList(toProcessTaskStepId, routeList, newRouteStepList, endStepVo);
+//                        } else {
+//                            getAllRouteList(toProcessTaskStepId, routeList, routeStepList, endStepVo);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+
     private void resetConvergeInfo(ProcessTaskStepVo nextStepVo) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         List<ProcessTaskStepVo> stepList = processTaskCrossoverMapper.getProcessTaskStepByProcessTaskIdAndType(nextStepVo.getProcessTaskId(), ProcessStepType.END.getValue());
@@ -2423,12 +2494,13 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         if (stepList.size() == 1) {
             endStepVo = stepList.get(0);
         }
+        List<ProcessTaskStepRelVo> allProcessTaskStepRelList = processTaskCrossoverMapper.getProcessTaskStepRelByProcessTaskId(nextStepVo.getProcessTaskId());
+        List<ProcessTaskConvergeVo> allProcessTaskConvergeList = processTaskCrossoverMapper.getProcessTaskConvergeListByProcessTaskId(nextStepVo.getProcessTaskId());
         // 重新插入汇聚数据
         List<List<Long>> routeList = new ArrayList<>();
         List<Long> routeStepList = new ArrayList<>();
         routeList.add(routeStepList);
-
-        getAllRouteList(nextStepVo.getId(), routeList, routeStepList, endStepVo);
+        getAllRouteList(nextStepVo.getId(), routeList, routeStepList, endStepVo, allProcessTaskStepRelList, allProcessTaskConvergeList);
         // 如果最后一个步骤不是结束节点的路由全部删掉，因为这是回环路由
         Iterator<List<Long>> routeStepIt = routeList.iterator();
         List<Long> convergeIdList = new ArrayList<>();
@@ -2445,24 +2517,32 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             }
         }
         if (convergeIdList.size() > 0) {
+            List<ProcessTaskConvergeVo> processTaskConvergeList = new ArrayList<>();
             for (Long convergeId : convergeIdList) {
                 ProcessTaskConvergeVo processTaskStepConvergeVo = new ProcessTaskConvergeVo(nextStepVo.getProcessTaskId(), nextStepVo.getId(), convergeId);
-                if (processTaskCrossoverMapper.checkProcessTaskConvergeIsExists(processTaskStepConvergeVo) == 0) {
-                    processTaskCrossoverMapper.insertIgnoreProcessTaskConverge(processTaskStepConvergeVo);
-                }
+                processTaskConvergeList.add(processTaskStepConvergeVo);
             }
+            processTaskCrossoverMapper.insertIgnoreProcessTaskConvergeList(processTaskConvergeList);
         }
     }
 
-    private void getAllRouteList(Long processTaskStepId, List<List<Long>> routeList, List<Long> routeStepList, ProcessTaskStepVo endStepVo) {
+    private void getAllRouteList(Long processTaskStepId, List<List<Long>> routeList, List<Long> routeStepList, ProcessTaskStepVo endStepVo, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<ProcessTaskConvergeVo> allProcessTaskConvergeList) {
         if (!routeStepList.contains(processTaskStepId)) {
             routeStepList.add(processTaskStepId);
             List<Long> tmpRouteStepList = new ArrayList<>(routeStepList);
             if (!processTaskStepId.equals(endStepVo.getId())) {
-                IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
-                List<ProcessTaskStepVo> convergeStepList = processTaskCrossoverMapper.getProcessTaskStepByConvergeId(processTaskStepId);
-                List<Long> convergeStepIdList = convergeStepList.stream().map(ProcessTaskStepVo::getId).collect(Collectors.toList());
-                List<Long> toProcessTaskStepIdList = processTaskCrossoverMapper.getToProcessTaskStepIdListByFromIdAndType(processTaskStepId, ProcessFlowDirection.FORWARD.getValue());
+                List<Long> convergeStepIdList = new ArrayList<>();
+                for (ProcessTaskConvergeVo processTaskConvergeVo : allProcessTaskConvergeList) {
+                    if (Objects.equals(processTaskConvergeVo.getConvergeId(), processTaskStepId)) {
+                        convergeStepIdList.add(processTaskConvergeVo.getProcessTaskStepId());
+                    }
+                }
+                List<Long> toProcessTaskStepIdList = new ArrayList<>();
+                for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
+                    if (Objects.equals(processTaskStepRelVo.getFromProcessTaskStepId(), processTaskStepId) && Objects.equals(processTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())) {
+                        toProcessTaskStepIdList.add(processTaskStepRelVo.getToProcessTaskStepId());
+                    }
+                }
                 for (int i = 0; i < toProcessTaskStepIdList.size(); i++) {
                     Long toProcessTaskStepId = toProcessTaskStepIdList.get(i);
                     /* 当前节点不是别人的汇聚节点时，才记录进路由，这是为了避免因为出现打回路径而产生错误的汇聚数据 **/
@@ -2470,9 +2550,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                         if (i > 0) {
                             List<Long> newRouteStepList = new ArrayList<>(tmpRouteStepList);
                             routeList.add(newRouteStepList);
-                            getAllRouteList(toProcessTaskStepId, routeList, newRouteStepList, endStepVo);
+                            getAllRouteList(toProcessTaskStepId, routeList, newRouteStepList, endStepVo, allProcessTaskStepRelList, allProcessTaskConvergeList);
                         } else {
-                            getAllRouteList(toProcessTaskStepId, routeList, routeStepList, endStepVo);
+                            getAllRouteList(toProcessTaskStepId, routeList, routeStepList, endStepVo, allProcessTaskStepRelList, allProcessTaskConvergeList);
                         }
                     }
                 }

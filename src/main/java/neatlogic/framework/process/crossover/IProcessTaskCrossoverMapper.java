@@ -50,6 +50,8 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     List<ProcessTaskConvergeVo> getProcessTaskConvergeListByStepId(Long processTaskStepId);
 
+    List<ProcessTaskConvergeVo> getProcessTaskConvergeListByProcessTaskId(Long processTaskId);
+
     List<ProcessTaskStepVo> getToProcessTaskStepByFromIdAndType(
             @Param("fromProcessTaskStepId") Long fromProcessTaskStepId, @Param("type") String type);
 
@@ -133,6 +135,8 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
     int insertIgnoreProcessTaskStepUser(ProcessTaskStepUserVo processTaskStepUserVo);
 
     int insertIgnoreProcessTaskConverge(ProcessTaskConvergeVo processTaskConvergeVo);
+
+    int insertIgnoreProcessTaskConvergeList(List<ProcessTaskConvergeVo> processTaskConvergeList);
 
     int insertIgnoreProcessTaskStepConfig(ProcessTaskStepConfigVo processTaskStepConfigVo);
 
