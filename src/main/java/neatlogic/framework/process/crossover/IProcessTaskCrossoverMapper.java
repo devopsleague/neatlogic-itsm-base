@@ -122,13 +122,19 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     int insertProcessTaskStep(ProcessTaskStepVo processTaskStepVo);
 
+    int insertProcessTaskStepList(List<ProcessTaskStepVo> processTaskStepList);
+
     int insertProcessTaskStepUser(ProcessTaskStepUserVo processTaskStepUserVo);
 
     int insertProcessTaskStepMinorUser(ProcessTaskStepUserVo processTaskStepUserVo);
 
     int insertProcessTaskStepWorkerPolicy(ProcessTaskStepWorkerPolicyVo processTaskStepWorkerPolicyVo);
 
+    int insertProcessTaskStepWorkerPolicyList(List<ProcessTaskStepWorkerPolicyVo> processTaskStepWorkerPolicyList);
+
     int insertProcessTaskStepRel(ProcessTaskStepRelVo processTaskStepRelVo);
+
+    int insertProcessTaskStepRelList(List<ProcessTaskStepRelVo> processTaskStepRelList);
 
     int insertIgnoreProcessTaskStepWorker(ProcessTaskStepWorkerVo processTaskStepWorkerVo);
 
@@ -140,7 +146,7 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     int insertIgnoreProcessTaskStepConfig(ProcessTaskStepConfigVo processTaskStepConfigVo);
 
-    int insertProcessTaskStepNotifyPolicy(ProcessTaskStepNotifyPolicyVo processTaskStepNotifyPolicyVo);
+    int insertIgnoreProcessTaskStepConfigList(List<ProcessTaskStepConfigVo> processTaskStepConfigList);
 
     int insertProcessTaskTransferReport(ProcessTaskTransferReportVo processTaskTransferReportVo);
 
@@ -153,6 +159,8 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
     int insertProcessTaskStepInOperation(ProcessTaskStepInOperationVo processTaskStepInOperationVo);
 
     int insertProcessTaskStepTag(ProcessTaskStepTagVo processTaskStepTagVo);
+
+    int insertProcessTaskStepTagList(List<ProcessTaskStepTagVo> processTaskStepTagList);
 
     int insertProcessTaskStepReapprovalRestoreBackup(ProcessTaskStepReapprovalRestoreBackupVo processTaskStepReapprovalRestoreBackupVo);
 
