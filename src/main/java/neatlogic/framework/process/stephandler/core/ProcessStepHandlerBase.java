@@ -36,7 +36,6 @@ import neatlogic.framework.form.dto.FormVersionVo;
 import neatlogic.framework.fulltextindex.core.FullTextIndexHandlerFactory;
 import neatlogic.framework.fulltextindex.core.IFullTextIndexHandler;
 import neatlogic.framework.notify.dao.mapper.NotifyMapper;
-import neatlogic.framework.notify.dto.NotifyPolicyVo;
 import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.crossover.*;
 import neatlogic.framework.process.dto.*;
@@ -1835,7 +1834,12 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 processTaskCrossoverMapper.insertProcessTaskScoreTemplate(processTaskScoreTemplateVo);
             }
             Map<String, Long> stepIdMap = new HashMap<>();
+            List<ProcessTaskStepVo> processTaskStepList = new ArrayList<>();
+            List<ProcessTaskStepConfigVo> processTaskStepConfigList = new ArrayList<>();
+            List<ProcessTaskStepWorkerPolicyVo> processTaskStepWorkerPolicyList = new ArrayList<>();
+            List<ProcessTaskStepTagVo> processTaskStepTagList = new ArrayList<>();
             /* 写入所有步骤信息 **/
+            List<ProcessStepTagVo> processStepTagList = processCrossoverMapper.getProcessStepTagListByProcessUuid(currentProcessTaskStepVo.getProcessUuid());
             List<ProcessStepVo> processStepList = processCrossoverMapper.getProcessStepDetailByProcessUuid(currentProcessTaskStepVo.getProcessUuid());
             for (ProcessStepVo stepVo : processStepList) {
                 ProcessTaskStepVo ptStepVo = new ProcessTaskStepVo(stepVo);
@@ -1846,27 +1850,21 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 对步骤配置进行散列处理 **/
                     String hash = DigestUtils.md5DigestAsHex(stepConfig.getBytes());
                     ptStepVo.setConfigHash(hash);
-                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepConfig(new ProcessTaskStepConfigVo(hash, stepConfig));
+//                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepConfig(new ProcessTaskStepConfigVo(hash, stepConfig));
+                    processTaskStepConfigList.add(new ProcessTaskStepConfigVo(hash, stepConfig));
                 }
 
-                processTaskCrossoverMapper.insertProcessTaskStep(ptStepVo);
+//                processTaskCrossoverMapper.insertProcessTaskStep(ptStepVo);
+                processTaskStepList.add(ptStepVo);
                 stepIdMap.put(ptStepVo.getProcessStepUuid(), ptStepVo.getId());
-
-                /* 写入步骤表单属性 **/
-//                if (CollectionUtils.isNotEmpty(ptStepVo.getFormAttributeList())) {
-//                    for (ProcessTaskStepFormAttributeVo processTaskStepFormAttributeVo : ptStepVo.getFormAttributeList()) {
-//                        processTaskStepFormAttributeVo.setProcessTaskId(processTaskVo.getId());
-//                        processTaskStepFormAttributeVo.setProcessTaskStepId(ptStepVo.getId());
-//                        processTaskMapper.insertProcessTaskStepFormAttribute(processTaskStepFormAttributeVo);
-//                    }
-//                }
 
                 /* 写入用户分配策略信息 **/
                 if (CollectionUtils.isNotEmpty(ptStepVo.getWorkerPolicyList())) {
                     for (ProcessTaskStepWorkerPolicyVo policyVo : ptStepVo.getWorkerPolicyList()) {
                         policyVo.setProcessTaskId(processTaskVo.getId());
                         policyVo.setProcessTaskStepId(ptStepVo.getId());
-                        processTaskCrossoverMapper.insertProcessTaskStepWorkerPolicy(policyVo);
+//                        processTaskCrossoverMapper.insertProcessTaskStepWorkerPolicy(policyVo);
+                        processTaskStepWorkerPolicyList.add(policyVo);
                     }
                 }
 
@@ -1875,34 +1873,53 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     currentProcessTaskStepVo.setId(ptStepVo.getId());
                 }
 
-                Long notifyPolicyId = processCrossoverMapper.getNotifyPolicyIdByProcessStepUuid(ptStepVo.getProcessStepUuid());
-                if (notifyPolicyId != null) {
-                    NotifyPolicyVo notifyPolicyVo = notifyMapper.getNotifyPolicyById(notifyPolicyId);
-                    if (notifyPolicyVo != null) {
-                        ProcessTaskStepNotifyPolicyVo processTaskStepNotifyPolicyVo = new ProcessTaskStepNotifyPolicyVo();
-                        processTaskStepNotifyPolicyVo.setProcessTaskStepId(ptStepVo.getId());
-                        processTaskStepNotifyPolicyVo.setPolicyId(notifyPolicyVo.getId());
-                        processTaskStepNotifyPolicyVo.setPolicyName(notifyPolicyVo.getName());
-                        processTaskStepNotifyPolicyVo.setPolicyHandler(notifyPolicyVo.getHandler());
-                        processTaskStepNotifyPolicyVo.setPolicyConfig(notifyPolicyVo.getConfigStr());
-//                        processTaskMapper.insertIgnoreProcessTaskStepNotifyPolicyConfig(processTaskStepNotifyPolicyVo);
-                        processTaskCrossoverMapper.insertProcessTaskStepNotifyPolicy(processTaskStepNotifyPolicyVo);
+//                Long notifyPolicyId = processCrossoverMapper.getNotifyPolicyIdByProcessStepUuid(ptStepVo.getProcessStepUuid());
+//                if (notifyPolicyId != null) {
+//                    NotifyPolicyVo notifyPolicyVo = notifyMapper.getNotifyPolicyById(notifyPolicyId);
+//                    if (notifyPolicyVo != null) {
+//                        ProcessTaskStepNotifyPolicyVo processTaskStepNotifyPolicyVo = new ProcessTaskStepNotifyPolicyVo();
+//                        processTaskStepNotifyPolicyVo.setProcessTaskStepId(ptStepVo.getId());
+//                        processTaskStepNotifyPolicyVo.setPolicyId(notifyPolicyVo.getId());
+//                        processTaskStepNotifyPolicyVo.setPolicyName(notifyPolicyVo.getName());
+//                        processTaskStepNotifyPolicyVo.setPolicyHandler(notifyPolicyVo.getHandler());
+//                        processTaskStepNotifyPolicyVo.setPolicyConfig(notifyPolicyVo.getConfigStr());
+//                        processTaskCrossoverMapper.insertProcessTaskStepNotifyPolicy(processTaskStepNotifyPolicyVo);
+//                        processTaskStepNotifyPolicyList.add(processTaskStepNotifyPolicyVo);
+//                    }
+//                }
+
+//                List<Long> tagIdList = processCrossoverMapper.getProcessStepTagIdListByProcessStepUuid(stepVo.getUuid());
+                List<Long> tagIdList = new ArrayList<>();
+                for (ProcessStepTagVo processStepTagVo : processStepTagList) {
+                    if (Objects.equals(processStepTagVo.getProcessStepUuid(), stepVo.getUuid())) {
+                        tagIdList.add(processStepTagVo.getTagId());
                     }
                 }
-
-                List<Long> tagIdList = processCrossoverMapper.getProcessStepTagIdListByProcessStepUuid(stepVo.getUuid());
                 if (CollectionUtils.isNotEmpty(tagIdList)) {
                     ProcessTaskStepTagVo processTaskStepTagVo = new ProcessTaskStepTagVo();
                     processTaskStepTagVo.setProcessTaskId(processTaskVo.getId());
                     processTaskStepTagVo.setProcessTaskStepId(ptStepVo.getId());
                     for (Long tagId : tagIdList) {
                         processTaskStepTagVo.setTagId(tagId);
-                        processTaskCrossoverMapper.insertProcessTaskStepTag(processTaskStepTagVo);
+//                        processTaskCrossoverMapper.insertProcessTaskStepTag(processTaskStepTagVo);
+                        processTaskStepTagList.add(processTaskStepTagVo);
                     }
                 }
             }
-
+            if (CollectionUtils.isNotEmpty(processTaskStepList)) {
+                processTaskCrossoverMapper.insertProcessTaskStepList(processTaskStepList);
+            }
+            if (CollectionUtils.isNotEmpty(processTaskStepConfigList)) {
+                processTaskCrossoverMapper.insertIgnoreProcessTaskStepConfigList(processTaskStepConfigList);
+            }
+            if (CollectionUtils.isNotEmpty(processTaskStepWorkerPolicyList)) {
+                processTaskCrossoverMapper.insertProcessTaskStepWorkerPolicyList(processTaskStepWorkerPolicyList);
+            }
+            if (CollectionUtils.isNotEmpty(processTaskStepTagList)) {
+                processTaskCrossoverMapper.insertProcessTaskStepTagList(processTaskStepTagList);
+            }
             /* 写入关系信息 **/
+            List<ProcessTaskStepRelVo> processTaskStepRelList = new ArrayList<>();
             List<ProcessStepRelVo> processStepRelList = processCrossoverMapper.getProcessStepRelByProcessUuid(currentProcessTaskStepVo.getProcessUuid());
             for (ProcessStepRelVo relVo : processStepRelList) {
                 ProcessTaskStepRelVo processTaskStepRelVo = new ProcessTaskStepRelVo(relVo);
@@ -1911,10 +1928,13 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 processTaskStepRelVo.setToProcessTaskStepId(stepIdMap.get(processTaskStepRelVo.getToProcessStepUuid()));
                 /* 同时找到from step id 和to step id 时才写入，其他数据舍弃 **/
                 if (processTaskStepRelVo.getFromProcessTaskStepId() != null && processTaskStepRelVo.getToProcessTaskStepId() != null) {
-                    processTaskCrossoverMapper.insertProcessTaskStepRel(processTaskStepRelVo);
+//                    processTaskCrossoverMapper.insertProcessTaskStepRel(processTaskStepRelVo);
+                    processTaskStepRelList.add(processTaskStepRelVo);
                 }
             }
-
+            if (CollectionUtils.isNotEmpty(processTaskStepRelList)) {
+                processTaskCrossoverMapper.insertProcessTaskStepRelList(processTaskStepRelList);
+            }
             IProcessTaskSlaCrossoverMapper processTaskSlaCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskSlaCrossoverMapper.class);
             /* 写入sla信息 **/
             List<ProcessSlaVo> processSlaList = processCrossoverMapper.getProcessSlaByProcessUuid(currentProcessTaskStepVo.getProcessUuid());
