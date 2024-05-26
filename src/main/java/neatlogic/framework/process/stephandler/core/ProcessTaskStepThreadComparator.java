@@ -43,7 +43,6 @@ public class ProcessTaskStepThreadComparator implements Comparator<ProcessTaskSt
      */
     @Override
     public int compare(ProcessTaskStepThread e1, ProcessTaskStepThread e2) {
-//        System.out.println("compare: " + e1.getName() + "_" + e1.getId() + ", " + e2.getName() + "_" + e2.getId());
         if (e1.getOperationType() != ProcessTaskOperationType.STEP_ACTIVE) {
             return 1;
         }
@@ -51,35 +50,24 @@ public class ProcessTaskStepThreadComparator implements Comparator<ProcessTaskSt
             return -1;
         }
         if (Objects.equals(e1.getProcessTaskStepId(), endProcessTaskStepId)) {
-//            System.out.println("结束节点 = " + e1.getName());
-//            System.out.println("a return 1");
             return 1;
         }
         if (Objects.equals(e2.getProcessTaskStepId(), endProcessTaskStepId)) {
-//            System.out.println("b return -1");
-//            System.out.println("结束节点 = " + e2.getName());
             return -1;
         }
         // 如果e1是e2的后继步骤，则e2先排在e1前面
         if (checkIsSubsequentStep(e2.getProcessTaskStepId(), e1.getProcessTaskStepId())) {
-//            System.out.println("c return 1");
-//            System.out.println(e2.getName() + "->" + e1.getName());
             return 1;
         }
         // 如果e2是e1的后继步骤，则e1先排在e2前面
         if (checkIsSubsequentStep(e1.getProcessTaskStepId(), e2.getProcessTaskStepId())) {
-//            System.out.println("d return -1");
-//            System.out.println(e1.getName() + "->" + e2.getName());
             return -1;
         }
         if (e1.getMode() == ProcessStepMode.MT && e2.getMode() == ProcessStepMode.AT) {
-//            System.out.println("e return -1");
             return -1;
         } else if (e1.getMode() == ProcessStepMode.AT && e2.getMode() == ProcessStepMode.MT) {
-//            System.out.println("f return 1");
             return 1;
         }
-//        System.out.println("g return 0");
         return 0;
     }
 
