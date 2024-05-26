@@ -43,11 +43,13 @@ public class ProcessTaskStepThreadComparator implements Comparator<ProcessTaskSt
      */
     @Override
     public int compare(ProcessTaskStepThread e1, ProcessTaskStepThread e2) {
-        if (e1.getOperationType() != ProcessTaskOperationType.STEP_ACTIVE) {
-            return 1;
-        }
-        if (e2.getOperationType() != ProcessTaskOperationType.STEP_ACTIVE) {
-            return -1;
+        if (e1.getOperationType() != e2.getOperationType()) {
+            if (e1.getOperationType() != ProcessTaskOperationType.STEP_ACTIVE) {
+                return 1;
+            }
+            if (e2.getOperationType() != ProcessTaskOperationType.STEP_ACTIVE) {
+                return -1;
+            }
         }
         if (Objects.equals(e1.getProcessTaskStepId(), endProcessTaskStepId)) {
             return 1;
