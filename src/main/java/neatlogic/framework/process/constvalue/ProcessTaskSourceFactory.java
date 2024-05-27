@@ -22,15 +22,19 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 @RootComponent
 public class ProcessTaskSourceFactory extends ModuleInitializedListenerBase {
     Logger logger = LoggerFactory.getLogger(ProcessTaskSourceFactory.class);
     private static final Map<String, String> sourcelValueTextMap = new HashMap<>();
     private static final Map<String, IProcessTaskSource> sourcelMap = new HashMap<>();
     private static final Map<String, IProcessTaskSource> handlerMap = new HashMap<>();
+    private static final List<IProcessTaskSource> sourceList = new ArrayList<>();
+
+    public static List<IProcessTaskSource> getSourceList(){
+        return sourceList;
+    }
 
     static {
         Reflections reflections = new Reflections("neatlogic");
@@ -73,6 +77,7 @@ public class ProcessTaskSourceFactory extends ModuleInitializedListenerBase {
                     logger.error("IProcessTaskSource '" + handler.getClass().getSimpleName() + "(" + handler.getValue() + ")' repeat");
                     System.exit(1);
                 }
+                sourceList.add(handler);
                 handlerMap.put(handler.getValue(), handler);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
