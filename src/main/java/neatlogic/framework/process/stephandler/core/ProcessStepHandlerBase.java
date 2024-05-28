@@ -1047,11 +1047,15 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     private List<Long> getAwaitAdvanceStepIdList(Long processTaskId, Long currentProcessTaskStepId) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         List<ProcessTaskStepRelVo> allProcessTaskStepRelList = processTaskCrossoverMapper.getProcessTaskStepRelByProcessTaskId(processTaskId);
-        return doGetAwaitAdvanceStepIdList(currentProcessTaskStepId, allProcessTaskStepRelList);
+        return doGetAwaitAdvanceStepIdList(currentProcessTaskStepId, allProcessTaskStepRelList, new ArrayList<>());
     }
 
-    private List<Long> doGetAwaitAdvanceStepIdList(Long currentProcessTaskStepId, List<ProcessTaskStepRelVo> allProcessTaskStepRelList) {
+    private List<Long> doGetAwaitAdvanceStepIdList(Long currentProcessTaskStepId, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<Long> passedStepIdList) {
         List<Long> awaitAdvanceStepIdList = new ArrayList<>();
+        if (passedStepIdList.contains(currentProcessTaskStepId)) {
+            return awaitAdvanceStepIdList;
+        }
+        passedStepIdList.add(currentProcessTaskStepId);
         // 失效步骤ID列表
         List<Long> invalidStepIdList = new ArrayList<>();
         for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
@@ -1088,7 +1092,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             }
         }
         for (Long stepId : needExploreStepIdList) {
-            List<Long> list = doGetAwaitAdvanceStepIdList(stepId, allProcessTaskStepRelList);
+            List<Long> list = doGetAwaitAdvanceStepIdList(stepId, allProcessTaskStepRelList, passedStepIdList);
             awaitAdvanceStepIdList.addAll(list);
         }
         return awaitAdvanceStepIdList;
