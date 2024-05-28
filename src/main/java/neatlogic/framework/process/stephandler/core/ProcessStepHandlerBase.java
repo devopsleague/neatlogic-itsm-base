@@ -220,6 +220,16 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 }
                 if (!hasDoingStep) {
+                    for (ProcessTaskStepRelVo fromProcessTaskStepRelVo : fromProcessTaskStepRelList) {
+                        if (Objects.equals(fromProcessTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())) {
+                            if (fromProcessTaskStepRelVo.getIsHit().equals(0)) {
+                                hasDoingStep = true;
+                            }
+                        }
+                    }
+                    System.out.println("hasDoingStep = " + hasDoingStep);
+                }
+                if (!hasDoingStep) {
                     canFire = true;
                 }
                 /* 场景三：没有前置节点，证明是开始节点 **/
@@ -937,6 +947,48 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 //                        });
                     }
                 }
+                // 默认是向前流转
+                ProcessFlowDirection direction = ProcessFlowDirection.FORWARD;
+                // 判断是向前流转还是向后回退，向后回退时nextStepIdSet大小一定是1，因为条件节点和分流节点都不能向后回退
+                if (nextStepIdSet.size() == 1) {
+                    // 找出当前步骤的所有正向的下一个步骤列表，如果nextStepIdSet不包含下一个步骤id，则是向后回退
+                    boolean isForward = false;
+                    List<ProcessTaskStepVo> toProcessTaskStepList = processTaskCrossoverMapper.getToProcessTaskStepByFromIdAndType(currentProcessTaskStepVo.getId(), ProcessFlowDirection.FORWARD.getValue());
+                    for (ProcessTaskStepVo toProcessTaskStep : toProcessTaskStepList) {
+                        if (nextStepIdSet.contains(toProcessTaskStep.getId())) {
+                            isForward = true;
+                            break;
+                        }
+                    }
+                    if (!isForward) {
+                        direction = ProcessFlowDirection.BACKWARD;
+                    }
+                }
+                // 如果是向前流转时，需要找出不流转的路经，判断是否有聚合步骤在等待该条路径到达才能前进，如果有，则激活该聚合步骤
+                if (direction == ProcessFlowDirection.FORWARD) {
+                    List<Long> awaitAdvanceStepIdList = getAwaitAdvanceStepIdList(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
+                    if (CollectionUtils.isNotEmpty(awaitAdvanceStepIdList)) {
+                        List<ProcessTaskStepVo> awaitAdvanceStepList = processTaskCrossoverMapper.getProcessTaskStepListByIdList(awaitAdvanceStepIdList);
+                        for (ProcessTaskStepVo awaitAdvanceStep : awaitAdvanceStepList) {
+                            IProcessStepHandler awaitAdvanceStepHandler = ProcessStepHandlerFactory.getHandler(awaitAdvanceStep.getHandler());
+                            if (awaitAdvanceStepHandler != null) {
+                                awaitAdvanceStep.setFromProcessTaskStepId(currentProcessTaskStepVo.getId());
+                                awaitAdvanceStep.setStartProcessTaskStepId(currentProcessTaskStepVo.getStartProcessTaskStepId());
+                                awaitAdvanceStep.setParallelActivateStepIdList(new ArrayList<>());
+                                ProcessTaskStepThread thread = new ProcessTaskStepThread(ProcessTaskOperationType.STEP_ACTIVE, awaitAdvanceStep, awaitAdvanceStepHandler.getMode()) {
+                                    @Override
+                                    protected void myExecute(ProcessTaskStepVo processTaskStepVo) {
+                                        IProcessStepHandler processStepHandler = ProcessStepHandlerFactory.getHandler(processTaskStepVo.getHandler());
+                                        if (processStepHandler != null) {
+                                            processStepHandler.active(processTaskStepVo);
+                                        }
+                                    }
+                                };
+                                processTaskStepThreadList.add(thread);
+                            }
+                        }
+                    }
+                }
                 doNext(processTaskStepThreadList);
 
                 /* 触发通知 **/
@@ -989,6 +1041,58 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         return 1;
     }
 
+    /**
+     * 获取等待前进的聚合步骤列表
+     */
+    private List<Long> getAwaitAdvanceStepIdList(Long processTaskId, Long currentProcessTaskStepId) {
+        IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+        List<ProcessTaskStepRelVo> allProcessTaskStepRelList = processTaskCrossoverMapper.getProcessTaskStepRelByProcessTaskId(processTaskId);
+        return doGetAwaitAdvanceStepIdList(currentProcessTaskStepId, allProcessTaskStepRelList);
+    }
+
+    private List<Long> doGetAwaitAdvanceStepIdList(Long currentProcessTaskStepId, List<ProcessTaskStepRelVo> allProcessTaskStepRelList) {
+        List<Long> awaitAdvanceStepIdList = new ArrayList<>();
+        // 失效步骤ID列表
+        List<Long> invalidStepIdList = new ArrayList<>();
+        for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
+            if (Objects.equals(processTaskStepRelVo.getFromProcessTaskStepId(), currentProcessTaskStepId)
+                    && Objects.equals(processTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())) {
+                if (Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
+                    invalidStepIdList.add(processTaskStepRelVo.getToProcessTaskStepId());
+                }
+            }
+        }
+        // 需要进一步下探的步骤ID列表
+        List<Long> needExploreStepIdList = new ArrayList<>();
+        for (Long invalidStepId : invalidStepIdList) {
+            int isHit0Count = 0;
+            int isHit1Count = 0;
+            for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
+                if (Objects.equals(processTaskStepRelVo.getToProcessTaskStepId(), invalidStepId)
+                        && Objects.equals(processTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())) {
+                    if (Objects.equals(processTaskStepRelVo.getIsHit(), 0)) {
+                        isHit0Count++;
+                        break;
+                    } else if (Objects.equals(processTaskStepRelVo.getIsHit(), 1)) {
+                        isHit1Count++;
+                    }
+                }
+            }
+            if (isHit0Count > 0) {
+                continue;
+            }
+            if (isHit1Count > 0) {
+                awaitAdvanceStepIdList.add(invalidStepId);
+            } else {
+                needExploreStepIdList.add(invalidStepId);
+            }
+        }
+        for (Long stepId : needExploreStepIdList) {
+            List<Long> list = doGetAwaitAdvanceStepIdList(stepId, allProcessTaskStepRelList);
+            awaitAdvanceStepIdList.addAll(list);
+        }
+        return awaitAdvanceStepIdList;
+    }
     protected abstract int myComplete(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException;
 
     protected int myBeforeComplete(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException {
@@ -2226,8 +2330,6 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
      * @param needProcessTaskStepRelList 需要更新isHit值为-1的连线列表
      */
     private void doIdentifyPostInvalidStepRelIsHit(Long currentProcessTaskStepId, Set<Long> activeStepIdSet, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<ProcessTaskStepRelVo> needProcessTaskStepRelList) {
-        IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
-        ProcessTaskStepVo processTaskStep = processTaskCrossoverMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepId);
         List<Long> unactiveStepIdList = null;
         List<Long> allNextStepIdList = new ArrayList<>();
         for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
