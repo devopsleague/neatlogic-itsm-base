@@ -120,7 +120,6 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     private int updateProcessTaskStatus(Long processTaskId) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         List<ProcessTaskStepVo> processTaskStepList = processTaskCrossoverMapper.getProcessTaskStepBaseInfoByProcessTaskId(processTaskId);
-
         int runningCount = 0, succeedCount = 0, failedCount = 0, abortedCount = 0, draftCount = 0, hangCount = 0;
         for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
             if (ProcessTaskStepStatus.DRAFT.getValue().equals(processTaskStepVo.getStatus())
@@ -132,9 +131,12 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 runningCount += 1;
             } else if (processTaskStepVo.getIsActive().equals(-1)) {
                 abortedCount += 1;
-            } else if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.SUCCEED.getValue())
-                    && ProcessStepHandlerType.END.getHandler().equals(processTaskStepVo.getHandler())) {
-                succeedCount += 1;
+            } else if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.SUCCEED.getValue())) {
+                if (ProcessStepHandlerType.END.getHandler().equals(processTaskStepVo.getHandler())) {
+                    succeedCount += 1;
+                } else {
+                    runningCount += 1;
+                }
             } else if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.FAILED.getValue())) {
                 failedCount += 1;
             }
