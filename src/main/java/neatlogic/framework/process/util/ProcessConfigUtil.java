@@ -15,6 +15,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.util;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import neatlogic.framework.form.constvalue.FormAttributeAction;
 import neatlogic.framework.form.constvalue.FormAttributeAuthRange;
 import neatlogic.framework.form.constvalue.FormAttributeAuthType;
@@ -22,9 +25,6 @@ import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -465,9 +465,9 @@ public class ProcessConfigUtil {
         autoStart = autoStart == null ? 1 : autoStart;
         resultObj.put("autoStart", autoStart);
         /** 启用上传附件 **/
-        Integer isNeedUploadFile = configObj.getInteger("isNeedUploadFile");
-        isNeedUploadFile = isNeedUploadFile == null ? 1 : isNeedUploadFile;
-        resultObj.put("isNeedUploadFile", isNeedUploadFile);
+//        Integer isNeedUploadFile = configObj.getInteger("isNeedUploadFile");
+//        isNeedUploadFile = isNeedUploadFile == null ? 1 : isNeedUploadFile;
+//        resultObj.put("isNeedUploadFile", isNeedUploadFile);
         /** 启用描述 **/
         Integer isNeedContent = configObj.getInteger("isNeedContent");
         isNeedContent = isNeedContent == null ? 1 : isNeedContent;

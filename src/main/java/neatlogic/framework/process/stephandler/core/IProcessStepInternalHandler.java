@@ -2,15 +2,15 @@ package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
+import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.dto.ProcessStepVo;
 import neatlogic.framework.process.dto.ProcessTaskStepInOperationVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Title: IProcessStepInternalHandler
@@ -64,19 +64,72 @@ public interface IProcessStepInternalHandler {
      * @Description: 构造节点管理配置数据，初始化节点管理中各个节点的全局配置信息，设置默认值，校正节点的全局配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      */
     default JSONObject makeupConfig(JSONObject configObj) {
-        if (configObj == null) {
+       /* if (configObj == null) {
             configObj = new JSONObject();
         }
-        return configObj;
+        return configObj;*/
+        return this.regulateProcessStepConfig(configObj);
+    }
+
+    /**
+     * 返回步骤动作，校验时用
+     */
+    default ProcessTaskOperationType[] getStepActions() {
+        //TODO 加default只是为了不报错，重构完所有代码后删掉这个default函数
+        return null;
+    }
+
+    /**
+     * 返回步骤按钮列表
+     */
+    default ProcessTaskOperationType[] getStepButtons() {
+        //TODO 加default只是为了不报错，重构完所有代码后删掉这个default函数
+        return null;
+    }
+
+    /*
+    返回需要校验的键列表，因为原配置里某些键可能不存在却需要补充，只需要定义必须要补充的键即可，取余的按照config数据来校验
+     */
+    default String[] getRegulateKeyList() {
+        //TODO 加default只是为了不报错，重构完所有代码后删掉这个default函数
+        return null;
     }
 
     /**
      * 初始化流程步骤的默认配置信息，校正流程步骤配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
      *
      * @param configObj 配置数据
-     * @return
      */
     default JSONObject regulateProcessStepConfig(JSONObject configObj) {
+        if (MapUtils.isNotEmpty(configObj) || this.getRegulateKeyList() != null) {
+            JSONObject newConfig = new JSONObject();
+            Set<String> validatedSet = new HashSet<>();
+            //先检查config中存在的数据
+            if (MapUtils.isNotEmpty(configObj)) {
+                for (Map.Entry<String, Object> entry : configObj.entrySet()) {
+                    validatedSet.add(entry.getKey());
+                    IRegulateHandler handler = RegulateHandlerFactory.getHandlers(entry.getKey());
+                    if (handler != null) {
+                        handler.regulateConfig(this, configObj, newConfig);
+                    }
+                }
+            }
+            //再补充不存在的数据
+            if (this.getRegulateKeyList() != null) {
+                if (configObj == null) {
+                    configObj = new JSONObject();
+                }
+                for (String key : this.getRegulateKeyList()) {
+                    if (!validatedSet.contains(key)) {
+                        IRegulateHandler handler = RegulateHandlerFactory.getHandlers(key);
+                        if (handler != null) {
+                            handler.regulateConfig(this, configObj, newConfig);
+                        }
+                    }
+                }
+            }
+            return newConfig;
+        }
         return configObj;
     }
 
