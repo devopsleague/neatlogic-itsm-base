@@ -101,8 +101,8 @@ public interface IProcessStepInternalHandler {
      * @param configObj 配置数据
      */
     default JSONObject regulateProcessStepConfig(JSONObject configObj) {
+        JSONObject newConfig = new JSONObject();
         if (MapUtils.isNotEmpty(configObj) || this.getRegulateKeyList() != null) {
-            JSONObject newConfig = new JSONObject();
             Set<String> validatedSet = new HashSet<>();
             //先检查config中存在的数据
             if (MapUtils.isNotEmpty(configObj)) {
@@ -128,9 +128,8 @@ public interface IProcessStepInternalHandler {
                     }
                 }
             }
-            return newConfig;
         }
-        return configObj;
+        return newConfig;
     }
 
     /**
