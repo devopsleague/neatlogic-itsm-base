@@ -15,15 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package neatlogic.framework.process.stephandler.core;
+package neatlogic.framework.process.exception.process;
 
-import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.exception.core.ApiRuntimeException;
 
-/**
- * 校正流程节点参数，每个handler负责一种配置，handler名称和配置的key一致，实现此方法不能抛出任何异常
- */
-public interface IRegulateHandler {
-    String getName();
+public class RegulateHandlerIsExistsException extends ApiRuntimeException {
 
-    void regulateConfig(IProcessStepInternalHandler processStepInternalHandler, JSONObject oldConfigObj, JSONObject newConfigObj);
+
+	public RegulateHandlerIsExistsException(String name) {
+		super("参数处理器{0}已存在", name);
+	}
 }

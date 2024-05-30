@@ -18,12 +18,13 @@
 package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.process.dto.ProcessStepVo;
 
 /**
- * 校正流程节点参数，每个handler负责一种配置，handler名称和配置的key一致，实现此方法不能抛出任何异常
+ * 用于在配置中提取相关配置设入ProcessStepVo，以便后续统一操作，例如写库等
  */
-public interface IRegulateHandler {
+public interface IProcessStepMakeupHandler {
     String getName();
 
-    void regulateConfig(IProcessStepInternalHandler processStepInternalHandler, JSONObject oldConfigObj, JSONObject newConfigObj);
+    void makeup(IProcessStepInternalHandler processStepInternalHandler, ProcessStepVo processStepVo, JSONObject stepConfigObj);
 }

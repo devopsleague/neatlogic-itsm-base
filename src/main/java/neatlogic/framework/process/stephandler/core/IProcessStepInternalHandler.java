@@ -24,41 +24,45 @@ public interface IProcessStepInternalHandler {
     String getHandler();
 
     /**
-     * @param @return
      * @return Object
      * @Time: 2020年7月27日
      * @Description: 该步骤特有的步骤信息（当该步骤是开始节点时调用该方法）
      */
-    Object getHandlerStepInfo(ProcessTaskStepVo currentProcessTaskStepVo);
+    default Object getStartStepInfo(ProcessTaskStepVo currentProcessTaskStepVo) {
+        return null;
+    }
 
     /**
-     * @param @return
      * @return Object
      * @Time: 2020年8月12日
      * @Description: 该步骤特有的步骤初始化信息 （当该步骤不是开始节点时调用该方法）
      */
-    Object getHandlerStepInitInfo(ProcessTaskStepVo currentProcessTaskStepVo);
+    default Object getNonStartStepInfo(ProcessTaskStepVo currentProcessTaskStepVo) {
+        return null;
+    }
 
     /**
-     * @param @param processStepVo
-     * @param @param stepConfigObj
      * @return void
-     * @Author: chenqiwei
-     * @Time: Feb 10, 2020
      * @Description: 组装步骤节点信息，将步骤stepConfig配置信息中的字段值写入到ProcessStepVo对象对应属性中
      */
-    void makeupProcessStep(ProcessStepVo processStepVo, JSONObject stepConfigObj);
+    default void makeupProcessStep(ProcessStepVo processStepVo, JSONObject stepConfigObj) {
+        if (MapUtils.isNotEmpty(stepConfigObj)) {
+            for (Map.Entry<String, Object> entry : stepConfigObj.entrySet()) {
+                IProcessStepMakeupHandler handler = ProcessStepMakeupHandlerFactory.getHandlers(entry.getKey());
+                if (handler != null) {
+                    handler.makeup(this, processStepVo, stepConfigObj);
+                }
+            }
+        }
+    }
 
     /**
-     * @param processTaskId
-     * @param processTaskStepId
      * @return void
      * @Description: 子任务状态发生变化后，对子任务处理人的在 processtask_step_worker表和processtask_step_user表的数据做对应的变化
      */
     void updateProcessTaskStepUserAndWorker(Long processTaskId, Long processTaskStepId);
 
     /**
-     * @param configObj
      * @return JSONObject
      * @Time: 2020年6月30日
      * @Description: 构造节点管理配置数据，初始化节点管理中各个节点的全局配置信息，设置默认值，校正节点的全局配置数据，对配置数据中没用的字段删除，对缺失的字段用默认值补充。
@@ -68,6 +72,7 @@ public interface IProcessStepInternalHandler {
             configObj = new JSONObject();
         }
         return configObj;*/
+        //TODO 暂时直接使用regulateProcessStepConfig，后续再看是否需要优化
         return this.regulateProcessStepConfig(configObj);
     }
 
@@ -133,9 +138,7 @@ public interface IProcessStepInternalHandler {
     }
 
     /**
-     * @param processTaskStepId
      * @return void
-     * @Time:2020年9月15日
      * @Description: 根据工单步骤id获取自定义按钮文案映射
      */
     Map<String, String> getCustomButtonMapByProcessTaskStepId(Long processTaskStepId);
@@ -144,8 +147,6 @@ public interface IProcessStepInternalHandler {
      * @Description: 根据步骤configHash和handler获取自定义按钮文案映射
      * @Author: linbq
      * @Date: 2020/9/15 12:17
-     * @Params:[configHash, handler]
-     * @Returns:java.util.Map<java.lang.String,java.lang.String>
      **/
     Map<String, String> getCustomButtonMapByConfigHashAndHandler(String configHash, String handler);
 
@@ -153,23 +154,17 @@ public interface IProcessStepInternalHandler {
      * @Description: 根据步骤configHash和handler、status获取状态自定义按钮文案
      * @Author: linbq
      * @Date: 2020/9/15 12:17
-     * @Params:[configHash, handler, status]
-     * @Returns:java.lang.String
      **/
     String getStatusTextByConfigHashAndHandler(String configHash, String handler, String status);
 
     /**
-     * @param configHash
      * @return Integer
-     * @Time:2020年11月23日
      * @Description: 获取步骤配置信息中isRequired(回复是否必填)字段值
      */
     Integer getIsRequiredByConfigHash(String configHash);
 
     /**
-     * @param configHash
      * @return Integer
-     * @Time:2020年11月23日
      * @Description: 获取步骤配置信息中isNeedContent(回复是否启用)字段值
      */
     Integer getIsNeedContentByConfigHash(String configHash);
@@ -177,24 +172,24 @@ public interface IProcessStepInternalHandler {
     /**
      * 获取步骤配置信息中isNeedUploadFile(是否启用上传文件)字段值
      *
-     * @param configHash
-     * @return
+     * @param configHash 配置Hash值
+     * @return Integer
      */
     Integer getIsNeedUploadFileByConfigHash(String configHash);
 
     /**
      * 获取步骤配置信息中enableReapproval(启用重审)字段值
      *
-     * @param configHash
-     * @return
+     * @param configHash 配置Hash值
+     * @return Integer
      */
     Integer getEnableReapprovalByConfigHash(String configHash);
 
     /**
      * 获取步骤配置信息中formSceneUuid(表单场景)字段值
      *
-     * @param configHash
-     * @return
+     * @param configHash 配置Hash值
+     * @return String
      */
     String getFormSceneUuidByConfigHash(String configHash);
 

@@ -27,19 +27,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RootComponent
-public class RegulateHandlerFactory extends ModuleInitializedListenerBase {
-    private static final Map<String, IRegulateHandler> componentMap = new HashMap<>();
+public class ProcessStepMakeupHandlerFactory extends ModuleInitializedListenerBase {
+    private static final Map<String, IProcessStepMakeupHandler> componentMap = new HashMap<>();
 
-    public static IRegulateHandler getHandlers(String handler) {
+    public static IProcessStepMakeupHandler getHandlers(String handler) {
         return componentMap.get(handler);
     }
 
 
     @Override
     public void onInitialized(NeatLogicWebApplicationContext context) {
-        Map<String, IRegulateHandler> myMap = context.getBeansOfType(IRegulateHandler.class);
-        for (Map.Entry<String, IRegulateHandler> entry : myMap.entrySet()) {
-            IRegulateHandler component = entry.getValue();
+        Map<String, IProcessStepMakeupHandler> myMap = context.getBeansOfType(IProcessStepMakeupHandler.class);
+        for (Map.Entry<String, IProcessStepMakeupHandler> entry : myMap.entrySet()) {
+            IProcessStepMakeupHandler component = entry.getValue();
             if (StringUtils.isNotBlank(component.getName())) {
                 if (componentMap.containsKey(component.getName())) {
                     throw new RegulateHandlerIsExistsException(component.getName());
