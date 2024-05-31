@@ -20,7 +20,11 @@ package neatlogic.framework.process.crossover;
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.process.dto.ProcessTaskStepDataVo;
 
+import java.util.List;
+
 public interface IProcessTaskStepDataCrossoverMapper extends ICrossoverService {
+    List<ProcessTaskStepDataVo> getProcessTaskStepDataByProcessTaskIdAndStepId(Long processTaskId, Long stepId);
+
     ProcessTaskStepDataVo getProcessTaskStepData(ProcessTaskStepDataVo processTaskStepDataVo);
 
     int replaceProcessTaskStepData(ProcessTaskStepDataVo processTaskStepDataVo);

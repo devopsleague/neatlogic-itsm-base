@@ -1,5 +1,6 @@
 package neatlogic.framework.process.stephandler.core;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
@@ -12,10 +13,7 @@ import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessTaskStepTaskUserStatus;
 import neatlogic.framework.process.constvalue.ProcessTaskStepUserStatus;
 import neatlogic.framework.process.constvalue.ProcessUserType;
-import neatlogic.framework.process.crossover.IProcessStepHandlerCrossoverMapper;
-import neatlogic.framework.process.crossover.IProcessTaskCrossoverMapper;
-import neatlogic.framework.process.crossover.IProcessTaskStepTaskCrossoverMapper;
-import neatlogic.framework.process.crossover.ISelectContentByHashCrossoverMapper;
+import neatlogic.framework.process.crossover.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.worktime.dao.mapper.WorktimeMapper;
@@ -59,9 +57,41 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
         ProcessTaskStepVo processTaskStepVo = processTaskCrossoverMapper.getProcessTaskStepBaseInfoById(processTaskStepId);
         if (processTaskStepVo != null) {
             return getCustomButtonMapByConfigHashAndHandler(processTaskStepVo.getConfigHash(),
-                processTaskStepVo.getHandler());
+                    processTaskStepVo.getHandler());
         }
         return customButtonMap;
+    }
+
+    @Override
+    public Object getStartStepInfo(ProcessTaskStepVo currentProcessTaskStepVo) {
+        return this.getNonStartStepInfo(currentProcessTaskStepVo);
+    }
+
+    @Override
+    public Object getNonStartStepInfo(ProcessTaskStepVo currentProcessTaskStepVo) {
+       /*
+       默认返回所有数据和配置信息
+        */
+        IProcessTaskStepDataCrossoverMapper processTaskStepDataCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepDataCrossoverMapper.class);
+        ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
+        List<ProcessTaskStepDataVo> processTaskStepDataList = processTaskStepDataCrossoverMapper.getProcessTaskStepDataByProcessTaskIdAndStepId(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
+        JSONObject returnObj = new JSONObject();
+        if (CollectionUtils.isNotEmpty(processTaskStepDataList)) {
+            JSONArray dataList = new JSONArray();
+            for (ProcessTaskStepDataVo data : processTaskStepDataList) {
+                JSONObject dataObj = new JSONObject();
+                dataObj.put("type", data.getType());
+                dataObj.put("data", data.getData());
+                dataList.add(dataObj);
+            }
+            returnObj.put("dataList", dataList);
+        }
+        String configHash = currentProcessTaskStepVo.getConfigHash();
+        if (StringUtils.isNotBlank(configHash)) {
+            String config = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
+            returnObj.put("config", JSON.parseObject(config));
+        }
+        return returnObj;
     }
 
     @Override
@@ -70,7 +100,7 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
         /** 节点设置按钮映射 **/
-        JSONArray customButtonList = (JSONArray)JSONPath.read(stepConfig, "customButtonList");
+        JSONArray customButtonList = (JSONArray) JSONPath.read(stepConfig, "customButtonList");
         if (CollectionUtils.isNotEmpty(customButtonList)) {
             for (int i = 0; i < customButtonList.size(); i++) {
                 JSONObject customButton = customButtonList.getJSONObject(i);
@@ -116,7 +146,7 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
         /** 节点设置状态映射 **/
-        JSONArray customStatusList = (JSONArray)JSONPath.read(stepConfig, "customStatusList");
+        JSONArray customStatusList = (JSONArray) JSONPath.read(stepConfig, "customStatusList");
         if (CollectionUtils.isNotEmpty(customStatusList)) {
             for (int i = 0; i < customStatusList.size(); i++) {
                 JSONObject customStatus = customStatusList.getJSONObject(i);
@@ -137,7 +167,7 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
         String processStepHandlerConfig = processStepHandlerCrossoverMapper.getProcessStepHandlerConfigByHandler(handler);
         JSONObject globalConfig = null;
         if (StringUtils.isNotBlank(processStepHandlerConfig)) {
-            globalConfig = JSONObject.parseObject(processStepHandlerConfig);
+            globalConfig = JSON.parseObject(processStepHandlerConfig);
         }
         globalConfig = processStepUtilHandler.makeupConfig(globalConfig);
         /** 节点管理状态映射 **/
@@ -161,35 +191,35 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
     public Integer getIsRequiredByConfigHash(String configHash) {
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
-        return (Integer)JSONPath.read(stepConfig, "isRequired");
+        return (Integer) JSONPath.read(stepConfig, "isRequired");
     }
 
     @Override
     public Integer getIsNeedContentByConfigHash(String configHash) {
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
-        return (Integer)JSONPath.read(stepConfig, "isNeedContent");
+        return (Integer) JSONPath.read(stepConfig, "isNeedContent");
     }
 
     @Override
     public Integer getIsNeedUploadFileByConfigHash(String configHash) {
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
-        return (Integer)JSONPath.read(stepConfig, "isNeedUploadFile");
+        return (Integer) JSONPath.read(stepConfig, "isNeedUploadFile");
     }
 
     @Override
     public Integer getEnableReapprovalByConfigHash(String configHash) {
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
-        return (Integer)JSONPath.read(stepConfig, "enableReapproval");
+        return (Integer) JSONPath.read(stepConfig, "enableReapproval");
     }
 
     @Override
     public String getFormSceneUuidByConfigHash(String configHash) {
         ISelectContentByHashCrossoverMapper selectContentByHashCrossoverMapper = CrossoverServiceFactory.getApi(ISelectContentByHashCrossoverMapper.class);
         String stepConfig = selectContentByHashCrossoverMapper.getProcessTaskStepConfigByHash(configHash);
-        return (String)JSONPath.read(stepConfig, "formSceneUuid");
+        return (String) JSONPath.read(stepConfig, "formSceneUuid");
     }
 
     @Override
