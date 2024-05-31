@@ -147,6 +147,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         processTaskVo.setId(processTaskId);
         if (draftCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.DRAFT.getValue());
+        } else if (succeedCount > 0) {
+            processTaskVo.setStatus(ProcessTaskStatus.SUCCEED.getValue());
+            needCalculateTimeCost = true;
         } else if (runningCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.RUNNING.getValue());
         } else if (abortedCount > 0) {
@@ -154,9 +157,6 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             needCalculateTimeCost = true;
         } else if (failedCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.FAILED.getValue());
-            needCalculateTimeCost = true;
-        } else if (succeedCount > 0) {
-            processTaskVo.setStatus(ProcessTaskStatus.SUCCEED.getValue());
             needCalculateTimeCost = true;
         } else if (hangCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.HANG.getValue());
@@ -229,7 +229,6 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                             }
                         }
                     }
-                    System.out.println("hasDoingStep = " + hasDoingStep);
                 }
                 if (!hasDoingStep) {
                     canFire = true;
