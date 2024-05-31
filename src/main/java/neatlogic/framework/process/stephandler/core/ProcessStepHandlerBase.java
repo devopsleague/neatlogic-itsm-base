@@ -61,7 +61,6 @@ import neatlogic.framework.service.AuthenticationInfoService;
 import neatlogic.framework.transaction.core.AfterTransactionJob;
 import neatlogic.framework.worktime.dao.mapper.WorktimeMapper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -2177,6 +2176,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             /* 流转到下一步 **/
             List<ProcessTaskStepThread> processTaskStepThreadList = new ArrayList<>();
             Set<Long> nextStepIdSet = getNext(currentProcessTaskStepVo);
+            //将不流转的步骤的正向输入连线的isHit设置为-1
+            identifyPostInvalidStepRelIsHit(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId(), nextStepIdSet);
             List<ProcessTaskStepVo> nextStepList = processTaskCrossoverMapper.getProcessTaskStepListByIdList(new ArrayList<>(nextStepIdSet));
             for (ProcessTaskStepVo nextStep : nextStepList) {
                 IProcessStepHandler nextStepHandler = ProcessStepHandlerFactory.getHandler(nextStep.getHandler());
@@ -2335,21 +2336,17 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
      * @param needProcessTaskStepRelList 需要更新isHit值为-1的连线列表
      */
     private void doIdentifyPostInvalidStepRelIsHit(Long currentProcessTaskStepId, Set<Long> activeStepIdSet, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<ProcessTaskStepRelVo> needProcessTaskStepRelList) {
-        List<Long> unactiveStepIdList = null;
-        List<Long> allNextStepIdList = new ArrayList<>();
+        List<Long> unactiveStepIdList = new ArrayList<>();
         for (ProcessTaskStepRelVo processTaskStepRelVo : allProcessTaskStepRelList) {
             if (Objects.equals(processTaskStepRelVo.getFromProcessTaskStepId(), currentProcessTaskStepId) && Objects.equals(processTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())) {
-                allNextStepIdList.add(processTaskStepRelVo.getToProcessTaskStepId());
-                if (!Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
-                    processTaskStepRelVo.setIsHit(-1);
-                    needProcessTaskStepRelList.add(processTaskStepRelVo);
+                if (!activeStepIdSet.contains(processTaskStepRelVo.getToProcessTaskStepId())) {
+                    unactiveStepIdList.add(processTaskStepRelVo.getToProcessTaskStepId());
+                    if (!Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
+                        processTaskStepRelVo.setIsHit(-1);
+                        needProcessTaskStepRelList.add(processTaskStepRelVo);
+                    }
                 }
             }
-        }
-        if (CollectionUtils.isNotEmpty(activeStepIdSet)) {
-            unactiveStepIdList = ListUtils.removeAll(allNextStepIdList, activeStepIdSet);
-        } else {
-            unactiveStepIdList = allNextStepIdList;
         }
         if (CollectionUtils.isNotEmpty(unactiveStepIdList)) {
             Map<Long, List<ProcessTaskStepRelVo>> toStepIdMap = new HashMap<>();
@@ -2377,7 +2374,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 }
                 if (invalid) {
                     //节点失效, 更新节点状态，继续判断后续节点是否也是失效的
-                    doIdentifyPostInvalidStepRelIsHit(unactiveStepId, null, allProcessTaskStepRelList, needProcessTaskStepRelList);
+                    doIdentifyPostInvalidStepRelIsHit(unactiveStepId, new HashSet<>(), allProcessTaskStepRelList, needProcessTaskStepRelList);
                 }
             }
         }
