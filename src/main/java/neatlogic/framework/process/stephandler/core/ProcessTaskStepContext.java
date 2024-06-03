@@ -74,12 +74,12 @@ public class ProcessTaskStepContext {
     }
 
     /**
-     * 获取表单属性值
+     * 获取表单简单属性值
      *
      * @param attributeUuid 属性uuid
      * @return Object
      */
-    public Object getFormValue(String attributeUuid) {
+    public Object getFormSimpleValue(String attributeUuid) {
         if (processTaskFormAttributeDataList == null) {
             IProcessTaskCrossoverService processTaskCrossoverService = CrossoverServiceFactory.getApi(IProcessTaskCrossoverService.class);
             processTaskFormAttributeDataList = processTaskCrossoverService.getProcessTaskFormAttributeDataListByProcessTaskId(processTaskStepVo.getProcessTaskId());
@@ -96,6 +96,27 @@ public class ProcessTaskStepContext {
                         return attributeDataVo.getDataObj();
                     }
                 }
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * 获取表单属性值
+     *
+     * @param attributeUuid 属性uuid
+     * @return Object
+     */
+    public Object getFormValue(String attributeUuid) {
+        if (processTaskFormAttributeDataList == null) {
+            IProcessTaskCrossoverService processTaskCrossoverService = CrossoverServiceFactory.getApi(IProcessTaskCrossoverService.class);
+            processTaskFormAttributeDataList = processTaskCrossoverService.getProcessTaskFormAttributeDataListByProcessTaskId(processTaskStepVo.getProcessTaskId());
+        }
+        if (CollectionUtils.isNotEmpty(processTaskFormAttributeDataList)) {
+            Optional<ProcessTaskFormAttributeDataVo> op = processTaskFormAttributeDataList.stream().filter(d -> d.getAttributeUuid().equals(attributeUuid)).findFirst();
+            if (op.isPresent()) {
+                return op.get().getDataObj();
             }
 
         }

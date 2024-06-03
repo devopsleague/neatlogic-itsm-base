@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.dto.ProcessStepVo;
+import neatlogic.framework.process.dto.ProcessTaskStepDataVo;
 import neatlogic.framework.process.dto.ProcessTaskStepInOperationVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import org.apache.commons.collections4.MapUtils;
@@ -39,6 +40,14 @@ public interface IProcessStepInternalHandler {
      */
     default Object getNonStartStepInfo(ProcessTaskStepVo currentProcessTaskStepVo) {
         return null;
+    }
+
+    /**
+     * 如果步骤数据需要保存到自定义地方，扩展此方法
+     * @param currentProcessTaskStepDataVo 当前步骤数据
+     */
+    default void saveData(ProcessTaskStepDataVo currentProcessTaskStepDataVo) {
+
     }
 
     /**
@@ -196,7 +205,7 @@ public interface IProcessStepInternalHandler {
     /**
      * 向processtask_step_in_operation表中插入步骤正在操作记录，等到该步骤操作完成时会删除这条记录
      *
-     * @param processTaskStepInOperationVo
+     * @param processTaskStepInOperationVo 当前步骤
      * @return
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -205,7 +214,7 @@ public interface IProcessStepInternalHandler {
     /**
      * 获取该步骤中的附件id列表
      *
-     * @param currentProcessTaskStepVo
+     * @param currentProcessTaskStepVo 当前步骤
      * @return
      */
     default List<Long> getFileIdList(ProcessTaskStepVo currentProcessTaskStepVo) {
@@ -215,7 +224,7 @@ public interface IProcessStepInternalHandler {
     /**
      * 获取可流转步骤列表
      *
-     * @param currentProcessTaskStepVo
+     * @param currentProcessTaskStepVo 当前步骤
      * @return
      */
     List<ProcessTaskStepVo> getNextStepList(ProcessTaskStepVo currentProcessTaskStepVo, ProcessFlowDirection processFlowDirection);
