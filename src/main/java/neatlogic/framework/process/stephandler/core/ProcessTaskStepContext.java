@@ -18,6 +18,7 @@
 package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.form.attribute.core.FormAttributeDataConversionHandlerFactory;
@@ -117,6 +118,36 @@ public class ProcessTaskStepContext {
             Optional<ProcessTaskFormAttributeDataVo> op = processTaskFormAttributeDataList.stream().filter(d -> d.getAttributeUuid().equals(attributeUuid)).findFirst();
             if (op.isPresent()) {
                 return op.get().getDataObj();
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * 获取表单组件隐藏属性值
+     *
+     * @param attributeUuid 属性uuid
+     * @return Object
+     */
+    public Object getFormHiddenValue(String attributeUuid, String hiddenFieldUuid) {
+        if (processTaskFormAttributeDataList == null) {
+            IProcessTaskCrossoverService processTaskCrossoverService = CrossoverServiceFactory.getApi(IProcessTaskCrossoverService.class);
+            processTaskFormAttributeDataList = processTaskCrossoverService.getProcessTaskFormAttributeDataListByProcessTaskId(processTaskStepVo.getProcessTaskId());
+        }
+        if (CollectionUtils.isNotEmpty(processTaskFormAttributeDataList)) {
+            Optional<ProcessTaskFormAttributeDataVo> op = processTaskFormAttributeDataList.stream().filter(d -> d.getAttributeUuid().equals(attributeUuid)).findFirst();
+            if (op.isPresent()) {
+                Object dataObj = op.get().getDataObj();
+                if (dataObj instanceof JSONObject) {
+                    return ((JSONObject) op.get().getDataObj()).get(hiddenFieldUuid);
+                } else if (dataObj instanceof JSONArray) {
+                    JSONArray returnList = new JSONArray();
+                    for (int i = 0; i < ((JSONArray) dataObj).size(); i++) {
+                        returnList.add(((JSONArray) dataObj).getJSONObject(i).get(hiddenFieldUuid));
+                    }
+                    return returnList;
+                }
             }
 
         }
