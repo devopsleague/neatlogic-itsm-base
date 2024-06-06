@@ -149,14 +149,14 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         } else if (succeedCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.SUCCEED.getValue());
             needCalculateTimeCost = true;
-        } else if (runningCount > 0) {
-            processTaskVo.setStatus(ProcessTaskStatus.RUNNING.getValue());
         } else if (abortedCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.ABORTED.getValue());
             needCalculateTimeCost = true;
         } else if (failedCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.FAILED.getValue());
             needCalculateTimeCost = true;
+        } else if (runningCount > 0) {
+            processTaskVo.setStatus(ProcessTaskStatus.RUNNING.getValue());
         } else if (hangCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.HANG.getValue());
         } else {
@@ -298,18 +298,18 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             /* 异常提醒 **/
             processStepHandlerCrossoverUtil.saveStepRemind(currentProcessTaskStepVo, currentProcessTaskStepVo.getStartProcessTaskStepId(), e.getMessage(), ProcessTaskStepRemindType.ERROR);
         } finally {
-            if (ProcessTaskStepStatus.FAILED.getValue().equals(currentProcessTaskStepVo.getStatus())) {
-                /*
-                 * 发生异常不能激活当前步骤，执行当前步骤的回退操作
-                 */
-                IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
-                doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
-                    @Override
-                    public void myExecute() {
-                        handler.back(currentProcessTaskStepVo);
-                    }
-                });
-            }
+//            if (ProcessTaskStepStatus.FAILED.getValue().equals(currentProcessTaskStepVo.getStatus())) {
+//                /*
+//                 * 发生异常不能激活当前步骤，执行当前步骤的回退操作
+//                 */
+//                IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
+//                doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
+//                    @Override
+//                    public void myExecute() {
+//                        handler.back(currentProcessTaskStepVo);
+//                    }
+//                });
+//            }
         }
         return 1;
     }
@@ -1017,16 +1017,16 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 /* 执行动作 **/
                 processStepHandlerCrossoverUtil.action(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.FAILED);
             } finally {
-                if (ProcessTaskStepStatus.FAILED.getValue().equals(currentProcessTaskStepVo.getStatus())) {
-                    /* 发生异常不能完成当前步骤，执行当前步骤的回退操作 **/
-                    IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
-                    doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
-                        @Override
-                        public void myExecute() {
-                            handler.back(currentProcessTaskStepVo);
-                        }
-                    });
-                }
+//                if (Objects.equals(currentProcessTaskStepVo.getStatus(), ProcessTaskStepStatus.FAILED.getValue())) {
+//                    /* 发生异常不能完成当前步骤，执行当前步骤的回退操作 **/
+//                    IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
+//                    doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
+//                        @Override
+//                        public void myExecute() {
+//                            handler.back(currentProcessTaskStepVo);
+//                        }
+//                    });
+//                }
 
                 myCompleteAudit(currentProcessTaskStepVo);
                 if (this.getMode().equals(ProcessStepMode.MT)) {
@@ -1260,16 +1260,16 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 /* 执行动作 **/
                 processStepHandlerCrossoverUtil.action(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.FAILED);
             } finally {
-                if (ProcessTaskStepStatus.FAILED.getValue().equals(currentProcessTaskStepVo.getStatus())) {
-                    /* 发生异常不能完成当前步骤，执行当前步骤的回退操作 **/
-                    IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
-                    doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
-                        @Override
-                        public void myExecute() {
-                            handler.back(currentProcessTaskStepVo);
-                        }
-                    });
-                }
+//                if (ProcessTaskStepStatus.FAILED.getValue().equals(currentProcessTaskStepVo.getStatus())) {
+//                    /* 发生异常不能完成当前步骤，执行当前步骤的回退操作 **/
+//                    IProcessStepHandler handler = ProcessStepHandlerFactory.getHandler(this.getHandler());
+//                    doNext(ProcessTaskOperationType.STEP_BACK, new ProcessStepThread(currentProcessTaskStepVo) {
+//                        @Override
+//                        public void myExecute() {
+//                            handler.back(currentProcessTaskStepVo);
+//                        }
+//                    });
+//                }
 
                 myReapprovalAudit(currentProcessTaskStepVo);
                 if (this.getMode().equals(ProcessStepMode.MT)) {
