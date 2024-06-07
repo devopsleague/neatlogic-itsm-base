@@ -20,14 +20,17 @@ package neatlogic.framework.process.stephandler.core;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.form.attribute.core.FormAttributeDataConversionHandlerFactory;
 import neatlogic.framework.form.attribute.core.IFormAttributeDataConversionHandler;
 import neatlogic.framework.form.dto.FormAttributeVo;
 import neatlogic.framework.form.service.IFormCrossoverService;
 import neatlogic.framework.process.crossover.IProcessTaskCrossoverService;
+import neatlogic.framework.process.crossover.IProcessTaskStepDataCrossoverMapper;
 import neatlogic.framework.process.crossover.ISelectContentByHashCrossoverMapper;
 import neatlogic.framework.process.dto.ProcessTaskFormAttributeDataVo;
+import neatlogic.framework.process.dto.ProcessTaskStepDataVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -61,6 +64,31 @@ public class ProcessTaskStepContext {
             }
         }
         return stepConfig;
+    }
+
+    public ProcessTaskStepDataVo getStepData(String type, boolean needUser) {
+        IProcessTaskStepDataCrossoverMapper processTaskStepDataCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepDataCrossoverMapper.class);
+        ProcessTaskStepDataVo processTaskStepDataVo = new ProcessTaskStepDataVo();
+        processTaskStepDataVo.setProcessTaskId(processTaskStepVo.getProcessTaskId());
+        processTaskStepDataVo.setProcessTaskStepId(processTaskStepVo.getId());
+        if (needUser) {
+            processTaskStepDataVo.setFcu(UserContext.get().getUserUuid(true));
+        }
+        processTaskStepDataVo.setType(type);
+        return processTaskStepDataCrossoverMapper.getProcessTaskStepData(processTaskStepDataVo);
+    }
+
+    public void saveStepData(String type, String data, boolean needUser) {
+        IProcessTaskStepDataCrossoverMapper processTaskStepDataCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepDataCrossoverMapper.class);
+        ProcessTaskStepDataVo processTaskStepDataVo = new ProcessTaskStepDataVo();
+        processTaskStepDataVo.setProcessTaskId(processTaskStepVo.getProcessTaskId());
+        processTaskStepDataVo.setProcessTaskStepId(processTaskStepVo.getId());
+        if (needUser) {
+            processTaskStepDataVo.setFcu(UserContext.get().getUserUuid(true));
+        }
+        processTaskStepDataVo.setType(type);
+        processTaskStepDataVo.setData(data);
+        processTaskStepDataCrossoverMapper.replaceProcessTaskStepData(processTaskStepDataVo);
     }
 
     /**
