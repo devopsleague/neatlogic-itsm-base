@@ -83,6 +83,7 @@ public interface IProcessStepInternalHandler {
         return configObj;*/
         //TODO 暂时直接使用regulateProcessStepConfig，后续再看是否需要优化
         return this.regulateProcessStepConfig(configObj);
+
     }
 
     /**
