@@ -85,6 +85,9 @@ public class ProcessTaskStepContext {
         processTaskStepDataVo.setProcessTaskStepId(processTaskStepVo.getId());
         if (needUser) {
             processTaskStepDataVo.setFcu(UserContext.get().getUserUuid(true));
+        } else {
+            //必须给个默认值，否则唯一索引不生效
+            processTaskStepDataVo.setFcu("SYSTEM");
         }
         processTaskStepDataVo.setType(type);
         processTaskStepDataVo.setData(data);
