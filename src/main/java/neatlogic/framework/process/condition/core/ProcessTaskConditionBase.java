@@ -67,11 +67,21 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
 
     protected void getSimpleSqlConditionWhere(ConditionVo condition, StringBuilder sqlSb, String tableShortName, String columnName) {
         Object value = StringUtils.EMPTY;
+        List<String> valueList = new ArrayList<>();
         if (condition.getValueList() instanceof String) {
             value = condition.getValueList();
         } else if (condition.getValueList() instanceof List) {
-            List<String> values = JSON.parseArray(JSON.toJSONString(condition.getValueList()), String.class);
-            value = String.join("','", values);
+            JSONArray values = JSON.parseArray(JSON.toJSONString(condition.getValueList()));
+            for (int v = 0; v < values.size(); v++) {
+                if (values.get(v) instanceof JSONObject) {
+                    JSONObject valueJson = values.getJSONObject(v);
+                    valueList.add(valueJson.getString("value"));
+                } else {
+                    valueList.add(values.getString(v));
+                }
+            }
+
+            value = String.join("','", valueList);
         }
         sqlSb.append(Expression.getExpressionSql(condition.getExpression(), tableShortName, columnName, value.toString()));
     }
@@ -238,4 +248,5 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
     }
 
     public abstract JSONObject getConfig(ConditionConfigType type);
+
 }

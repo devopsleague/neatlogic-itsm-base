@@ -24,6 +24,7 @@ import neatlogic.framework.common.constvalue.DeviceType;
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.util.CommonUtil;
 import neatlogic.framework.dto.AuthorityVo;
+import neatlogic.framework.dto.condition.ConditionGroupVo;
 import neatlogic.framework.dto.condition.ConditionVo;
 import neatlogic.framework.process.condition.core.IProcessTaskCondition;
 import neatlogic.framework.process.condition.core.ProcessTaskConditionFactory;
@@ -487,12 +488,13 @@ public class WorkcenterVo extends SqlDecoratorVo implements Serializable {
     }
 
     @Override
-    public void buildMyConditionWhereSql(StringBuilder sqlSb, String handler, List<ConditionVo> conditionVoList, int conditionIndex, String searchMode) {
+    public void buildMyConditionWhereSql(StringBuilder sqlSb, String handler, ConditionGroupVo groupVo, int conditionIndex, String searchMode) {
+        List<ConditionVo> conditionVoList = groupVo.getConditionList();
         ConditionVo conditionVo = conditionVoList.get(conditionIndex);
         if (conditionVo.getType().equals(ProcessFieldType.FORM.getValue())) {
             handler = ProcessFieldType.FORM.getValue();
         }
         IProcessTaskCondition sqlCondition = ProcessTaskConditionFactory.getHandler(handler);
-        sqlCondition.getSqlConditionWhere(conditionVoList, conditionIndex, sqlSb);
+        sqlCondition.getSqlConditionWhere(groupVo, conditionIndex, sqlSb);
     }
 }
