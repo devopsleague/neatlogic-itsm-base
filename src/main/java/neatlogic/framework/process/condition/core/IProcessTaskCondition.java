@@ -1,7 +1,7 @@
 package neatlogic.framework.process.condition.core;
 
 import neatlogic.framework.condition.core.IConditionHandler;
-import neatlogic.framework.dto.condition.ConditionVo;
+import neatlogic.framework.dto.condition.ConditionGroupVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.SqlDecoratorVo;
 import neatlogic.framework.process.workcenter.dto.JoinTableColumnVo;
@@ -15,14 +15,14 @@ public interface IProcessTaskCondition extends IConditionHandler {
         return "processtask";
     }
 
+
     /**
-     * @Description: 根据conditionVo 转成对应的sql
-     * @Author: 89770
-     * @Date: 2021/1/20 18:27
-     * @Params: []
-     * @Returns: void
-     **/
-    void getSqlConditionWhere(List<ConditionVo> conditionList, Integer index, StringBuilder sqlSb);
+     * 获取sql where 条件
+     * @param groupVo 条件组
+     * @param index condition 下表
+     * @param sqlSb 拼装好的sql
+     */
+    default void getSqlConditionWhere(ConditionGroupVo groupVo, Integer index, StringBuilder sqlSb){}
 
     /**
      * @Description: 获取对应条件需要关联的表和字段
