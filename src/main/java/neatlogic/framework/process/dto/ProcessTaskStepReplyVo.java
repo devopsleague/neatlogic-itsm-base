@@ -1,14 +1,14 @@
 package neatlogic.framework.process.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.fastjson.annotation.JSONField;
-
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BaseEditorVo;
+import neatlogic.framework.dto.WorkAssignmentUnitVo;
 import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.restful.annotation.EntityField;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProcessTaskStepReplyVo extends BaseEditorVo {
 	@EntityField(name = "回复id", type = ApiParamType.LONG)
@@ -40,6 +40,9 @@ public class ProcessTaskStepReplyVo extends BaseEditorVo {
 	private String sourceName;
 	@EntityField(name = "操作人角色", type = ApiParamType.STRING)
 	private String operatorRole;
+	@EntityField(name = "目标对象列表", type = ApiParamType.JSONARRAY)
+	List<WorkAssignmentUnitVo> targetList;
+
 	public ProcessTaskStepReplyVo() {}
 	public ProcessTaskStepReplyVo(ProcessTaskStepContentVo processTaskStepContentVo) {
 	    super.setFcd(processTaskStepContentVo.getFcd());
@@ -146,5 +149,13 @@ public class ProcessTaskStepReplyVo extends BaseEditorVo {
 
 	public void setOperatorRole(String operatorRole) {
 		this.operatorRole = operatorRole;
+	}
+
+	public List<WorkAssignmentUnitVo> getTargetList() {
+		return targetList;
+	}
+
+	public void setTargetList(List<WorkAssignmentUnitVo> targetList) {
+		this.targetList = targetList;
 	}
 }

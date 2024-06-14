@@ -372,11 +372,29 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             throw new ProcessTaskStepNoMatchedWorkerException();
         }
 
-        ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-        processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-        processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人人
-        processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
-
+        if (!oldUserList.isEmpty()) {
+            boolean changeMajorUser = true;
+            ProcessTaskStepUserVo oldUserVo = oldUserList.get(0);
+            for (ProcessTaskStepWorkerVo workerVo : workerSet) {
+                if (Objects.equals(workerVo.getUuid(), oldUserVo.getUserUuid())) {
+                    changeMajorUser = false;
+                    break;
+                }
+            }
+            if (changeMajorUser) {
+                oldUserVo.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
+                oldUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
+                int count = processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUserVo);
+                System.out.println("count = " + count);
+                List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskCrossoverMapper.getProcessTaskStepUserListByProcessTaskIdList(Collections.singletonList(currentProcessTaskStepVo.getProcessTaskId()));
+                System.out.println("processTaskStepUserList = " + JSONObject.toJSONString(processTaskStepUserList));
+            } else {
+                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人人
+                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+            }
+        }
         /* 当只分配到一个用户时，自动设置为处理人，不需要抢单 **/
         if (workerSet.size() == 1 && autoStart == 1) {
             for (ProcessTaskStepWorkerVo workerVo : workerSet) {
@@ -1691,6 +1709,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 }
                 for (ProcessTaskStepUserVo oldUser : oldUserList) {
+                    /* 更新处理人状态 **/
+                    oldUser.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
+                    oldUser.setStatus(ProcessTaskStepUserStatus.TRANSFERRED.getValue());
+                    processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUser);
                     if (workerUserUuidList.contains(oldUser.getUserUuid())) {
                         String userName = oldUser.getUserName();
                         if (StringUtils.isBlank(userName)) {
@@ -1703,13 +1725,21 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 }
                 /* 清空user表 **/
-                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
-                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+//                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+//                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+//                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
+//                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
             }
 
             /* 保存描述内容 **/
+            JSONArray contentTargetList = new JSONArray();
+            for (ProcessTaskStepWorkerVo workerVo : workerList) {
+                JSONObject contentTargetObj = new JSONObject();
+                contentTargetObj.put("type", workerVo.getType());
+                contentTargetObj.put("uuid", workerVo.getUuid());
+                contentTargetList.add(contentTargetObj);
+            }
+            currentProcessTaskStepVo.getParamObj().put("contentTargetList", contentTargetList);
             processStepHandlerCrossoverUtil.saveContentAndFile(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_TRANSFER);
 
             /* 根据子类需要把最终处理人放进来，引擎将自动写入数据库，也可能为空，例如一些特殊的流程节点 **/
@@ -1764,7 +1794,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         } catch (ProcessTaskException e) {
             logger.error(e.getMessage(), e);
             processTaskStepVo.setError(e.getMessage());
-            currentProcessTaskStepVo.setIsActive(1);
+            processTaskStepVo.setIsActive(1);
             processTaskStepVo.setStatus(ProcessTaskStepStatus.FAILED.getValue());
             updateProcessTaskStepStatus(processTaskStepVo);
         } finally {
