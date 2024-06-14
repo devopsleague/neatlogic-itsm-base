@@ -1710,6 +1710,14 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             }
 
             /* 保存描述内容 **/
+            JSONArray contentTargetList = new JSONArray();
+            for (ProcessTaskStepWorkerVo workerVo : workerList) {
+                JSONObject contentTargetObj = new JSONObject();
+                contentTargetObj.put("type", workerVo.getType());
+                contentTargetObj.put("uuid", workerVo.getUuid());
+                contentTargetList.add(contentTargetObj);
+            }
+            currentProcessTaskStepVo.getParamObj().put("contentTargetList", contentTargetList);
             processStepHandlerCrossoverUtil.saveContentAndFile(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_TRANSFER);
 
             /* 根据子类需要把最终处理人放进来，引擎将自动写入数据库，也可能为空，例如一些特殊的流程节点 **/
@@ -1764,7 +1772,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         } catch (ProcessTaskException e) {
             logger.error(e.getMessage(), e);
             processTaskStepVo.setError(e.getMessage());
-            currentProcessTaskStepVo.setIsActive(1);
+            processTaskStepVo.setIsActive(1);
             processTaskStepVo.setStatus(ProcessTaskStepStatus.FAILED.getValue());
             updateProcessTaskStepStatus(processTaskStepVo);
         } finally {
