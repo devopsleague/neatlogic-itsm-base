@@ -19,9 +19,7 @@ package neatlogic.framework.process.crossover;
 
 import com.alibaba.fastjson.JSONArray;
 import neatlogic.framework.crossover.ICrossoverService;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface ICollectionCrossoverService extends ICrossoverService {
-    @Transactional
     Long applyCollectionDefinition(String title, String content, String userId, JSONArray formData, JSONArray attrList);
 }
