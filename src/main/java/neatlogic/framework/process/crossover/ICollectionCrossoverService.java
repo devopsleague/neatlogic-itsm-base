@@ -23,5 +23,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface ICollectionCrossoverService extends ICrossoverService {
     @Transactional
-    Long applyCollectionDefinition(String title, String content, String userId, JSONArray formData, JSONArray attrList);
+    Long applyCollectionDefinition(String title, String content, String userId, JSONArray formData, JSONArray attrList, Boolean needLaunch) throws Exception;
 }
