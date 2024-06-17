@@ -144,14 +144,16 @@ public class ProcessConfigUtil {
      */
     public static JSONArray regulateAuthorityList(JSONArray authorityList, ProcessTaskOperationType[] stepActions) {
         JSONArray authorityArray = new JSONArray();
-        for (ProcessTaskOperationType stepAction : stepActions) {
-            authorityArray.add(new JSONObject() {{
-                this.put("action", stepAction.getValue());
-                this.put("text", stepAction.getText());
-                this.put("defaultValue", stepAction.getDefaultValue());
-                this.put("acceptList", null);
-                this.put("groupList", stepAction.getGroupList());
-            }});
+        if (stepActions != null) {
+            for (ProcessTaskOperationType stepAction : stepActions) {
+                authorityArray.add(new JSONObject() {{
+                    this.put("action", stepAction.getValue());
+                    this.put("text", stepAction.getText());
+                    this.put("defaultValue", stepAction.getDefaultValue());
+                    this.put("acceptList", null);
+                    this.put("groupList", stepAction.getGroupList());
+                }});
+            }
         }
 
         if (CollectionUtils.isNotEmpty(authorityList)) {
@@ -192,16 +194,18 @@ public class ProcessConfigUtil {
      */
     public static JSONArray regulateCustomButtonList(JSONArray customButtonList, IOperationType[] stepButtons, String remark) {
         JSONArray customButtonArray = new JSONArray();
-        for (IOperationType stepButton : stepButtons) {
-            customButtonArray.add(new JSONObject() {{
-                this.put("name", stepButton.getValue());
-                if (StringUtils.isNotBlank(remark)) {
-                    this.put("text", stepButton.getText() + "(" + remark + ")");
-                } else {
-                    this.put("text", stepButton.getText());
-                }
-                this.put("value", "");
-            }});
+        if(stepButtons != null) {
+            for (IOperationType stepButton : stepButtons) {
+                customButtonArray.add(new JSONObject() {{
+                    this.put("name", stepButton.getValue());
+                    if (StringUtils.isNotBlank(remark)) {
+                        this.put("text", stepButton.getText() + "(" + remark + ")");
+                    } else {
+                        this.put("text", stepButton.getText());
+                    }
+                    this.put("value", "");
+                }});
+            }
         }
 
         if (CollectionUtils.isNotEmpty(customButtonList)) {
