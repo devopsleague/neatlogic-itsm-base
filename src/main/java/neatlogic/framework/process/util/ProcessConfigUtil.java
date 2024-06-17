@@ -317,6 +317,7 @@ public class ProcessConfigUtil {
             JSONObject config = new JSONObject();
             config.put("isRequired", 0);
             config.put("processStepUuidList", new JSONArray());
+            config.put("processStepList", new JSONArray());
             config.put("rangeList", new JSONArray());
             config.put("groupList", new JSONArray());
             policyObj.put("config", config);
@@ -395,6 +396,21 @@ public class ProcessConfigUtil {
                                 JSONArray processStepUuidList = configObj.getJSONArray("processStepUuidList");
                                 if (CollectionUtils.isNotEmpty(processStepUuidList)) {
                                     configObject.put("processStepUuidList", processStepUuidList);
+                                }
+                                JSONArray processStepArray = configObj.getJSONArray("processStepList");
+                                if (CollectionUtils.isNotEmpty(processStepArray)) {
+                                    JSONArray processStepList = new JSONArray();
+                                    for (int j = 0; j < processStepArray.size(); j++) {
+                                        JSONObject processStepObj = processStepArray.getJSONObject(j);
+                                        if (MapUtils.isEmpty(processStepObj)) {
+                                            continue;
+                                        }
+                                        if (StringUtils.isBlank(processStepObj.getString("uuid"))) {
+                                            continue;
+                                        }
+                                        processStepList.add(processStepObj);
+                                    }
+                                    configObject.put("processStepList", processStepList);
                                 }
                                 JSONArray rangeList = configObj.getJSONArray("rangeList");
                                 if (CollectionUtils.isNotEmpty(rangeList)) {
