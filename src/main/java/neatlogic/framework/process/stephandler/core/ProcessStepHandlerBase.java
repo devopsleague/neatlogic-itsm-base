@@ -384,16 +384,13 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             if (changeMajorUser) {
                 oldUserVo.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
                 oldUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
-                int count = processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUserVo);
-                System.out.println("count = " + count);
-                List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskCrossoverMapper.getProcessTaskStepUserListByProcessTaskIdList(Collections.singletonList(currentProcessTaskStepVo.getProcessTaskId()));
-                System.out.println("processTaskStepUserList = " + JSONObject.toJSONString(processTaskStepUserList));
-            } else {
-                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人人
-                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+                oldUserVo.setEndTime(new Date());
+                processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(oldUserVo);
             }
+            ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+            processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+            processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人
+            processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
         }
         /* 当只分配到一个用户时，自动设置为处理人，不需要抢单 **/
         if (workerSet.size() == 1 && autoStart == 1) {
@@ -1712,7 +1709,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 更新处理人状态 **/
                     oldUser.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
                     oldUser.setStatus(ProcessTaskStepUserStatus.TRANSFERRED.getValue());
-                    processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUser);
+                    oldUser.setEndTime(new Date());
+                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(oldUser);
                     if (workerUserUuidList.contains(oldUser.getUserUuid())) {
                         String userName = oldUser.getUserName();
                         if (StringUtils.isBlank(userName)) {
@@ -1725,10 +1723,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 }
                 /* 清空user表 **/
-//                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-//                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-//                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
-//                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
+                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
             }
 
             /* 保存描述内容 **/
