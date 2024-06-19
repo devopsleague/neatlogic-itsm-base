@@ -174,8 +174,6 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     int updateProcessTaskStepUserStatus(ProcessTaskStepUserVo processTaskStepUserVo);
 
-    int updateProcessTaskStepMajorUserUserTypeAndStatus(ProcessTaskStepUserVo processTaskStepUserVo);
-
     int updateProcessTaskTitleOwnerPriorityUuid(ProcessTaskVo processTaskVo);
 
     int updateProcessTaskStepWorkerUuid(ProcessTaskStepWorkerVo processTaskStepWorkerVo);

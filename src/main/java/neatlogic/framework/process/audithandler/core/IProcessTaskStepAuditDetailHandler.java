@@ -4,7 +4,7 @@ import neatlogic.framework.process.dto.ProcessTaskStepAuditDetailVo;
 
 public interface IProcessTaskStepAuditDetailHandler {
 
-	public String getType();
+	String getType();
 	
-	public int handle(ProcessTaskStepAuditDetailVo processTaskStepAuditDetailVo);
+	int handle(ProcessTaskStepAuditDetailVo processTaskStepAuditDetailVo);
 }

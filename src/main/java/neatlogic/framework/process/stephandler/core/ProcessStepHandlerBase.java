@@ -384,16 +384,13 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             if (changeMajorUser) {
                 oldUserVo.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
                 oldUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
-                int count = processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUserVo);
-                System.out.println("count = " + count);
-                List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskCrossoverMapper.getProcessTaskStepUserListByProcessTaskIdList(Collections.singletonList(currentProcessTaskStepVo.getProcessTaskId()));
-                System.out.println("processTaskStepUserList = " + JSONObject.toJSONString(processTaskStepUserList));
-            } else {
-                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人人
-                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+                oldUserVo.setEndTime(new Date());
+                processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(oldUserVo);
             }
+            ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+            processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+            processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人
+            processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
         }
         /* 当只分配到一个用户时，自动设置为处理人，不需要抢单 **/
         if (workerSet.size() == 1 && autoStart == 1) {
@@ -1126,12 +1123,16 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
         return awaitAdvanceStepIdList;
     }
+
     protected abstract int myComplete(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException;
 
     protected int myBeforeComplete(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException {
         return 0;
     }
 
+    /*
+    节点完成时写入时间线信息
+     */
     protected abstract int myCompleteAudit(ProcessTaskStepVo currentProcessTaskStepVo);
 
     @Override
@@ -1712,7 +1713,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     /* 更新处理人状态 **/
                     oldUser.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
                     oldUser.setStatus(ProcessTaskStepUserStatus.TRANSFERRED.getValue());
-                    processTaskCrossoverMapper.updateProcessTaskStepMajorUserUserTypeAndStatus(oldUser);
+                    oldUser.setEndTime(new Date());
+                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(oldUser);
                     if (workerUserUuidList.contains(oldUser.getUserUuid())) {
                         String userName = oldUser.getUserName();
                         if (StringUtils.isBlank(userName)) {
@@ -1725,10 +1727,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     }
                 }
                 /* 清空user表 **/
-//                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
-//                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-//                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
-//                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+                ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+                processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
+                processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
             }
 
             /* 保存描述内容 **/
@@ -2359,7 +2361,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     /**
      * 标识失效步骤，将失效步骤的正向流转连线isHit设置为-1
      *
-     * @param processTaskId 工单id
+     * @param processTaskId            工单id
      * @param currentProcessTaskStepId 当前步骤id
      * @param activeStepIdSet          激活步骤列表
      */
@@ -2378,9 +2380,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     /**
      * 标识失效步骤，将失效步骤的正向流转连线isHit设置为-1
      *
-     * @param currentProcessTaskStepId 当前步骤id
-     * @param activeStepIdSet          激活步骤列表
-     * @param allProcessTaskStepRelList 工单的所有连线列表
+     * @param currentProcessTaskStepId   当前步骤id
+     * @param activeStepIdSet            激活步骤列表
+     * @param allProcessTaskStepRelList  工单的所有连线列表
      * @param needProcessTaskStepRelList 需要更新isHit值为-1的连线列表
      */
     private void doIdentifyPostInvalidStepRelIsHit(Long currentProcessTaskStepId, Set<Long> activeStepIdSet, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<ProcessTaskStepRelVo> needProcessTaskStepRelList) {
@@ -2482,7 +2484,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     /**
      * 将当前步骤的所有后续步骤间的连线的isHit设置为0
-     * @param processTaskId 工单ID
+     *
+     * @param processTaskId            工单ID
      * @param currentProcessTaskStepId 步骤ID
      */
     private void resetPostStepRelIsHit(Long processTaskId, Long currentProcessTaskStepId) {
@@ -2499,9 +2502,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
     /**
      * 将当前步骤的所有后续步骤间的连线的isHit设置为0
-     * @param currentProcessTaskStepId 步骤ID
-     * @param avoidCyclingStepIdList 遍历过的步骤id列表，避免重复
-     * @param allProcessTaskStepRelList 工单的所有连线列表
+     *
+     * @param currentProcessTaskStepId   步骤ID
+     * @param avoidCyclingStepIdList     遍历过的步骤id列表，避免重复
+     * @param allProcessTaskStepRelList  工单的所有连线列表
      * @param needProcessTaskStepRelList 需要更新isHit值为0的连线列表
      */
     private void doResetPostStepRelIsHit(Long currentProcessTaskStepId, List<Long> avoidCyclingStepIdList, List<ProcessTaskStepRelVo> allProcessTaskStepRelList, List<ProcessTaskStepRelVo> needProcessTaskStepRelList) {
