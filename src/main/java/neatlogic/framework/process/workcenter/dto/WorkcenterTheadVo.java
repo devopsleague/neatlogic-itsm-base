@@ -25,7 +25,9 @@ import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.$;
 
-public class WorkcenterTheadVo {
+import java.io.Serializable;
+
+public class WorkcenterTheadVo implements Serializable {
 
     @JSONField(serialize = false)
     @EntityField(name = "工单中心分类唯一标识段", type = ApiParamType.STRING)
