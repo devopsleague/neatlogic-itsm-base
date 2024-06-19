@@ -44,11 +44,10 @@ public enum ProcessTaskAuditType implements IProcessTaskAuditType {
     UNDOFOCUSTASK("undofocustask", "取消关注工单", "取消关注工单"),
 	BINDREPEAT("bindrepeat", "绑定重复工单", "绑定重复工单"),
 	UNBINDREPEAT("unbindrepeat", "解绑重复工单", "解绑重复工单")
-
 	;
-	private String value;
-	private String text;
-	private String description;
+	private final String value;
+	private final String text;
+	private final String description;
 	
 	ProcessTaskAuditType(String value, String text, String description) {
 		this.value = value;
