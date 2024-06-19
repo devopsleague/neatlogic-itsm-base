@@ -90,6 +90,35 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
         }
         return resultObj;
     }
+
+    public static JSONObject getConditionParamData(ConditionProcessTaskOptions[] options, ProcessTaskStepVo processTaskStepVo, String formTag) {
+        JSONObject resultObj = new JSONObject();
+        for (ConditionProcessTaskOptions option : options) {
+            IProcessTaskCondition handler = conditionComponentMap.get(option.getValue());
+            if (handler != null) {
+                Object object = handler.getConditionParamDataNew(processTaskStepVo, formTag);
+                if (object != null) {
+                    resultObj.put(option.getValue(), object);
+                    resultObj.put(option.getText(), handler.getConditionParamDataForHumanizationNew(processTaskStepVo, formTag));
+                }
+            }
+        }
+        IProcessTaskCondition handler = conditionComponentMap.get(ProcessFieldType.FORM.getValue());
+        if (handler != null) {
+            Object formObj = handler.getConditionParamDataNew(processTaskStepVo, formTag);
+            if (formObj != null) {
+                if (formObj instanceof JSONObject) {
+                    resultObj.putAll((JSONObject) formObj);
+                }
+                Object formObjForHumanization = handler.getConditionParamDataForHumanizationNew(processTaskStepVo, formTag);
+                if (formObjForHumanization instanceof JSONObject) {
+                    resultObj.putAll((JSONObject) formObjForHumanization);
+                }
+            }
+        }
+        return resultObj;
+    }
+
     @Override
     public void onInitialized(NeatLogicWebApplicationContext context) {
         Map<String, IProcessTaskCondition> myMap = context.getBeansOfType(IProcessTaskCondition.class);

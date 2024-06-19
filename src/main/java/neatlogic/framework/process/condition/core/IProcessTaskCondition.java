@@ -51,4 +51,22 @@ public interface IProcessTaskCondition extends IConditionHandler {
         return getConditionParamData(processTaskStepVo);
     }
 
+    /**
+     * 获取条件分流需要判断的数据
+     *
+     * @return 数据
+     */
+    default Object getConditionParamDataNew(ProcessTaskStepVo processTaskStepVo, String formTag) {
+        return getConditionParamData(processTaskStepVo);
+    }
+
+    /**
+     * 获取条件分流需要判断的数据，人性化数据，拥有javascript判断
+     *
+     * @return 数据
+     */
+    default Object getConditionParamDataForHumanizationNew(ProcessTaskStepVo processTaskStepVo, String formTag) {
+        return getConditionParamDataNew(processTaskStepVo, formTag);
+    }
+
 }
