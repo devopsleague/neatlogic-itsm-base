@@ -15,8 +15,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.workcenter.dto;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.ApiParamType;
@@ -32,6 +34,7 @@ import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.constvalue.ProcessWorkcenterType;
 import neatlogic.framework.process.dto.SqlDecoratorVo;
 import neatlogic.framework.restful.annotation.EntityField;
+import neatlogic.framework.util.Md5Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,6 +100,12 @@ public class WorkcenterVo extends SqlDecoratorVo implements Serializable {
     private String handlerType;
     @EntityField(name = "是否显示总数，默认0：显示待办数", type = ApiParamType.INTEGER)
     private Integer isShowTotal = 0;
+    @EntityField(name = "默认表头配置", type = ApiParamType.JSONOBJECT)
+    private List<WorkcenterTheadVo> theadList = new ArrayList<>();
+    @EntityField(name = "默认表头配置Hash", type = ApiParamType.STRING)
+    private String theadConfigHash;
+    @JSONField(serialize = false)
+    private String theadConfigStr;
 
     //params
     private List<String> channelUuidList;
@@ -496,5 +505,39 @@ public class WorkcenterVo extends SqlDecoratorVo implements Serializable {
         }
         IProcessTaskCondition sqlCondition = ProcessTaskConditionFactory.getHandler(handler);
         sqlCondition.getSqlConditionWhere(groupVo, conditionIndex, sqlSb);
+    }
+
+    public List<WorkcenterTheadVo> getTheadList() {
+        if (CollectionUtils.isEmpty(theadList) && StringUtils.isNotBlank(theadConfigStr)) {
+            theadList = JSON.parseObject(theadConfigStr, new TypeReference<List<WorkcenterTheadVo>>() {
+            });
+        }
+        return theadList;
+    }
+
+    public void setTheadList(List<WorkcenterTheadVo> theadList) {
+        this.theadList = theadList;
+    }
+
+    public String getTheadConfigStr() {
+        if (StringUtils.isBlank(theadConfigStr) && CollectionUtils.isNotEmpty(this.theadList)) {
+            theadConfigStr = JSON.toJSONString(this.theadList);
+        }
+        return theadConfigStr;
+    }
+
+    public void setTheadConfigStr(String theadConfigStr) {
+        this.theadConfigStr = theadConfigStr;
+    }
+
+    public String getTheadConfigHash() {
+        if (StringUtils.isBlank(theadConfigHash) && StringUtils.isNotBlank(this.getTheadConfigStr())) {
+            theadConfigHash =  Md5Util.encryptMD5(this.getTheadConfigStr());
+        }
+        return theadConfigHash;
+    }
+
+    public void setTheadConfigHash(String theadConfigHash) {
+        this.theadConfigHash = theadConfigHash;
     }
 }
