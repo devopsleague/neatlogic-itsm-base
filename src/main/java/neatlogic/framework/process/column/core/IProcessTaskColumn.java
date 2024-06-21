@@ -50,13 +50,13 @@ public interface IProcessTaskColumn {
 
 
     /**
-     * @Description: 是否显示该字段
+     * @Description: 是否显示该字段（控制checkbox是否默认勾选）
      * @Date: 2020/6/5
      */
     Boolean getIsShow();
 
     /**
-     * 是否可以控制该字段是否显示
+     * 是否该字段是否显示（否，则永远不在table中展示这一列数据，也不会在可选的表头选项中显示）
      * @return 是｜否
      */
     Boolean getDisabled();
