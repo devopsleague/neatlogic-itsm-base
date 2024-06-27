@@ -55,6 +55,8 @@ public class WorkcenterTheadVo implements Serializable {
     private Integer isExport;
     @EntityField(name = "是否支持排序", type = ApiParamType.INTEGER)
     private int isSortable;
+    @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
+    private JSONObject config;
 
     public WorkcenterTheadVo(String name) {
         this.name = name;
@@ -191,5 +193,13 @@ public class WorkcenterTheadVo implements Serializable {
 
     public void setIsExport(Integer isExport) {
         this.isExport = isExport;
+    }
+
+    public JSONObject getConfig() {
+        return config;
+    }
+
+    public void setConfig(JSONObject config) {
+        this.config = config;
     }
 }
