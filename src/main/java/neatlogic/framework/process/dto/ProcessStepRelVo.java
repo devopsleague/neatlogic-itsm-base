@@ -1,5 +1,8 @@
 package neatlogic.framework.process.dto;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 
 public class ProcessStepRelVo implements Serializable {
@@ -8,7 +11,11 @@ public class ProcessStepRelVo implements Serializable {
 	private String uuid;
 	private String fromStepUuid;
 	private String toStepUuid;
+	@JSONField(serialize = false)
 	private String condition;
+
+	private JSONObject conditionConfig;
+
 	private String name;
 	private String type;
 	@Override
@@ -62,11 +69,25 @@ public class ProcessStepRelVo implements Serializable {
 	}
 
 	public String getCondition() {
+		if (condition == null && conditionConfig != null) {
+			condition = conditionConfig.toJSONString();
+		}
 		return condition;
 	}
 
 	public void setCondition(String condition) {
 		this.condition = condition;
+	}
+
+	public JSONObject getConditionConfig() {
+		if (conditionConfig == null && condition != null) {
+			conditionConfig = JSONObject.parseObject(condition);
+		}
+		return conditionConfig;
+	}
+
+	public void setConditionConfig(JSONObject conditionConfig) {
+		this.conditionConfig = conditionConfig;
 	}
 
 	public String getProcessUuid() {

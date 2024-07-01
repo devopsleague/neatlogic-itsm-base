@@ -22,10 +22,13 @@ import neatlogic.framework.form.constvalue.FormAttributeAction;
 import neatlogic.framework.form.constvalue.FormAttributeAuthRange;
 import neatlogic.framework.form.constvalue.FormAttributeAuthType;
 import neatlogic.framework.process.constvalue.*;
+import neatlogic.framework.process.exception.process.ProcessConfigException;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
+import neatlogic.framework.process.stephandler.core.ProcessMessageManager;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -330,7 +333,7 @@ public class ProcessConfigUtil {
             policyObj.put("type", WorkerPolicy.COPY.getValue());
             policyObj.put("isChecked", 0);
             JSONObject config = new JSONObject();
-            config.put("processStepUuid", "");//TODO 这里是单选，应该改成processStepUuid
+            config.put("processStepUuid", "");
             policyObj.put("config", config);
             policyMap.put(WorkerPolicy.COPY, policyObj);
         }
@@ -370,6 +373,7 @@ public class ProcessConfigUtil {
         }
         JSONArray policyList = workerPolicyConfig.getJSONArray("policyList");
         if (CollectionUtils.isNotEmpty(policyList)) {
+            List<String> effectiveStepUuidList = ProcessMessageManager.getEffectiveStepUuidList();
             for (int i = 0; i < policyList.size(); i++) {
                 JSONObject policyObj = policyList.getJSONObject(i);
                 if (MapUtils.isNotEmpty(policyObj)) {
@@ -395,18 +399,31 @@ public class ProcessConfigUtil {
                                 }
                                 JSONArray processStepUuidList = configObj.getJSONArray("processStepUuidList");
                                 if (CollectionUtils.isNotEmpty(processStepUuidList)) {
+                                    processStepUuidList.retainAll(effectiveStepUuidList);
                                     configObject.put("processStepUuidList", processStepUuidList);
                                 }
+                                JSONArray processStepList = new JSONArray();
                                 JSONArray processStepArray = configObj.getJSONArray("processStepList");
                                 if (CollectionUtils.isNotEmpty(processStepArray)) {
-                                    JSONArray processStepList = new JSONArray();
                                     for (int j = 0; j < processStepArray.size(); j++) {
                                         JSONObject processStepObj = processStepArray.getJSONObject(j);
                                         if (MapUtils.isEmpty(processStepObj)) {
                                             continue;
                                         }
-                                        if (StringUtils.isBlank(processStepObj.getString("uuid"))) {
+                                        String uuid = processStepObj.getString("uuid");
+                                        if (StringUtils.isBlank(uuid)) {
                                             continue;
+                                        }
+                                        if (!effectiveStepUuidList.contains(uuid)) {
+                                            throw new ProcessConfigException(ProcessConfigException.Type.PRE_STEP_ASSIGN, ProcessMessageManager.getStepName());
+                                        }
+                                        JSONArray conditionUuidArray = processStepObj.getJSONArray("condition");
+                                        if (CollectionUtils.isNotEmpty(conditionUuidArray)) {
+                                            List<String> conditionUuidList = conditionUuidArray.toJavaList(String.class);
+                                            List<String> list = ListUtils.removeAll(conditionUuidList, effectiveStepUuidList);
+                                            if (CollectionUtils.isNotEmpty(list)) {
+                                                throw new ProcessConfigException(ProcessConfigException.Type.PRE_STEP_ASSIGN_CONDITION_STEP, ProcessMessageManager.getStepName());
+                                            }
                                         }
                                         processStepList.add(processStepObj);
                                     }
@@ -424,6 +441,9 @@ public class ProcessConfigUtil {
                             case COPY:
                                 String processStepUuid = configObj.getString("processStepUuid");
                                 if (StringUtils.isNotBlank(processStepUuid)) {
+                                    if (!effectiveStepUuidList.contains(processStepUuid)) {
+                                        throw new ProcessConfigException(ProcessConfigException.Type.COPY, ProcessMessageManager.getStepName());
+                                    }
                                     configObject.put("processStepUuid", processStepUuid);
                                 }
                                 break;
@@ -525,53 +545,43 @@ public class ProcessConfigUtil {
         }
         JSONObject process = configObj.getJSONObject("process");
         if (MapUtils.isNotEmpty(process)) {
-            JSONArray connectionList = process.getJSONArray("connectionList");
-            process.remove("connectionList");
-//                    String source = JSONObject.toJSONString(process, SerializerFeature.MapSortField);
-            IProcessStepInternalHandler processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(ProcessStepHandlerType.END.getHandler());
-            if (processStepInternalHandler == null) {
-                throw new ProcessStepUtilHandlerNotFoundException(ProcessStepHandlerType.END.getHandler());
-            }
-            JSONObject processObj = processStepInternalHandler.regulateProcessStepConfig(process);
-            JSONArray stepList = process.getJSONArray("stepList");
-            if (CollectionUtils.isNotEmpty(stepList)) {
-                stepList.removeIf(Objects::isNull);
-                for (int i = 0; i < stepList.size(); i++) {
-                    JSONObject step = stepList.getJSONObject(i);
-                    String handler = step.getString("handler");
-                    if (!Objects.equals(handler, ProcessStepHandlerType.END.getHandler())) {
-                        processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(handler);
-                        if (processStepInternalHandler == null) {
-                            throw new ProcessStepUtilHandlerNotFoundException(handler);
+            try {
+                ProcessMessageManager.setConfig(process);
+                IProcessStepInternalHandler processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(ProcessStepHandlerType.END.getHandler());
+                if (processStepInternalHandler == null) {
+                    throw new ProcessStepUtilHandlerNotFoundException(ProcessStepHandlerType.END.getHandler());
+                }
+                JSONObject processObj = processStepInternalHandler.regulateProcessStepConfig(process);
+                JSONArray stepList = process.getJSONArray("stepList");
+                if (CollectionUtils.isNotEmpty(stepList)) {
+                    stepList.removeIf(Objects::isNull);
+                    List<String> effectiveStepUuidList = ProcessMessageManager.getEffectiveStepUuidList();
+                    for (int i = stepList.size() - 1; i >= 0; i--) {
+                        JSONObject step = stepList.getJSONObject(i);
+                        String uuid = step.getString("uuid");
+                        if (!effectiveStepUuidList.contains(uuid)) {
+                            stepList.remove(i);
+                            continue;
                         }
-                        JSONObject stepConfig = step.getJSONObject("stepConfig");
-                        JSONObject stepConfigObj = processStepInternalHandler.regulateProcessStepConfig(stepConfig);
-                        step.put("stepConfig", stepConfigObj);
+                        ProcessMessageManager.setStepName(step.getString("name"));
+                        String handler = step.getString("handler");
+                        if (!Objects.equals(handler, ProcessStepHandlerType.END.getHandler())) {
+                            processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(handler);
+                            if (processStepInternalHandler == null) {
+                                throw new ProcessStepUtilHandlerNotFoundException(handler);
+                            }
+                            JSONObject stepConfig = step.getJSONObject("stepConfig");
+                            JSONObject stepConfigObj = processStepInternalHandler.regulateProcessStepConfig(stepConfig);
+                            step.put("stepConfig", stepConfigObj);
+                        }
                     }
                 }
+                processObj.put("stepList", stepList);
+                processObj.put("connectionList", ProcessMessageManager.getProcessStepRelList());
+                configObj.put("process", processObj);
+            } finally {
+                ProcessMessageManager.release();
             }
-            processObj.put("stepList", stepList);
-//                    String target = JSONObject.toJSONString(processObj, SerializerFeature.MapSortField);
-            if (CollectionUtils.isNotEmpty(connectionList)) {
-                connectionList.removeIf(Objects::isNull);
-            } else {
-                connectionList = new JSONArray();
-            }
-            processObj.put("connectionList", connectionList);
-            configObj.put("process", processObj);
-//                    System.out.println("-------------------------");
-//                    List<SegmentPair> segmentPairList = LCSUtil.LCSCompare(source, target);
-//                    List<SegmentRange> oldSegmentRangeList = new ArrayList<>();
-//                    List<SegmentRange> newSegmentRangeList = new ArrayList<>();
-//                    for(SegmentPair segmentpair : segmentPairList) {
-//                        oldSegmentRangeList.add(new SegmentRange(segmentpair.getOldBeginIndex(), segmentpair.getOldEndIndex(), segmentpair.isMatch()));
-//                        newSegmentRangeList.add(new SegmentRange(segmentpair.getNewBeginIndex(), segmentpair.getNewEndIndex(), segmentpair.isMatch()));
-//                    }
-//                    LCSUtil.wrapChangePlace(source, oldSegmentRangeList, LCSUtil.SPAN_CLASS_DELETE, LCSUtil.SPAN_END);
-//                    PrintSingeColorFormatUtil.println();
-//                    LCSUtil.wrapChangePlace(target, newSegmentRangeList, LCSUtil.SPAN_CLASS_INSERT, LCSUtil.SPAN_END);
-//                    PrintSingeColorFormatUtil.println();
-//                    System.out.println("=========================");
         }
         return configObj.toJSONString();
     }
