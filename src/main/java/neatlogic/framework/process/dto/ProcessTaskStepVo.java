@@ -161,6 +161,10 @@ public class ProcessTaskStepVo extends BasePageVo {
     @JSONField(serialize = false)
     private Long subProcessTaskId; //子工单id
 
+    @EntityField(name = "处理时查看步骤",type= ApiParamType.JSONARRAY)
+    private List<String> viewPrevNodeUuidList;
+
+
     public ProcessTaskStepVo() {
 
     }
@@ -834,5 +838,13 @@ public class ProcessTaskStepVo extends BasePageVo {
 
     public void setSubProcessTaskId(Long subProcessTaskId) {
         this.subProcessTaskId = subProcessTaskId;
+    }
+
+    public List<String> getViewPrevNodeUuidList() {
+        return viewPrevNodeUuidList;
+    }
+
+    public void setViewPrevNodeUuidList(List<String> viewPrevNodeUuidList) {
+        this.viewPrevNodeUuidList = viewPrevNodeUuidList;
     }
 }
