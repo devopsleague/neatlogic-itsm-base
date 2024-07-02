@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
 import neatlogic.framework.process.dto.ProcessStepRelVo;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,23 +33,32 @@ import java.util.Objects;
 public class ProcessMessageManager {
     private static final ThreadLocal<ProcessMessageContext> context = new ThreadLocal<>();
 
+    private static ProcessMessageContext getProcessMessageContext() {
+        ProcessMessageContext processMessageContext = context.get();
+        if (processMessageContext == null) {
+            processMessageContext = new ProcessMessageContext();
+            context.set(processMessageContext);
+        }
+        return context.get();
+    }
     public static void setConfig(JSONObject config) {
-        context.set(new ProcessMessageContext(config));
+        getProcessMessageContext().setConfig(config);
     }
 
     public static void setStepName(String stepName) {
-        ProcessMessageContext processMessageContext = context.get();
-        if (processMessageContext != null) {
-            processMessageContext.setStepName(stepName);
-        }
+        getProcessMessageContext().setStepName(stepName);
     }
 
     public static String getStepName() {
-        ProcessMessageContext processMessageContext = context.get();
-        if (processMessageContext != null) {
-            return processMessageContext.getStepName();
-        }
-        return StringUtils.EMPTY;
+        return getProcessMessageContext().getStepName();
+    }
+
+    public static OperationTypeEnum getOperationType() {
+        return getProcessMessageContext().getOperationType();
+    }
+
+    public static void setOperationType(OperationTypeEnum operationType) {
+        getProcessMessageContext().setOperationType(operationType);
     }
 
     public static void release() {
@@ -56,16 +66,16 @@ public class ProcessMessageManager {
     }
 
     public static List<String> getEffectiveStepUuidList() {
-        ProcessMessageContext processMessageContext = context.get();
-        if (processMessageContext == null) {
-            return new ArrayList<>();
-        }
+        ProcessMessageContext processMessageContext = getProcessMessageContext();
         List<String> effectiveStepUuidList = processMessageContext.getEffectiveStepUuidList();
         if (effectiveStepUuidList == null) {
             List<ProcessStepRelVo> allProcessStepRelList = getProcessStepRelList();
             String startStepUuid = null;
             String endStepUuid = null;
             JSONObject process = processMessageContext.getConfig();
+            if (MapUtils.isEmpty(process)) {
+                return new ArrayList<>();
+            }
             JSONArray stepList = process.getJSONArray("stepList");
             for (int i = 0; i < stepList.size(); i++) {
                 JSONObject step = stepList.getJSONObject(i);
@@ -105,13 +115,13 @@ public class ProcessMessageManager {
     }
 
     public static List<ProcessStepRelVo> getProcessStepRelList() {
-        ProcessMessageContext processMessageContext = context.get();
-        if (processMessageContext == null) {
-            return new ArrayList<>();
-        }
+        ProcessMessageContext processMessageContext = getProcessMessageContext();
         List<ProcessStepRelVo> processStepRelList = processMessageContext.getConnectionList();
         if (processStepRelList == null) {
             JSONObject process = processMessageContext.getConfig();
+            if (MapUtils.isEmpty(process)) {
+                return new ArrayList<>();
+            }
             JSONArray connectionList = process.getJSONArray("connectionList");
             if (connectionList == null) {
                 connectionList = new JSONArray();

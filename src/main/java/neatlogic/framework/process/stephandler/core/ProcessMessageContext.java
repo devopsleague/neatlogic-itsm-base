@@ -19,24 +19,33 @@ package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.dto.ProcessStepRelVo;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class ProcessMessageContext {
 
-    private final JSONObject config;
+    private JSONObject config;
 
-    private String stepName;
+    private String stepName = StringUtils.EMPTY;
+
+    private OperationTypeEnum operationType;
+
     private List<String> effectiveStepUuidList;
 
     private List<ProcessStepRelVo> connectionList;
 
-    public ProcessMessageContext(JSONObject config) {
-        this.config = config;
-    }
+//    public ProcessMessageContext(JSONObject config) {
+//        this.config = config;
+//    }
 
     public JSONObject getConfig() {
         return config;
+    }
+
+    public void setConfig(JSONObject config) {
+        this.config = config;
     }
 
     public String getStepName() {
@@ -61,5 +70,13 @@ public class ProcessMessageContext {
 
     public void setConnectionList(List<ProcessStepRelVo> connectionList) {
         this.connectionList = connectionList;
+    }
+
+    public OperationTypeEnum getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(OperationTypeEnum operationType) {
+        this.operationType = operationType;
     }
 }
