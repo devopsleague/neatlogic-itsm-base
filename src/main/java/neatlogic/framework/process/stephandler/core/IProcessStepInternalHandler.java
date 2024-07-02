@@ -1,6 +1,7 @@
 package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.notify.core.INotifyPolicyHandler;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.dto.ProcessStepVo;
@@ -145,6 +146,14 @@ public interface IProcessStepInternalHandler {
             }
         }
         return newConfig;
+    }
+
+    /**
+     * 返回该步骤的通知策略处理器类
+     * @return
+     */
+    default Class<? extends INotifyPolicyHandler> getNotifyPolicyHandlerClass() {
+        return null;
     }
 
     /**
