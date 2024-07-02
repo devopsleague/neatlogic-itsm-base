@@ -27,6 +27,7 @@ import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFo
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessMessageManager;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -414,14 +415,14 @@ public class ProcessConfigUtil {
                                         if (StringUtils.isBlank(uuid)) {
                                             continue;
                                         }
-                                        if (!effectiveStepUuidList.contains(uuid)) {
+                                        if (!effectiveStepUuidList.contains(uuid) && ProcessMessageManager.getOperationType() == OperationTypeEnum.UPDATE) {
                                             throw new ProcessConfigException(ProcessConfigException.Type.PRE_STEP_ASSIGN, ProcessMessageManager.getStepName());
                                         }
                                         JSONArray conditionUuidArray = processStepObj.getJSONArray("condition");
                                         if (CollectionUtils.isNotEmpty(conditionUuidArray)) {
                                             List<String> conditionUuidList = conditionUuidArray.toJavaList(String.class);
                                             List<String> list = ListUtils.removeAll(conditionUuidList, effectiveStepUuidList);
-                                            if (CollectionUtils.isNotEmpty(list)) {
+                                            if (CollectionUtils.isNotEmpty(list) && ProcessMessageManager.getOperationType() == OperationTypeEnum.UPDATE) {
                                                 throw new ProcessConfigException(ProcessConfigException.Type.PRE_STEP_ASSIGN_CONDITION_STEP, ProcessMessageManager.getStepName());
                                             }
                                         }
@@ -441,7 +442,7 @@ public class ProcessConfigUtil {
                             case COPY:
                                 String processStepUuid = configObj.getString("processStepUuid");
                                 if (StringUtils.isNotBlank(processStepUuid)) {
-                                    if (!effectiveStepUuidList.contains(processStepUuid)) {
+                                    if (!effectiveStepUuidList.contains(processStepUuid) && ProcessMessageManager.getOperationType() == OperationTypeEnum.UPDATE) {
                                         throw new ProcessConfigException(ProcessConfigException.Type.COPY, ProcessMessageManager.getStepName());
                                     }
                                     configObject.put("processStepUuid", processStepUuid);
