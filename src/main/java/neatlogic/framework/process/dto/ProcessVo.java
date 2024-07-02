@@ -262,9 +262,10 @@ public class ProcessVo extends BaseEditorVo {
         if (relList != null && relList.size() > 0) {
             this.stepRelList = new ArrayList<>();
             for (int i = 0; i < relList.size(); i++) {
-                JSONObject relObj = relList.getJSONObject(i);
-                String fromStepUuid = relObj.getString("fromStepUuid");
-                String toStepUuid = relObj.getString("toStepUuid");
+                ProcessStepRelVo processStepRelVo = relList.getObject(i, ProcessStepRelVo.class);
+//                JSONObject relObj = relList.getJSONObject(i);
+                String fromStepUuid = processStepRelVo.getFromStepUuid();
+                String toStepUuid = processStepRelVo.getToStepUuid();
                 if (virtualStartStepUuid.equals(fromStepUuid)) {// 通过虚拟开始节点连线找到真正的开始步骤
                     ProcessStepVo startStep = stepMap.get(toStepUuid);
                     if (startStep != null) {
@@ -272,14 +273,14 @@ public class ProcessVo extends BaseEditorVo {
                     }
                     continue;
                 }
-                ProcessStepRelVo processStepRelVo = new ProcessStepRelVo();
-                processStepRelVo.setFromStepUuid(fromStepUuid);
-                processStepRelVo.setToStepUuid(toStepUuid);
-                processStepRelVo.setUuid(relObj.getString("uuid"));
+//                ProcessStepRelVo processStepRelVo = new ProcessStepRelVo();
+//                processStepRelVo.setFromStepUuid(fromStepUuid);
+//                processStepRelVo.setToStepUuid(toStepUuid);
+//                processStepRelVo.setUuid(relObj.getString("uuid"));
                 processStepRelVo.setProcessUuid(this.getUuid());
-                processStepRelVo.setCondition(relObj.getString("conditionConfig"));
-                processStepRelVo.setName(relObj.getString("name"));
-                String type = relObj.getString("type");
+//                processStepRelVo.setCondition(relObj.getString("conditionConfig"));
+//                processStepRelVo.setName(relObj.getString("name"));
+                String type = processStepRelVo.getType();
                 if (!ProcessFlowDirection.BACKWARD.getValue().equals(type)) {
                     type = ProcessFlowDirection.FORWARD.getValue();
                 }
