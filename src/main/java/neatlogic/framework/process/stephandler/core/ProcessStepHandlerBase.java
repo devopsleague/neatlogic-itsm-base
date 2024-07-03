@@ -1775,6 +1775,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             }
 
             updateProcessTaskStepStatus(processTaskStepVo);
+            myAfterTransfer(processTaskStepVo);
 
             /* 触发通知 **/
             processStepHandlerCrossoverUtil.notify(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.TRANSFER);
@@ -1808,6 +1809,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     }
 
     protected abstract int myTransfer(ProcessTaskStepVo currentProcessTaskStepVo, List<ProcessTaskStepWorkerVo> workerList) throws ProcessTaskException;
+
+    protected void myAfterTransfer(ProcessTaskStepVo currentProcessTaskStepVo) throws ProcessTaskException {
+    }
 
     /**
      * back操作不允许出现任何异常，所有异常都必须解决以便流程可以顺利回退，否则流程可能会卡死在某个节点不能前进或后退
