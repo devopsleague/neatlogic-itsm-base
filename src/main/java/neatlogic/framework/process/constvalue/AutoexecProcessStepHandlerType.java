@@ -24,9 +24,9 @@ import neatlogic.framework.util.I18n;
  **/
 public enum AutoexecProcessStepHandlerType implements IProcessStepHandlerType {
     AUTOEXEC("autoexec", "process", new I18n("自动化"));
-    private String handler;
-    private I18n name;
-    private String type;
+    private final String handler;
+    private final I18n name;
+    private final String type;
 
     AutoexecProcessStepHandlerType(String handler, String type, I18n name) {
         this.handler = handler;

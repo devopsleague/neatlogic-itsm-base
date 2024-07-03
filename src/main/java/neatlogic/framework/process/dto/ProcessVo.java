@@ -15,23 +15,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.dto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BaseEditorVo;
+import neatlogic.framework.notify.dto.InvokeNotifyPolicyConfigVo;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
 import neatlogic.framework.process.constvalue.ProcessStepType;
-import neatlogic.framework.notify.dto.InvokeNotifyPolicyConfigVo;
 import neatlogic.framework.process.dto.score.ProcessScoreTemplateVo;
 import neatlogic.framework.process.exception.process.ProcessStepHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerTypeFactory;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
 import neatlogic.framework.restful.annotation.EntityField;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
-import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -115,7 +115,7 @@ public class ProcessVo extends BaseEditorVo {
     }
 
     public void setConfig(String configStr) {
-        this.config = JSONObject.parseObject(configStr);
+        this.config = JSON.parseObject(configStr);
     }
 
     public List<ProcessStepVo> getStepList() {
@@ -128,7 +128,7 @@ public class ProcessVo extends BaseEditorVo {
         if (MapUtils.isEmpty(processObj)) {
             return;
         }
-        /** 组装表单属性 **/
+        /* 组装表单属性 **/
 //        Map<String, List<ProcessStepFormAttributeVo>> processStepFormAttributeMap = new HashMap<>();
         JSONObject formConfig = processObj.getJSONObject("formConfig");
         if (MapUtils.isNotEmpty(formConfig)) {
@@ -185,7 +185,7 @@ public class ProcessVo extends BaseEditorVo {
             this.slaList = new ArrayList<>();
             for (int i = 0; i < slaList.size(); i++) {
                 JSONObject slaObj = slaList.getJSONObject(i);
-                /** 关联了步骤的sla策略才保存 **/
+                /* 关联了步骤的sla策略才保存 **/
                 JSONArray processStepUuidList = slaObj.getJSONArray("processStepUuidList");
                 if (CollectionUtils.isNotEmpty(processStepUuidList)) {
                     ProcessSlaVo processSlaVo = new ProcessSlaVo();
@@ -216,7 +216,7 @@ public class ProcessVo extends BaseEditorVo {
         String virtualStartStepUuid = "";// 虚拟开始节点uuid
         Map<String, ProcessStepVo> stepMap = new HashMap<>();
         JSONArray stepList = processObj.getJSONArray("stepList");
-        if (stepList != null && stepList.size() > 0) {
+        if (stepList != null && !stepList.isEmpty()) {
             this.stepList = new ArrayList<>();
             for (int i = 0; i < stepList.size(); i++) {
                 JSONObject stepObj = stepList.getJSONObject(i);
@@ -259,7 +259,7 @@ public class ProcessVo extends BaseEditorVo {
         }
 
         JSONArray relList = processObj.getJSONArray("connectionList");
-        if (relList != null && relList.size() > 0) {
+        if (relList != null && !relList.isEmpty()) {
             this.stepRelList = new ArrayList<>();
             for (int i = 0; i < relList.size(); i++) {
                 JSONObject relObj = relList.getJSONObject(i);
@@ -287,7 +287,7 @@ public class ProcessVo extends BaseEditorVo {
                 stepRelList.add(processStepRelVo);
             }
         }
-        /** 组装评分设置 */
+        /* 组装评分设置 */
         JSONObject scoreConfig = processObj.getJSONObject("scoreConfig");
         if (MapUtils.isNotEmpty(scoreConfig)) {
             Integer isActive = scoreConfig.getInteger("isActive");
@@ -296,7 +296,7 @@ public class ProcessVo extends BaseEditorVo {
                 this.processScoreTemplateVo.setProcessUuid(uuid);
             }
         }
-        /** 组装通知策略 **/
+        /* 组装通知策略 **/
         JSONObject processConfig = processObj.getJSONObject("processConfig");
         if (MapUtils.isNotEmpty(processConfig)) {
             notifyPolicyConfig = processConfig.getObject("notifyPolicyConfig", InvokeNotifyPolicyConfigVo.class);
