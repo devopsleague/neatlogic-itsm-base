@@ -250,8 +250,16 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 hangPostStep(currentProcessTaskStepVo);
                 resetPostStepRelIsHit(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
                 if (this.getMode().equals(ProcessStepMode.MT)) {
-                    /* 分配处理人 **/
-                    assign(currentProcessTaskStepVo);
+                    if (!this.disableAssign()) {
+                        /* 分配处理人 **/
+                        assign(currentProcessTaskStepVo);
+                    } else {
+                        /* 清空主处理人 **/
+                        ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+                        processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                        processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());// 只删除主处理人
+                        processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+                    }
 
                     currentProcessTaskStepVo.setIsActive(1);
                     myActive(currentProcessTaskStepVo);
@@ -1145,7 +1153,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
         //如果步骤没有开始就先自动开始
         if (ProcessTaskStepStatus.PENDING.getValue().equals(processTaskStepVo.getStatus())) {
-            this.accept(currentProcessTaskStepVo);
+//            this.accept(currentProcessTaskStepVo);
             this.start(currentProcessTaskStepVo);
         }
         this.complete(currentProcessTaskStepVo);
