@@ -351,4 +351,14 @@ public interface IProcessStepHandler {
     default boolean isFitMobile() {
         return true;
     }
+
+    /**
+     * 禁用分派处理人，默认为false，即步骤激活的时候会执行分派处理人逻辑，如果找不到处理人，则分派到异常处理人。
+     * 如果设置为true，则不会执行分派处理人逻辑，直接进入激活成功，该步骤暂时没有处理人，步骤可以在某个时机调用IProcessStepHandler.assign()方法分派处理人。
+     * 例如：自动处理、自动化、定时、数据转换等步骤，激活时不分派处理人，在它们各自逻辑异常时，调用assign()方法分派处理人。
+     * @return
+     */
+    default boolean disableAssign() {
+        return false;
+    }
 }
