@@ -8,7 +8,7 @@ public enum ProcessTaskAuditType implements IProcessTaskAuditType {
 	EDITCOMMENT("editcomment", "编辑回复", "编辑回复【${DATA.processTaskStepName}】"),
 	DELETECOMMENT("deletecomment", "删除回复", "删除回复【${DATA.processTaskStepName}】"),
 	UPDATE("update", "上报内容", "修改工单"),
-	UPDATEFORM("updateform", "表单", "修改表单"),
+	UPDATEFORM("updateform", "修改表单", "修改表单"),
 	URGE("urge","催办","发起催办"),
 
 	//任务
