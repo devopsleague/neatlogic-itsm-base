@@ -782,7 +782,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.RUNNING.getValue())) {
                 throw new ProcessTaskStepRunningException();
             }
-
+            currentProcessTaskStepVo.setIsActive(processTaskStepVo.getIsActive());
+            currentProcessTaskStepVo.setStatus(processTaskStepVo.getStatus());
             myStart(currentProcessTaskStepVo);
 
             /* 更新工单步骤状态为 “进行中” **/
