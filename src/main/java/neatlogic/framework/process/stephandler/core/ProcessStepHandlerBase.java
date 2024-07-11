@@ -119,7 +119,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     private int updateProcessTaskStatus(Long processTaskId) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
         List<ProcessTaskStepVo> processTaskStepList = processTaskCrossoverMapper.getProcessTaskStepBaseInfoByProcessTaskId(processTaskId);
-        int runningCount = 0, succeedCount = 0, failedCount = 0, abortedCount = 0, draftCount = 0, hangCount = 0;
+        int runningCount = 0, succeedCount = 0, failedCount = 0, abortedCount = 0, draftCount = 0, hangCount = 0, endSucceedCount = 0;
         for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
             if (ProcessTaskStepStatus.DRAFT.getValue().equals(processTaskStepVo.getStatus())
                     && processTaskStepVo.getIsActive().equals(1)) {
@@ -137,9 +137,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 abortedCount += 1;
             } else if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.SUCCEED.getValue())) {
                 if (ProcessStepHandlerType.END.getHandler().equals(processTaskStepVo.getHandler())) {
-                    succeedCount += 1;
+                    endSucceedCount += 1;
                 } else {
-                    runningCount += 1;
+                    succeedCount += 1;
                 }
             }
         }
@@ -149,7 +149,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         processTaskVo.setId(processTaskId);
         if (draftCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.DRAFT.getValue());
-        } else if (succeedCount > 0) {
+        } else if (endSucceedCount > 0) {
             processTaskVo.setStatus(ProcessTaskStatus.SUCCEED.getValue());
             needCalculateTimeCost = true;
         } else if (abortedCount > 0) {
