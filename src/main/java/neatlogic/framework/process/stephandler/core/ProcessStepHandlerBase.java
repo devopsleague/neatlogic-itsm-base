@@ -124,12 +124,11 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             if (ProcessTaskStepStatus.DRAFT.getValue().equals(processTaskStepVo.getStatus())
                     && processTaskStepVo.getIsActive().equals(1)) {
                 draftCount += 1;
-            } else if (processTaskStepVo.getIsActive().equals(0) && processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.HANG.getValue())) {
+            } else if (processTaskStepVo.getIsActive().equals(1) && processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.HANG.getValue())) {
                 hangCount += 1;
             } else if (processTaskStepVo.getIsActive().equals(1)) {
                 if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.PENDING.getValue())
-                        || processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.RUNNING.getValue())
-                        || processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.HANG.getValue())) {
+                        || processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.RUNNING.getValue())) {
                     runningCount += 1;
                 } else if (processTaskStepVo.getStatus().equals(ProcessTaskStepStatus.FAILED.getValue())) {
                     failedCount += 1;
