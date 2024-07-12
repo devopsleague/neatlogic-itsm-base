@@ -91,6 +91,8 @@ public class ProcessTaskStepVo extends BasePageVo {
     private Integer isNeedUploadFile;
     @EntityField(name = "是否需要回复框", type = ApiParamType.INTEGER)
     private Integer isNeedContent;
+    @EntityField(name = "回复框帮助", type = ApiParamType.STRING)
+    private String contentHelp;
     @EntityField(name = "回复是否必填", type = ApiParamType.INTEGER)
     private Integer isRequired;
     @EntityField(name = "启用重审", type = ApiParamType.INTEGER)
@@ -353,6 +355,14 @@ public class ProcessTaskStepVo extends BasePageVo {
             isNeedContent = ProcessStepInternalHandlerFactory.getHandler().getIsNeedContentByConfigHash(configHash);
         }
         return isNeedContent;
+    }
+
+    public String getContentHelp() {
+        return contentHelp;
+    }
+
+    public void setContentHelp(String contentHelp) {
+        this.contentHelp = contentHelp;
     }
 
     public Integer getEnableReapproval() {
