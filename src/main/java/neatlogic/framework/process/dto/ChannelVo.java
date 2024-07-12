@@ -20,82 +20,82 @@ public class ChannelVo extends BasePageVo {
 
     private static final long serialVersionUID = 7055291271172611259L;
 
-    @EntityField(name = "服务通道uuid", type = ApiParamType.STRING)
+    @EntityField(name = "common.uuid", type = ApiParamType.STRING)
     private String uuid;
 
-    @EntityField(name = "服务通道名称", type = ApiParamType.STRING)
+    @EntityField(name = "common.name", type = ApiParamType.STRING)
     private String name;
 
-    @EntityField(name = "是否启用，0：禁用，1：启用", type = ApiParamType.INTEGER)
+    @EntityField(name = "common.isactive", type = ApiParamType.INTEGER)
     private Integer isActive;
 
-    @EntityField(name = "服务说明", type = ApiParamType.STRING)
+    @EntityField(name = "common.description", type = ApiParamType.STRING)
     private String desc;
 
-    @EntityField(name = "图标", type = ApiParamType.STRING)
+    @EntityField(name = "common.icon", type = ApiParamType.STRING)
     private String icon;
 
-    @EntityField(name = "颜色", type = ApiParamType.STRING)
+    @EntityField(name = "common.color", type = ApiParamType.STRING)
     private String color;
 
-    @EntityField(name = "服务目录uuid", type = ApiParamType.STRING)
+    @EntityField(name = "common.parentuuid", type = ApiParamType.STRING)
     private String parentUuid;
 
-    @EntityField(name = "服务所有父目录名，逗号隔开", type = ApiParamType.STRING)
+    @EntityField(name = "nfpd.channelvo.parentnames", type = ApiParamType.STRING)
     private String parentNames;
 
-    @EntityField(name = "服务所有父目录uuid，逗号隔开", type = ApiParamType.STRING)
+    @EntityField(name = "nfpd.channelvo.parentuuids", type = ApiParamType.STRING)
     private String parentUuids;
 
-    @EntityField(name = "是否收藏，0：未收藏，1：已收藏", type = ApiParamType.INTEGER)
+    @EntityField(name = "common.isfavoried", type = ApiParamType.INTEGER)
     private Integer isFavorite;
 
-    @EntityField(name = "类型", type = ApiParamType.STRING)
+    @EntityField(name = "common.type", type = ApiParamType.STRING)
     private String type = "channel";
 
-    @EntityField(name = "工作流uuid", type = ApiParamType.STRING)
+    @EntityField(name = "term.itsm.processuuid", type = ApiParamType.STRING)
     private String processUuid;
 
-    @EntityField(name = "服务窗口uuid", type = ApiParamType.STRING)
+    @EntityField(name = "common.worktimeuuid", type = ApiParamType.STRING)
     private String worktimeUuid;
 
-    @EntityField(name = "优先级uuid列表", type = ApiParamType.JSONARRAY)
+    @EntityField(name = "nmrap.updateprioritysortapi.input.param.desc.prioritylist", type = ApiParamType.JSONARRAY)
     private List<String> priorityUuidList;
 
-    @EntityField(name = "优先级列表", type = ApiParamType.JSONARRAY)
+    @EntityField(name = "nmrap.updateprioritysortapi.input.param.desc.prioritylist", type = ApiParamType.JSONARRAY)
     private List<PriorityVo> priorityList;
 
-    @EntityField(name = "是否显示优先级", type = ApiParamType.INTEGER)
+    @EntityField(name = "common.isneedpriority", type = ApiParamType.INTEGER)
     private Integer isNeedPriority = 1;
 
-    @EntityField(name = "默认优先级", type = ApiParamType.STRING)
+    @EntityField(name = "common.defaultpriorityuuid", type = ApiParamType.STRING)
     private String defaultPriorityUuid;
 
-    @EntityField(name = "工单上报页描述文本占位符", type = ApiParamType.STRING)
+    @EntityField(name = "term.itsm.contenthelp", type = ApiParamType.STRING)
     private String contentHelp;
 
-    @EntityField(name = "时效", type = ApiParamType.INTEGER)
+    @EntityField(name = "common.sla", type = ApiParamType.INTEGER)
     private Integer sla;
 
-    @EntityField(name = "授权对象", type = ApiParamType.JSONARRAY)
+    @EntityField(name = "common.authoritylist", type = ApiParamType.JSONARRAY)
     private List<String> authorityList;
 
-    @EntityField(name = "服务类型uuid", type = ApiParamType.STRING)
+    @EntityField(name = "term.itsm.channeltypeuuid", type = ApiParamType.STRING)
     private String channelTypeUuid;
 
-    @EntityField(name = "服务类型", type = ApiParamType.JSONOBJECT)
+    @EntityField(name = "term.itsm.channeltype", type = ApiParamType.JSONOBJECT)
     private ChannelTypeVo channelTypeVo;
 
-    @EntityField(name = "类型#uuid", type = ApiParamType.STRING)
+    @EntityField(name = "nfpd.channelvo.typeanduuid", type = ApiParamType.STRING)
     private String typeAndUuid;
 
-    @EntityField(name = "使用范围", type = ApiParamType.STRING)
+    @EntityField(name = "common.scopeofuse", type = ApiParamType.STRING)
     private String support;
 
-    @EntityField(name = "被引用个数", type = ApiParamType.INTEGER)
+    @EntityField(name = "common.childrencount", type = ApiParamType.INTEGER)
     private int childrenCount = 0;
 
-    @EntityField(name = "是否有上报权限", type = ApiParamType.BOOLEAN)
+    @EntityField(name = "nfpd.channelvo.effectiveauthority", type = ApiParamType.BOOLEAN)
     private Boolean effectiveAuthority;
 
     @JSONField(serialize = false)
@@ -113,7 +113,7 @@ public class ChannelVo extends BasePageVo {
     @JSONField(serialize = false)
     private List<String> uuidList;
 
-    @EntityField(name = "配置信息", type = ApiParamType.JSONOBJECT)
+    @EntityField(name = "common.config", type = ApiParamType.JSONOBJECT)
     private JSONObject config;
     @JSONField(serialize = false)
     private String configStr;
