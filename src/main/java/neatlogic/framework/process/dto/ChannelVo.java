@@ -71,14 +71,8 @@ public class ChannelVo extends BasePageVo {
     @EntityField(name = "默认优先级", type = ApiParamType.STRING)
     private String defaultPriorityUuid;
 
-    @EntityField(name = "是否显示上报页描述", type = ApiParamType.INTEGER)
-    private Integer allowDesc;
-
-    @EntityField(name = "描述帮助", type = ApiParamType.STRING)
-    private String help;
-
-    @EntityField(name = "是否激活描述帮助", type = ApiParamType.INTEGER)
-    private Integer isActiveHelp;
+    @EntityField(name = "工单上报页描述文本占位符", type = ApiParamType.STRING)
+    private String contentHelp;
 
     @EntityField(name = "时效", type = ApiParamType.INTEGER)
     private Integer sla;
@@ -136,9 +130,7 @@ public class ChannelVo extends BasePageVo {
         this.icon = channelVo.icon;
         this.color = channelVo.color;
         this.parentUuid = channelVo.parentUuid;
-        this.allowDesc = channelVo.allowDesc;
-        this.help = channelVo.help;
-        this.isActiveHelp = channelVo.isActiveHelp;
+        this.contentHelp = channelVo.contentHelp;
         this.sla = channelVo.sla;
         this.channelTypeUuid = channelVo.channelTypeUuid;
         this.support = channelVo.support;
@@ -274,28 +266,12 @@ public class ChannelVo extends BasePageVo {
         this.defaultPriorityUuid = defaultPriorityUuid;
     }
 
-    public Integer getAllowDesc() {
-        return allowDesc;
+    public String getContentHelp() {
+        return contentHelp;
     }
 
-    public void setAllowDesc(Integer allowDesc) {
-        this.allowDesc = allowDesc;
-    }
-
-    public String getHelp() {
-        return help;
-    }
-
-    public void setHelp(String help) {
-        this.help = help;
-    }
-
-    public Integer getIsActiveHelp() {
-        return isActiveHelp;
-    }
-
-    public void setIsActiveHelp(Integer isActiveHelp) {
-        this.isActiveHelp = isActiveHelp;
+    public void setContentHelp(String contentHelp) {
+        this.contentHelp = contentHelp;
     }
 
     public Integer getSla() {
