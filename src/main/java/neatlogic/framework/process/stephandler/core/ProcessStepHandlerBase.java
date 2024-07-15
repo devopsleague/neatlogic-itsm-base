@@ -275,7 +275,9 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                         processStepHandlerCrossoverUtil.notify(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.START);
                         processStepHandlerCrossoverUtil.action(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.START);
                     }
-
+                    // 删除时效延时数据
+                    IProcessTaskSlaCrossoverMapper processTaskSlaCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskSlaCrossoverMapper.class);
+                    processTaskSlaCrossoverMapper.deleteProcessTaskStepSlaDelayByTargetProcessTaskStepId(currentProcessTaskStepVo.getId());
                     /* 计算SLA并触发超时警告 **/
                     processStepHandlerCrossoverUtil.calculateSla(currentProcessTaskStepVo);
 
@@ -2137,6 +2139,12 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             Long channelTypeRelationId = paramObj.getLong("channelTypeRelationId");
             if (fromProcessTaskId != null && channelTypeRelationId != null) {
                 processTaskCrossoverMapper.insertProcessTaskTransferReport(new ProcessTaskTransferReportVo(channelTypeRelationId, fromProcessTaskId, processTaskVo.getId()));
+                Long invokeId = fromProcessTaskId;
+                Long fromProcessTaskStepId = paramObj.getLong("fromProcessTaskStepId");
+                if (fromProcessTaskStepId != null) {
+                    invokeId = fromProcessTaskStepId;
+                }
+                processTaskCrossoverMapper.insertProcessTaskInvoke(processTaskVo.getId(), ProcessTaskSource.PROCESSTASK_TRANSFER_REPORT.getValue(), ProcessTaskSourceType.ITSM.getValue(), invokeId);
             }
 
             //父子工单
@@ -2293,10 +2301,11 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             ProcessTaskInvokeVo processTaskInvokeVo = processTaskCrossoverMapper.getInvokeByProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
             if (processTaskInvokeVo != null) {
                 IProcessTaskSource processTaskSource = ProcessTaskSourceFactory.getHandler(processTaskInvokeVo.getSource());
-                if (processTaskSource == null) {
-                    throw new ProcessTaskSourceNotFoundException(processTaskInvokeVo.getSource());
+                if (processTaskSource != null) {
+                    processTaskSource.startProcess(currentProcessTaskStepVo);
+//                    throw new ProcessTaskSourceNotFoundException(processTaskInvokeVo.getSource());
                 }
-                processTaskSource.startProcess(currentProcessTaskStepVo);
+
             }
         } catch (ProcessTaskException ex) {
             logger.error(ex.getMessage(), ex);
