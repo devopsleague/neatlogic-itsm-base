@@ -164,6 +164,8 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     void insertProcessTaskTimeCost(ProcessTaskTimeCostVo processTaskTimeCostVo);
 
+    int insertProcessTaskInvoke(@Param("processTaskId") Long processTaskId, @Param("source") String invoke, @Param("sourceType") String invokeType, @Param("invokeId") Long invokeId);
+
     int updateProcessTaskStepStatus(ProcessTaskStepVo processTaskStepVo);
 
     int updateProcessTaskStatus(ProcessTaskVo processTaskVo);

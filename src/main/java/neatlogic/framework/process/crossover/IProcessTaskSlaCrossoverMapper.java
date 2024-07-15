@@ -26,4 +26,6 @@ public interface IProcessTaskSlaCrossoverMapper extends ICrossoverService {
     int insertProcessTaskSla(ProcessTaskSlaVo processTaskSlaVo);
 
     int insertProcessTaskStepSla(@Param("processTaskStepId") Long processTaskStepId, @Param("slaId") Long slaId);
+
+    int deleteProcessTaskStepSlaDelayByTargetProcessTaskStepId(Long targetProcessTaskStepId);
 }

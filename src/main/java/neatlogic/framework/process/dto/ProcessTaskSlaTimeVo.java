@@ -4,6 +4,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.restful.annotation.EntityField;
 
 import java.util.Date;
+import java.util.List;
 
 public class ProcessTaskSlaTimeVo {
 //    @ESKey(type = ESKeyType.PKEY, name ="processTaskId")
@@ -34,6 +35,8 @@ public class ProcessTaskSlaTimeVo {
 	private Long calculationTimeLong;
 	@EntityField(name = "工单时效超时后显示方式", type = ApiParamType.STRING)
 	private String displayModeAfterTimeout;
+	@EntityField(name = "延迟列表", type = ApiParamType.JSONARRAY)
+	private List<ProcessTaskStepSlaDelayVo> delayList;
 
 	public Long getProcessTaskId() {
 		return processTaskId;
@@ -153,6 +156,14 @@ public class ProcessTaskSlaTimeVo {
 
 	public void setDisplayModeAfterTimeout(String displayModeAfterTimeout) {
 		this.displayModeAfterTimeout = displayModeAfterTimeout;
+	}
+
+	public List<ProcessTaskStepSlaDelayVo> getDelayList() {
+		return delayList;
+	}
+
+	public void setDelayList(List<ProcessTaskStepSlaDelayVo> delayList) {
+		this.delayList = delayList;
 	}
 
 	@Override
