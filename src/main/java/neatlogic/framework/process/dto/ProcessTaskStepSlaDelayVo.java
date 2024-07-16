@@ -24,6 +24,7 @@ public class ProcessTaskStepSlaDelayVo extends BaseEditorVo {
 
     private Long id;
     private Long processTaskId;
+    private String processTaskTitle;
     private Long targetProcessTaskId;
     private Long targetProcessTaskStepId;
     private Long slaId;
@@ -46,6 +47,14 @@ public class ProcessTaskStepSlaDelayVo extends BaseEditorVo {
 
     public void setProcessTaskId(Long processTaskId) {
         this.processTaskId = processTaskId;
+    }
+
+    public String getProcessTaskTitle() {
+        return processTaskTitle;
+    }
+
+    public void setProcessTaskTitle(String processTaskTitle) {
+        this.processTaskTitle = processTaskTitle;
     }
 
     public Long getTargetProcessTaskId() {
