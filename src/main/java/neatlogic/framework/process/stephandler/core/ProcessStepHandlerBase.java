@@ -1002,6 +1002,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 // 如果是向前流转时，需要找出不流转的路经，判断是否有聚合步骤在等待该条路径到达才能前进，如果有，则激活该聚合步骤
                 if (direction == ProcessFlowDirection.FORWARD) {
                     List<Long> awaitAdvanceStepIdList = getAwaitAdvanceStepIdList(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
+                    awaitAdvanceStepIdList.removeAll(nextStepIdList);
                     if (CollectionUtils.isNotEmpty(awaitAdvanceStepIdList)) {
                         List<ProcessTaskStepVo> awaitAdvanceStepList = processTaskCrossoverMapper.getProcessTaskStepListByIdList(awaitAdvanceStepIdList);
                         for (ProcessTaskStepVo awaitAdvanceStep : awaitAdvanceStepList) {
