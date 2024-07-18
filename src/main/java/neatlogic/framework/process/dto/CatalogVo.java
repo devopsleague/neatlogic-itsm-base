@@ -64,8 +64,6 @@ public class CatalogVo extends BasePageVo implements Comparable<CatalogVo>,Seria
 	private String typeAndUuid;
 	@JSONField(serialize=false)
 	private boolean isAuthority = false;
-//	@JSONField(serialize=false)
-//	private List<AuthorityVo> authorityVoList;
 	@JSONField(serialize=false)
 	private CatalogVo parent;
 	@JSONField(serialize=false)
