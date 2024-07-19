@@ -33,8 +33,10 @@ public class ProcessTaskSlaTimeVo {
 	@EntityField(name = "上次耗时计算时间点", type = ApiParamType.LONG)
 	private Date calculationTime;
 	private Long calculationTimeLong;
-	@EntityField(name = "工单时效超时后显示方式", type = ApiParamType.STRING)
-	private String displayModeAfterTimeout;
+//	@EntityField(name = "工单时效超时后显示方式", type = ApiParamType.STRING)
+//	private String displayModeAfterTimeout;
+	@EntityField(name = "工单时效显示方式", type = ApiParamType.STRING)
+	private String slaTimeDisplayMode;
 	@EntityField(name = "延迟列表", type = ApiParamType.JSONARRAY)
 	private List<ProcessTaskStepSlaDelayVo> delayList;
 
@@ -150,12 +152,20 @@ public class ProcessTaskSlaTimeVo {
 		this.calculationTimeLong = calculationTimeLong;
 	}
 
-	public String getDisplayModeAfterTimeout() {
-		return displayModeAfterTimeout;
+//	public String getDisplayModeAfterTimeout() {
+//		return displayModeAfterTimeout;
+//	}
+//
+//	public void setDisplayModeAfterTimeout(String displayModeAfterTimeout) {
+//		this.displayModeAfterTimeout = displayModeAfterTimeout;
+//	}
+
+	public String getSlaTimeDisplayMode() {
+		return slaTimeDisplayMode;
 	}
 
-	public void setDisplayModeAfterTimeout(String displayModeAfterTimeout) {
-		this.displayModeAfterTimeout = displayModeAfterTimeout;
+	public void setSlaTimeDisplayMode(String slaTimeDisplayMode) {
+		this.slaTimeDisplayMode = slaTimeDisplayMode;
 	}
 
 	public List<ProcessTaskStepSlaDelayVo> getDelayList() {
