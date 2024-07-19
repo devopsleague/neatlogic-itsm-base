@@ -1,14 +1,12 @@
 package neatlogic.framework.process.dto;
 
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.common.constvalue.GroupSearch;
-import neatlogic.framework.common.dto.BasePageVo;
-import neatlogic.framework.common.util.CommonUtil;
-import neatlogic.framework.dto.AuthorityVo;
-import neatlogic.framework.restful.annotation.EntityField;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.base.Objects;
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
+import neatlogic.framework.common.util.CommonUtil;
+import neatlogic.framework.restful.annotation.EntityField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,8 +75,11 @@ public class ChannelVo extends BasePageVo {
     @EntityField(name = "common.sla", type = ApiParamType.INTEGER)
     private Integer sla;
 
-    @EntityField(name = "common.authoritylist", type = ApiParamType.JSONARRAY)
-    private List<String> authorityList;
+    @EntityField(name = "common.reportauthoritylist", type = ApiParamType.JSONARRAY)
+    private List<String> reportAuthorityList = new ArrayList<>();
+
+    @EntityField(name = "common.viewauthoritylist", type = ApiParamType.JSONARRAY)
+    private List<String> viewAuthorityList = new ArrayList<>();
 
     @EntityField(name = "term.itsm.channeltypeuuid", type = ApiParamType.STRING)
     private String channelTypeUuid;
@@ -100,8 +101,6 @@ public class ChannelVo extends BasePageVo {
 
     @JSONField(serialize = false)
     private boolean isAuthority = false;
-    @JSONField(serialize = false)
-    private List<AuthorityVo> authorityVoList;
     @JSONField(serialize = false)
     private CatalogVo parent;
     @JSONField(serialize = false)
@@ -282,41 +281,20 @@ public class ChannelVo extends BasePageVo {
         this.sla = sla;
     }
 
-    public List<String> getAuthorityList() {
-        if (authorityList == null && CollectionUtils.isNotEmpty(authorityVoList)) {
-            authorityList = new ArrayList<>();
-            for (AuthorityVo authorityVo : authorityVoList) {
-                GroupSearch groupSearch = GroupSearch.getGroupSearch(authorityVo.getType());
-                if (groupSearch != null) {
-                    authorityList.add(groupSearch.getValuePlugin() + authorityVo.getUuid());
-                }
-            }
-        }
-        return authorityList;
+    public List<String> getReportAuthorityList() {
+        return reportAuthorityList;
     }
 
-    public void setAuthorityList(List<String> authorityList) {
-        this.authorityList = authorityList;
+    public void setReportAuthorityList(List<String> reportAuthorityList) {
+        this.reportAuthorityList = reportAuthorityList;
     }
 
-    public List<AuthorityVo> getAuthorityVoList() {
-        if (authorityVoList == null && CollectionUtils.isNotEmpty(authorityList)) {
-            authorityVoList = new ArrayList<>();
-            for (String authority : authorityList) {
-                String[] split = authority.split("#");
-                if (GroupSearch.getGroupSearch(split[0]) != null) {
-                    AuthorityVo authorityVo = new AuthorityVo();
-                    authorityVo.setType(split[0]);
-                    authorityVo.setUuid(split[1]);
-                    authorityVoList.add(authorityVo);
-                }
-            }
-        }
-        return authorityVoList;
+    public List<String> getViewAuthorityList() {
+        return viewAuthorityList;
     }
 
-    public void setAuthorityVoList(List<AuthorityVo> authorityVoList) {
-        this.authorityVoList = authorityVoList;
+    public void setViewAuthorityList(List<String> viewAuthorityList) {
+        this.viewAuthorityList = viewAuthorityList;
     }
 
     public String getChannelTypeUuid() {
