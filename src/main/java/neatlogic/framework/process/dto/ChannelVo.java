@@ -127,6 +127,8 @@ public class ChannelVo extends BasePageVo {
         this.uuid = channelVo.uuid;
         this.name = channelVo.name;
         this.isActive = channelVo.isActive;
+        this.isActivePriority = channelVo.isActivePriority;
+        this.isDisplayPriority = channelVo.isDisplayPriority;
         this.desc = channelVo.desc;
         this.icon = channelVo.icon;
         this.color = channelVo.color;
