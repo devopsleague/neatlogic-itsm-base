@@ -74,8 +74,12 @@ public class ProcessTaskVo extends BasePageVo {
     private String configHash;
 
     private List<ProcessTaskStepVo> stepList = new ArrayList<>();
-    @EntityField(name = "common.isneedpriority", type = ApiParamType.INTEGER)
-    private Integer isNeedPriority = 1;
+
+    @EntityField(name = "common.isactivepriority", type = ApiParamType.INTEGER)
+    private Integer isActivePriority;
+
+    @EntityField(name = "common.isdisplaypriority", type = ApiParamType.INTEGER)
+    private Integer isDisplayPriority;
     @EntityField(name = "common.priority", type = ApiParamType.JSONOBJECT)
     private PriorityVo priority;
     @EntityField(name = "term.itsm.processtaskformconfig", type = ApiParamType.JSONOBJECT)
@@ -773,12 +777,20 @@ public class ProcessTaskVo extends BasePageVo {
         this.source = source;
     }
 
-    public Integer getIsNeedPriority() {
-        return isNeedPriority;
+    public Integer getIsActivePriority() {
+        return isActivePriority;
     }
 
-    public void setIsNeedPriority(Integer isNeedPriority) {
-        this.isNeedPriority = isNeedPriority;
+    public void setIsActivePriority(Integer isActivePriority) {
+        this.isActivePriority = isActivePriority;
+    }
+
+    public Integer getIsDisplayPriority() {
+        return isDisplayPriority;
+    }
+
+    public void setIsDisplayPriority(Integer isDisplayPriority) {
+        this.isDisplayPriority = isDisplayPriority;
     }
 
     public String getConfig() {
