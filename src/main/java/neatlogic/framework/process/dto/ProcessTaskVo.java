@@ -80,6 +80,9 @@ public class ProcessTaskVo extends BasePageVo {
 
     @EntityField(name = "common.isdisplaypriority", type = ApiParamType.INTEGER)
     private Integer isDisplayPriority;
+
+    @EntityField(name = "common.defaultpriorityuuid", type = ApiParamType.STRING)
+    private String defaultPriorityUuid;
     @EntityField(name = "common.priority", type = ApiParamType.JSONOBJECT)
     private PriorityVo priority;
     @EntityField(name = "term.itsm.processtaskformconfig", type = ApiParamType.JSONOBJECT)
@@ -791,6 +794,14 @@ public class ProcessTaskVo extends BasePageVo {
 
     public void setIsDisplayPriority(Integer isDisplayPriority) {
         this.isDisplayPriority = isDisplayPriority;
+    }
+
+    public String getDefaultPriorityUuid() {
+        return defaultPriorityUuid;
+    }
+
+    public void setDefaultPriorityUuid(String defaultPriorityUuid) {
+        this.defaultPriorityUuid = defaultPriorityUuid;
     }
 
     public String getConfig() {
