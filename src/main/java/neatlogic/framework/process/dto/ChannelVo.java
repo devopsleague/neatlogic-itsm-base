@@ -7,7 +7,6 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.common.util.CommonUtil;
 import neatlogic.framework.restful.annotation.EntityField;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -63,8 +62,11 @@ public class ChannelVo extends BasePageVo {
     @EntityField(name = "nmrap.updateprioritysortapi.input.param.desc.prioritylist", type = ApiParamType.JSONARRAY)
     private List<PriorityVo> priorityList;
 
-    @EntityField(name = "common.isneedpriority", type = ApiParamType.INTEGER)
-    private Integer isNeedPriority = 1;
+    @EntityField(name = "common.isactivepriority", type = ApiParamType.INTEGER)
+    private Integer isActivePriority;
+
+    @EntityField(name = "common.isdisplaypriority", type = ApiParamType.INTEGER)
+    private Integer isDisplayPriority;
 
     @EntityField(name = "common.defaultpriorityuuid", type = ApiParamType.STRING)
     private String defaultPriorityUuid;
@@ -125,6 +127,8 @@ public class ChannelVo extends BasePageVo {
         this.uuid = channelVo.uuid;
         this.name = channelVo.name;
         this.isActive = channelVo.isActive;
+        this.isActivePriority = channelVo.isActivePriority;
+        this.isDisplayPriority = channelVo.isDisplayPriority;
         this.desc = channelVo.desc;
         this.icon = channelVo.icon;
         this.color = channelVo.color;
@@ -247,6 +251,22 @@ public class ChannelVo extends BasePageVo {
 
     public void setWorktimeUuid(String worktimeUuid) {
         this.worktimeUuid = worktimeUuid;
+    }
+
+    public Integer getIsActivePriority() {
+        return isActivePriority;
+    }
+
+    public void setIsActivePriority(Integer isActivePriority) {
+        this.isActivePriority = isActivePriority;
+    }
+
+    public Integer getIsDisplayPriority() {
+        return isDisplayPriority;
+    }
+
+    public void setIsDisplayPriority(Integer isDisplayPriority) {
+        this.isDisplayPriority = isDisplayPriority;
     }
 
     public List<String> getPriorityUuidList() {
@@ -444,18 +464,6 @@ public class ChannelVo extends BasePageVo {
 
     public void setConfigStr(String configStr) {
         this.configStr = configStr;
-    }
-
-    public Integer getIsNeedPriority() {
-        //如果不存在优先级List则默认不显示优先级
-        if(CollectionUtils.isEmpty(priorityUuidList)){
-            isNeedPriority = 0;
-        }
-        return isNeedPriority;
-    }
-
-    public void setIsNeedPriority(Integer isNeedPriority) {
-        this.isNeedPriority = isNeedPriority;
     }
 
     public Boolean getEffectiveAuthority() {
