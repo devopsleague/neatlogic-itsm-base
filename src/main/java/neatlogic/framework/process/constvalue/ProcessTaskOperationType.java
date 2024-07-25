@@ -78,6 +78,7 @@ public enum ProcessTaskOperationType implements IOperationType {
     STEP_RETREAT("retreatcurrentstep",  new I18n("撤回"), Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValuePlugin() + ProcessUserType.MAJOR.getValue()), Arrays.asList(GroupSearch.COMMON.getValue(), ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue(), GroupSearch.USER.getValue(), GroupSearch.TEAM.getValue(), GroupSearch.ROLE.getValue())),
     STEP_HANG("hang", new I18n("挂起")),
     STEP_HANDLE("handle", new I18n("自动处理")),
+    STEP_REDO("redo", new I18n("重做")),
     TASK_CREATE("createtask", new I18n("创建任务")),
     TASK_EDIT("edittask", new I18n("编辑任务")),
     TASK_DELETE("deletetask", new I18n("删除任务")),
