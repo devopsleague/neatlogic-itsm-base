@@ -267,7 +267,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     if (processStepUtilHandler != null) {
                         processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
                     }
-                    currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+                    currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
                     ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_ACTIVE);
                     /* 写入时间审计 **/
                     processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_ACTIVE);
@@ -795,7 +795,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
             processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_START);
             /* 写入时间审计 **/
             processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_START);
@@ -1070,7 +1070,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
                 myCompleteAudit(currentProcessTaskStepVo);
                 if (this.getMode().equals(ProcessStepMode.MT)) {
-                    currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+                    currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
                     ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, operationType);
                     /* 写入时间审计 **/
                     processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, operationType);
@@ -1320,7 +1320,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
                 myReapprovalAudit(currentProcessTaskStepVo);
                 if (this.getMode().equals(ProcessStepMode.MT)) {
-                    currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+                    currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
                     ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_REAPPROVAL);
                     /* 写入时间审计 **/
                     processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_REAPPROVAL);
@@ -1367,7 +1367,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             currentProcessTaskStepVo.setIsActive(1);
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_RETREAT);
             /* 写入时间审计 **/
             processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_RETREAT);
@@ -1576,7 +1576,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             currentProcessTaskStepVo.setStatus(ProcessTaskStepStatus.RUNNING.getValue());
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_RECOVER);
             /* 触发通知 **/
             processStepHandlerCrossoverUtil.notify(currentProcessTaskStepVo, ProcessTaskStepNotifyTriggerType.RECOVER);
@@ -1620,7 +1620,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
             // processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(),
             // currentProcessTaskStepVo.getId());
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_PAUSE);
             /* 写入时间审计 **/
             processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_PAUSE);
@@ -1683,7 +1683,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DOING.getValue());
             processTaskCrossoverMapper.insertProcessTaskStepUser(processTaskStepUserVo);
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_ACCEPT);
             /* 处理历史记录 **/
             // processStepHandlerUtilService.audit(currentProcessTaskStepVo, ProcessTaskStepAction.ACCEPT);
@@ -1802,7 +1802,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             updateProcessTaskStepStatus(processTaskStepVo);
             myAfterTransfer(processTaskStepVo);
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_TRANSFER);
 
             /* 触发通知 **/
@@ -2929,7 +2929,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             IProcessTaskScoreCrossoverMapper processTaskScoreCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskScoreCrossoverMapper.class);
             processTaskScoreCrossoverMapper.deleteProcessTaskAutoScoreByProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
 
-            currentProcessTaskStepVo.getParamObj().put("actionTime", new Date());
+            currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_REDO);
             /* 写入时间审计 **/
             processStepHandlerCrossoverUtil.timeAudit(currentProcessTaskStepVo, ProcessTaskOperationType.PROCESSTASK_REDO);

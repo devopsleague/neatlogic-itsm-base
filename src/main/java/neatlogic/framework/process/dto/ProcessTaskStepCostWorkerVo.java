@@ -19,7 +19,7 @@ package neatlogic.framework.process.dto;
 
 public class ProcessTaskStepCostWorkerVo {
     private Long id;
-    private String actionType;
+    private String operateType;
     private Long costId;
     private String type;
     private String uuid;
@@ -32,12 +32,12 @@ public class ProcessTaskStepCostWorkerVo {
         this.id = id;
     }
 
-    public String getActionType() {
-        return actionType;
+    public String getOperateType() {
+        return operateType;
     }
 
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
+    public void setOperateType(String operateType) {
+        this.operateType = operateType;
     }
 
     public Long getCostId() {

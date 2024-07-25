@@ -24,12 +24,12 @@ public class ProcessTaskStepCostVo {
     private Long processTaskId;
     private Long processTaskStepId;
 
-    private String startAction;
+    private String startOperate;
     private String startStatus;
     private Date startTime;
     private String startUserUuid;
 
-    private String endAction;
+    private String endOperate;
     private String endStatus;
     private Date endTime;
     private String endUserUuid;
@@ -61,12 +61,12 @@ public class ProcessTaskStepCostVo {
         this.processTaskStepId = processTaskStepId;
     }
 
-    public String getStartAction() {
-        return startAction;
+    public String getStartOperate() {
+        return startOperate;
     }
 
-    public void setStartAction(String startAction) {
-        this.startAction = startAction;
+    public void setStartOperate(String startOperate) {
+        this.startOperate = startOperate;
     }
 
     public String getStartStatus() {
@@ -93,12 +93,12 @@ public class ProcessTaskStepCostVo {
         this.startUserUuid = startUserUuid;
     }
 
-    public String getEndAction() {
-        return endAction;
+    public String getEndOperate() {
+        return endOperate;
     }
 
-    public void setEndAction(String endAction) {
-        this.endAction = endAction;
+    public void setEndOperate(String endOperate) {
+        this.endOperate = endOperate;
     }
 
     public String getEndStatus() {
