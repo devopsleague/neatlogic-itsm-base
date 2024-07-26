@@ -36,7 +36,8 @@ public class ProcessTaskSqlTable implements ISqlTable {
         CHANNEL_UUID("channel_uuid", new I18n("工单状态")),
         IS_SHOW("is_show", new I18n("工单是否隐藏")),
         NEED_SCORE("need_score", new I18n("工单是否需要评分")),
-        TITLE("title", new I18n("标题"));
+        TITLE("title", new I18n("标题")),
+        REGION_ID("region_id", new I18n("地域"));
         private final String name;
         private final I18n text;
         private final String proName;

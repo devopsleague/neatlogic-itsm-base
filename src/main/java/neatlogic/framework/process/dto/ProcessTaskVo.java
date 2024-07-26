@@ -4,6 +4,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.dto.TeamVo;
 import neatlogic.framework.dto.UserVo;
+import neatlogic.framework.dto.region.RegionVo;
 import neatlogic.framework.process.constvalue.ProcessTaskSourceFactory;
 import neatlogic.framework.process.constvalue.ProcessTaskSource;
 import neatlogic.framework.process.constvalue.ProcessTaskStatus;
@@ -205,6 +206,9 @@ public class ProcessTaskVo extends BasePageVo {
 
     @EntityField(name = "nfpd.processtaskvo.entityfield.name.processdispatcherlist", type = ApiParamType.STRING)
     private List<String> processDispatcherList;
+
+    @EntityField(name = "地域", type = ApiParamType.JSONOBJECT)
+    private RegionVo regionVo;
 
     public ProcessTaskVo() {
 
@@ -873,5 +877,13 @@ public class ProcessTaskVo extends BasePageVo {
 
     public void setProcessDispatcherList(List<String> processDispatcherList) {
         this.processDispatcherList = processDispatcherList;
+    }
+
+    public RegionVo getRegionVo() {
+        return regionVo;
+    }
+
+    public void setRegionVo(RegionVo regionVo) {
+        this.regionVo = regionVo;
     }
 }

@@ -25,6 +25,7 @@ public enum ProcessWorkcenterField implements IDashboardGroupField {
     STEP("step", new I18n("步骤")),
     STEP_STATUS("stepstatus", new I18n("步骤状态")),
     STEP_USER("stepuser", new I18n("步骤处理人")),
+    STEP_ONLY_USER("steponlyuser", new I18n("步骤处理人(人)")),
     STEP_NAME("stepname", new I18n("步骤名")),
     STEP_TEAM("stepteam", new I18n("步骤处理组")),
     CURRENT_STEP("currentstep", new I18n("当前步骤")),
@@ -34,6 +35,7 @@ public enum ProcessWorkcenterField implements IDashboardGroupField {
     ACTION("action", new I18n("操作栏")),
     IS_SHOW("isshow", new I18n("是否显示，0隐藏，1显示")),
     FOCUS_USERS("focususers", new I18n("关注此工单的用户")),
+    REGION("region", new I18n("common.region")),
     INVOKE("invoke", new I18n("common.source"));
     private final String value;
     private final String valuePro;
