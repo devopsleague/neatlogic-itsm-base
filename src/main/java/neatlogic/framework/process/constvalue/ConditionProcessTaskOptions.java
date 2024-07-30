@@ -14,7 +14,8 @@ public enum ConditionProcessTaskOptions {
     OWNERCOMPANY("ownercompany", "上报人公司"),
     OWNERDEPARTMENT("ownerdepartment", "上报人部门"),
     OWNERROLE("ownerrole", "上报人角色"),
-    OWNERLEVEL("ownerlevel", "上报人级别");
+    OWNERLEVEL("ownerlevel", "上报人级别"),
+    REGION("region", "地域");
 
     private final String value;
     private final String text;
