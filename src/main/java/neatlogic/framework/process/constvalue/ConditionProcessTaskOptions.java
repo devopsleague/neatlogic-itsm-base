@@ -10,6 +10,7 @@ public enum ConditionProcessTaskOptions {
     CONTENT("content", "上报内容"),
     STARTTIME("starttime", "开始时间"),
     OWNER("owner", "上报人"),
+    OWNERUSERID("owneruserid", "上报人用户ID"),
     PRIORITY("priority", "优先级"),
     OWNERCOMPANY("ownercompany", "上报人公司"),
     OWNERDEPARTMENT("ownerdepartment", "上报人部门"),
