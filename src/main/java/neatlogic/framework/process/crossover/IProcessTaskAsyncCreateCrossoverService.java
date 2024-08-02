@@ -27,5 +27,5 @@ public interface IProcessTaskAsyncCreateCrossoverService extends ICrossoverServi
      * @param processTaskAsyncCreateVo
      * @throws InterruptedException
      */
-    void addNewProcessTaskAsyncCreate(ProcessTaskAsyncCreateVo processTaskAsyncCreateVo) throws InterruptedException;
+    Long addNewProcessTaskAsyncCreate(ProcessTaskAsyncCreateVo processTaskAsyncCreateVo) throws InterruptedException;
 }
