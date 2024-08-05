@@ -162,7 +162,7 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
 
         sqlSb.append(" ( ");
         // status
-        List<String> statusList = Stream.of(ProcessTaskStatus.RUNNING.getValue(),ProcessTaskStatus.HANG.getValue())
+        List<String> statusList = Stream.of(ProcessTaskStatus.RUNNING.getValue(), ProcessTaskStatus.HANG.getValue())
                 .map(String::toString).collect(Collectors.toList());
         sqlSb.append(Expression.getExpressionSql(Expression.INCLUDE.getExpression(), new ProcessTaskSqlTable().getShortName(), ProcessTaskSqlTable.FieldEnum.STATUS.getValue(), String.join("','", statusList)));
         sqlSb.append(" ) and ( ");
@@ -228,5 +228,4 @@ public abstract class ProcessTaskConditionBase implements IProcessTaskCondition 
     }
 
     public abstract JSONObject getConfig(ConditionConfigType type);
-
 }

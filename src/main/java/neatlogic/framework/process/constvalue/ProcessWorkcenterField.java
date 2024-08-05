@@ -26,6 +26,7 @@ public enum ProcessWorkcenterField implements IDashboardGroupField {
     STEP_STATUS("stepstatus", new I18n("步骤状态")),
     STEP_USER("stepuser", new I18n("步骤处理人")),
     STEP_ONLY_USER("steponlyuser", new I18n("步骤处理人(人)")),
+    STEP_ONLY_TEAM("steponlyteam", new I18n("步骤处理组")),
     STEP_NAME("stepname", new I18n("步骤名")),
     STEP_TEAM("stepteam", new I18n("步骤处理组")),
     CURRENT_STEP("currentstep", new I18n("当前步骤")),
@@ -41,14 +42,13 @@ public enum ProcessWorkcenterField implements IDashboardGroupField {
     private final String valuePro;
     private final I18n text;
 
-
-    private ProcessWorkcenterField(String _value, I18n _text) {
+    ProcessWorkcenterField(String _value, I18n _text) {
         this.value = _value;
         this.text = _text;
         this.valuePro = _value;
     }
 
-    private ProcessWorkcenterField(String _value, I18n _text, String _vaulePro) {
+    ProcessWorkcenterField(String _value, I18n _text, String _vaulePro) {
         this.value = _value;
         this.valuePro = _vaulePro;
         this.text = _text;
