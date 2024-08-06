@@ -12,6 +12,7 @@ import neatlogic.framework.process.exception.operationauth.ProcessTaskPermission
 import neatlogic.framework.process.exception.processtask.ProcessTaskNoPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +46,13 @@ public class ProcessAuthManager {
     private Map<Long, Map<ProcessTaskOperationType, ProcessTaskPermissionDeniedException>> operationTypePermissionDeniedExceptionMap = new HashMap<>();
     /** 保存额外参数 **/
     private Map<Long, JSONObject> extraParamMap = new HashMap<>();
+    /** 需要校验的用户，如果不传，默认为当前用户 **/
+    private String userUuid;
     public static class Builder {
         private Set<Long> processTaskIdSet = new HashSet<>();
         private Set<Long> processTaskStepIdSet = new HashSet<>();
         private Set<ProcessTaskOperationType> operationTypeSet = new HashSet<>();
-
+        private String userUuid;
         public Builder() {}
 
         public Builder addProcessTaskId(Long... processTaskIds) {
@@ -83,6 +86,11 @@ public class ProcessAuthManager {
             return this;
         }
 
+        public Builder withUserUuid(String _userUuid) {
+            userUuid = _userUuid;
+            return this;
+        }
+
         public ProcessAuthManager build() {
             return new ProcessAuthManager(this);
         }
@@ -98,6 +106,7 @@ public class ProcessAuthManager {
         private Long processTaskId;
         private ProcessTaskOperationType operationType;
         private JSONObject extraParam;
+        private String userUuid;
 
         public TaskOperationChecker(Long processTaskId, ProcessTaskOperationType operationType) {
             this.processTaskId = processTaskId;
@@ -109,6 +118,11 @@ public class ProcessAuthManager {
                 extraParam = new JSONObject();
             }
             extraParam.put(key, data);
+            return this;
+        }
+
+        public TaskOperationChecker withUserUuid(String _userUuid) {
+            userUuid = _userUuid;
             return this;
         }
         public ProcessAuthManager build() {
@@ -126,6 +140,7 @@ public class ProcessAuthManager {
         private Long processTaskStepId;
         private ProcessTaskOperationType operationType;
         private JSONObject extraParam;
+        private String userUuid;
 
         public StepOperationChecker(Long processTaskStepId, ProcessTaskOperationType operationType) {
             this.processTaskStepId = processTaskStepId;
@@ -140,6 +155,10 @@ public class ProcessAuthManager {
             return this;
         }
 
+        public StepOperationChecker withUserUuid(String _userUuid) {
+            userUuid = _userUuid;
+            return this;
+        }
         public ProcessAuthManager build() {
             return new ProcessAuthManager(this);
         }
@@ -149,6 +168,7 @@ public class ProcessAuthManager {
         this.processTaskIdSet = builder.processTaskIdSet;
         this.processTaskStepIdSet = builder.processTaskStepIdSet;
         this.operationTypeSet = builder.operationTypeSet;
+        this.userUuid = builder.userUuid;
     }
 
     private ProcessAuthManager(TaskOperationChecker checker) {
@@ -159,6 +179,7 @@ public class ProcessAuthManager {
         this.checkOperationTypeMap = new HashMap<>();
         checkOperationTypeMap.put(checker.processTaskId, checker.operationType);
         extraParamMap.put(checker.processTaskId, checker.extraParam);
+        this.userUuid = checker.userUuid;
     }
 
     private ProcessAuthManager(StepOperationChecker checker) {
@@ -169,6 +190,7 @@ public class ProcessAuthManager {
         this.checkOperationTypeMap = new HashMap<>();
         checkOperationTypeMap.put(checker.processTaskStepId, checker.operationType);
         extraParamMap.put(checker.processTaskStepId, checker.extraParam);
+        this.userUuid = checker.userUuid;
     }
     /**
      *
@@ -250,12 +272,15 @@ public class ProcessAuthManager {
 //            logger.error("D:" + (System.currentTimeMillis() - startTime3));
             Map<String, String> processTaskConfigMap = processTaskConfigList.stream().collect(Collectors.toMap(e->e.getHash(), e -> e.getConfig()));
 //            logger.error("A:" + (System.currentTimeMillis() - startTime));
+            if (StringUtils.isBlank(userUuid)) {
+                userUuid = UserContext.get().getUserUuid(true);
+            }
             for (ProcessTaskVo processTaskVo : processTaskList) {
                 processTaskVo.setConfig(processTaskConfigMap.get(processTaskVo.getConfigHash()));
 //                startTime = System.currentTimeMillis();
                 processTaskVo.setStepList(processTaskStepListMap.computeIfAbsent(processTaskVo.getId(), k -> new ArrayList<>()));
                 processTaskVo.setStepRelList(processTaskStepRelListMap.computeIfAbsent(processTaskVo.getId(), k -> new ArrayList<>()));
-                resultMap.putAll(getOperateMap(processTaskVo));
+                resultMap.putAll(getOperateMap(processTaskVo, userUuid));
 //                logger.error("B(" + processTaskVo.getId() + "):" + (System.currentTimeMillis() - startTime));
             }
         }
@@ -267,7 +292,7 @@ public class ProcessAuthManager {
      * @Description: 返回一个工单及其步骤权限列表，返回值map中的key可能是工单id或步骤id，value就是其拥有的权限列表
      * @return Map<Long,Set<ProcessTaskOperationType>>
      */
-    private Map<Long, Set<ProcessTaskOperationType>> getOperateMap(ProcessTaskVo processTaskVo) {
+    private Map<Long, Set<ProcessTaskOperationType>> getOperateMap(ProcessTaskVo processTaskVo, String userUuid) {
         Set<ProcessTaskOperationType> taskOperationTypeSet = new HashSet<>();
         Set<ProcessTaskOperationType> stepOperationTypeSet = new HashSet<>();
         List<ProcessTaskOperationType> taskOperationTypeList = OperationAuthHandlerType.TASK.getOperationTypeList();
@@ -285,7 +310,7 @@ public class ProcessAuthManager {
             }
         }
         Map<Long, Set<ProcessTaskOperationType>> resultMap = new HashMap<>();
-        String userUuid = UserContext.get().getUserUuid(true);
+//        String userUuid = UserContext.get().getUserUuid(true);
         JSONObject extraParam = extraParamMap.computeIfAbsent(processTaskVo.getId(), key -> new JSONObject());
         if (CollectionUtils.isNotEmpty(taskOperationTypeSet)) {
             IOperationAuthHandler handler = OperationAuthHandlerFactory.getHandler(OperationAuthHandlerType.TASK.getValue());
@@ -306,7 +331,7 @@ public class ProcessAuthManager {
                         continue;
                     }
                     /** 如果当前用户接受了其他用户的授权，查出其他用户拥有的权限，叠加当前用户权限里 **/
-                    List<String> fromUuidList = getFromUuidListByChannelUuid(processTaskVo.getChannelUuid());
+                    List<String> fromUuidList = getFromUuidListByChannelUuid(processTaskVo.getChannelUuid(), userUuid);
                     if (CollectionUtils.isNotEmpty(fromUuidList)) {
                         for (String fromUuid : fromUuidList) {
                             result = handler.getOperateMap(processTaskVo, fromUuid, operationType, operationTypePermissionDeniedExceptionMap, extraParam);
@@ -344,7 +369,7 @@ public class ProcessAuthManager {
                                 resultSet.add(operationType);
                             } else {
                                 /** 如果当前用户接受了其他用户的授权，查出其他用户拥有的权限，叠加当前用户权限里 **/
-                                List<String> fromUuidList = getFromUuidListByChannelUuid(processTaskVo.getChannelUuid());
+                                List<String> fromUuidList = getFromUuidListByChannelUuid(processTaskVo.getChannelUuid(), userUuid);
                                 if (CollectionUtils.isNotEmpty(fromUuidList)) {
                                     result = null;
                                     for (String fromUuid : fromUuidList) {
@@ -378,15 +403,15 @@ public class ProcessAuthManager {
      * @param channelUuid
      * @return
      */
-    private List<String> getFromUuidListByChannelUuid(String channelUuid) {
+    private List<String> getFromUuidListByChannelUuid(String channelUuid, String userUuid) {
         List<String> fromUserUuidList = channelUuidFromUserUuidListMap.get(channelUuid);
         if (fromUserUuidList == null) {
             fromUserUuidList = new ArrayList<>();
-            List<ProcessTaskAgentVo> processTaskAgentList = processTaskAgentListMap.get(UserContext.get().getUserUuid(true));
+            List<ProcessTaskAgentVo> processTaskAgentList = processTaskAgentListMap.get(userUuid);
             if (processTaskAgentList == null) {
                 IProcessTaskAgentCrossoverMapper processTaskAgentCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskAgentCrossoverMapper.class);
-                processTaskAgentList = processTaskAgentCrossoverMapper.getProcessTaskAgentDetailListByToUserUuid(UserContext.get().getUserUuid(true));
-                processTaskAgentListMap.put(UserContext.get().getUserUuid(true), processTaskAgentList);
+                processTaskAgentList = processTaskAgentCrossoverMapper.getProcessTaskAgentDetailListByToUserUuid(userUuid);
+                processTaskAgentListMap.put(userUuid, processTaskAgentList);
             }
             if (CollectionUtils.isNotEmpty(processTaskAgentList)) {
                 for (ProcessTaskAgentVo processTaskAgentVo : processTaskAgentList) {
