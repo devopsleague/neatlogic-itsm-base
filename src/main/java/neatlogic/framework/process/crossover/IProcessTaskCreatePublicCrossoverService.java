@@ -19,14 +19,15 @@ package neatlogic.framework.process.crossover;
 
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.crossover.ICrossoverService;
+import neatlogic.framework.process.dto.ProcessTaskCreateVo;
 
 public interface IProcessTaskCreatePublicCrossoverService extends ICrossoverService {
     /**
      * 创建工单
      *
-     * @param paramObj 创建工单所需参数
+     * @param processTaskCreateVo 创建工单所需参数
      * @return
      * @throws Exception
      */
-    JSONObject createProcessTask(JSONObject paramObj) throws Exception;
+    JSONObject createProcessTask(ProcessTaskCreateVo processTaskCreateVo) throws Exception;
 }

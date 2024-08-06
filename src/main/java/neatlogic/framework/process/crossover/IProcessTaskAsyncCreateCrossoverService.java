@@ -18,13 +18,13 @@
 package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
-import neatlogic.framework.process.dto.ProcessTaskAsyncCreateVo;
+import neatlogic.framework.process.dto.ProcessTaskCreateVo;
 
 public interface IProcessTaskAsyncCreateCrossoverService extends ICrossoverService {
 
     /**
      * 添加新的工单信息到阻塞队列
-     * @param processTaskAsyncCreateVo
+     * @param processTaskCreateVo
      */
-    Long addNewProcessTaskAsyncCreate(ProcessTaskAsyncCreateVo processTaskAsyncCreateVo);
+    Long addNewProcessTaskAsyncCreate(ProcessTaskCreateVo processTaskCreateVo);
 }
