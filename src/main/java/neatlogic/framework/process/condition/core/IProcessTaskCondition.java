@@ -18,11 +18,13 @@ public interface IProcessTaskCondition extends IConditionHandler {
 
     /**
      * 获取sql where 条件
+     *
      * @param groupVo 条件组
-     * @param index condition 下表
-     * @param sqlSb 拼装好的sql
+     * @param index   condition 下表
+     * @param sqlSb   拼装好的sql
      */
-    default void getSqlConditionWhere(ConditionGroupVo groupVo, Integer index, StringBuilder sqlSb){}
+    default void getSqlConditionWhere(ConditionGroupVo groupVo, Integer index, StringBuilder sqlSb) {
+    }
 
     /**
      * @Description: 获取对应条件需要关联的表和字段

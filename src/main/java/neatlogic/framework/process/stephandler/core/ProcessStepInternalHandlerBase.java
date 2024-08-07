@@ -9,10 +9,7 @@ import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.dao.mapper.TeamMapper;
 import neatlogic.framework.dao.mapper.UserMapper;
 import neatlogic.framework.file.dao.mapper.FileMapper;
-import neatlogic.framework.process.constvalue.ProcessFlowDirection;
-import neatlogic.framework.process.constvalue.ProcessTaskStepTaskUserStatus;
-import neatlogic.framework.process.constvalue.ProcessTaskStepUserStatus;
-import neatlogic.framework.process.constvalue.ProcessUserType;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.crossover.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
@@ -230,70 +227,79 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
 
     protected void defaultUpdateProcessTaskStepUserAndWorker(Long processTaskId, Long processTaskStepId) {
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
-        ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo(processTaskStepId, ProcessUserType.MINOR.getValue());
-        processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
-        ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
-        processTaskStepWorkerVo.setProcessTaskId(processTaskId);
-        processTaskStepWorkerVo.setProcessTaskStepId(processTaskStepId);
-        processTaskStepWorkerVo.setUserType(ProcessUserType.MINOR.getValue());
-        processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
-        IProcessTaskStepTaskCrossoverMapper processTaskStepTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepTaskCrossoverMapper.class);
-        List<ProcessTaskStepTaskVo> stepTaskList = processTaskStepTaskCrossoverMapper.getStepTaskListByProcessTaskStepId(processTaskStepId);
-        if (CollectionUtils.isNotEmpty(stepTaskList)) {
-            processTaskStepUserVo.setProcessTaskId(processTaskId);
-            processTaskStepWorkerVo.setType(GroupSearch.USER.getValue());
-            /** 查出processtask_step_task表中当前步骤任务处理人列表 **/
-            Set<String> runningTaskUserUuidSet = new HashSet<>();
-            Set<String> insertedRunningTaskUserUuidSet = new HashSet<>();
-            Set<String> insertedsucceedTaskUserUuidSet = new HashSet<>();
-            List<Long> stepTaskIdList = new ArrayList<>();
-            Map<Long, ProcessTaskStepTaskVo> processTaskStepTaskVoMap = new HashMap<>();
-            for (ProcessTaskStepTaskVo processTaskStepTaskVo : stepTaskList) {
-                stepTaskIdList.add(processTaskStepTaskVo.getId());
-                processTaskStepTaskVoMap.put(processTaskStepTaskVo.getId(), processTaskStepTaskVo);
-            }
+        ProcessTaskStepVo processTaskStepVo = processTaskCrossoverMapper.getProcessTaskStepBaseInfoById(processTaskStepId);
+        if (Objects.equals(processTaskStepVo.getStatus(), ProcessTaskStepStatus.RUNNING.getValue())) {
+            ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo(processTaskStepId, ProcessUserType.MINOR.getValue());
+            processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
+            ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
+            processTaskStepWorkerVo.setProcessTaskId(processTaskId);
+            processTaskStepWorkerVo.setProcessTaskStepId(processTaskStepId);
+            processTaskStepWorkerVo.setUserType(ProcessUserType.MINOR.getValue());
+            processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
+            IProcessTaskStepTaskCrossoverMapper processTaskStepTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskStepTaskCrossoverMapper.class);
+            List<ProcessTaskStepTaskVo> stepTaskList = processTaskStepTaskCrossoverMapper.getStepTaskListByProcessTaskStepId(processTaskStepId);
+            if (CollectionUtils.isNotEmpty(stepTaskList)) {
+                processTaskStepUserVo.setProcessTaskId(processTaskId);
+                processTaskStepWorkerVo.setType(GroupSearch.USER.getValue());
+                /** 查出processtask_step_task表中当前步骤任务处理人列表 **/
+                Set<String> runningTaskUserUuidSet = new HashSet<>();
+                Set<String> insertedRunningTaskUserUuidSet = new HashSet<>();
+                Set<String> insertedsucceedTaskUserUuidSet = new HashSet<>();
+                List<Long> stepTaskIdList = new ArrayList<>();
+                Map<Long, ProcessTaskStepTaskVo> processTaskStepTaskVoMap = new HashMap<>();
+                for (ProcessTaskStepTaskVo processTaskStepTaskVo : stepTaskList) {
+                    stepTaskIdList.add(processTaskStepTaskVo.getId());
+                    processTaskStepTaskVoMap.put(processTaskStepTaskVo.getId(), processTaskStepTaskVo);
+                }
 
-            List<ProcessTaskStepTaskUserVo> stepTaskUserList = processTaskStepTaskCrossoverMapper.getStepTaskUserByStepTaskIdList(stepTaskIdList);
-            for (ProcessTaskStepTaskUserVo stepTaskUserVo : stepTaskUserList) {
-                if (Objects.equals(stepTaskUserVo.getIsDelete(), 1)) {
-                    continue;
-                }
-                if (!Objects.equals(stepTaskUserVo.getStatus(), ProcessTaskStepTaskUserStatus.SUCCEED.getValue())) {
-                    runningTaskUserUuidSet.add(stepTaskUserVo.getUserUuid());
-                }
-            }
-            for (ProcessTaskStepTaskUserVo stepTaskUserVo : stepTaskUserList) {
-                if (Objects.equals(stepTaskUserVo.getIsDelete(), 1)) {
-                    continue;
-                }
-                ProcessTaskStepTaskVo processTaskStepTaskVo = processTaskStepTaskVoMap.get(stepTaskUserVo.getProcessTaskStepTaskId());
-                processTaskStepUserVo.setActiveTime(processTaskStepTaskVo.getCreateTime());
-                processTaskStepUserVo.setStartTime(processTaskStepTaskVo.getCreateTime());
-                String userUuid = stepTaskUserVo.getUserUuid();
-                processTaskStepUserVo.setUserUuid(userUuid);
-
-                if (Objects.equals(stepTaskUserVo.getStatus(), ProcessTaskStepTaskUserStatus.SUCCEED.getValue())) {
-                    if (runningTaskUserUuidSet.contains(userUuid)) {
+                List<ProcessTaskStepTaskUserVo> stepTaskUserList = processTaskStepTaskCrossoverMapper.getStepTaskUserByStepTaskIdList(stepTaskIdList);
+                for (ProcessTaskStepTaskUserVo stepTaskUserVo : stepTaskUserList) {
+                    if (Objects.equals(stepTaskUserVo.getIsDelete(), 1)) {
                         continue;
                     }
-                    if (insertedsucceedTaskUserUuidSet.contains(userUuid)) {
-                        continue;
+                    if (!Objects.equals(stepTaskUserVo.getStatus(), ProcessTaskStepTaskUserStatus.SUCCEED.getValue())) {
+                        runningTaskUserUuidSet.add(stepTaskUserVo.getUserUuid());
                     }
-                    insertedsucceedTaskUserUuidSet.add(userUuid);
-                    processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
-                    processTaskStepUserVo.setEndTime(stepTaskUserVo.getEndTime());
-                } else {
-                    if (insertedRunningTaskUserUuidSet.contains(userUuid)) {
-                        continue;
-                    }
-                    insertedRunningTaskUserUuidSet.add(userUuid);
-                    processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DOING.getValue());
-
-                    processTaskStepWorkerVo.setUuid(userUuid);
-                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepWorker(processTaskStepWorkerVo);
                 }
-                processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(processTaskStepUserVo);
+                for (ProcessTaskStepTaskUserVo stepTaskUserVo : stepTaskUserList) {
+                    if (Objects.equals(stepTaskUserVo.getIsDelete(), 1)) {
+                        continue;
+                    }
+                    ProcessTaskStepTaskVo processTaskStepTaskVo = processTaskStepTaskVoMap.get(stepTaskUserVo.getProcessTaskStepTaskId());
+                    processTaskStepUserVo.setActiveTime(processTaskStepTaskVo.getCreateTime());
+                    processTaskStepUserVo.setStartTime(processTaskStepTaskVo.getCreateTime());
+                    String userUuid = stepTaskUserVo.getUserUuid();
+                    processTaskStepUserVo.setUserUuid(userUuid);
+
+                    if (Objects.equals(stepTaskUserVo.getStatus(), ProcessTaskStepTaskUserStatus.SUCCEED.getValue())) {
+                        if (runningTaskUserUuidSet.contains(userUuid)) {
+                            continue;
+                        }
+                        if (insertedsucceedTaskUserUuidSet.contains(userUuid)) {
+                            continue;
+                        }
+                        insertedsucceedTaskUserUuidSet.add(userUuid);
+                        processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
+                        processTaskStepUserVo.setEndTime(stepTaskUserVo.getEndTime());
+                    } else {
+                        if (insertedRunningTaskUserUuidSet.contains(userUuid)) {
+                            continue;
+                        }
+                        insertedRunningTaskUserUuidSet.add(userUuid);
+                        processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DOING.getValue());
+
+                        processTaskStepWorkerVo.setUuid(userUuid);
+                        processTaskCrossoverMapper.insertIgnoreProcessTaskStepWorker(processTaskStepWorkerVo);
+                    }
+                    processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(processTaskStepUserVo);
+                }
             }
+        } else {
+            ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
+            processTaskStepWorkerVo.setProcessTaskId(processTaskId);
+            processTaskStepWorkerVo.setProcessTaskStepId(processTaskStepId);
+            processTaskStepWorkerVo.setUserType(ProcessUserType.MINOR.getValue());
+            processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
         }
     }
 

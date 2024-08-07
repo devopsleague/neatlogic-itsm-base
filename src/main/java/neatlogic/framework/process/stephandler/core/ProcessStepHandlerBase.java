@@ -1576,6 +1576,19 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             currentProcessTaskStepVo.setStatus(ProcessTaskStepStatus.RUNNING.getValue());
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
 
+            List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskCrossoverMapper.getProcessTaskStepUserByStepId(currentProcessTaskStepVo.getId(), ProcessUserType.MAJOR.getValue());
+            if (CollectionUtils.isNotEmpty(processTaskStepUserList)) {
+                String userUuid = processTaskStepUserList.get(0).getUserUuid();
+                ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
+                processTaskStepWorkerVo.setProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
+                processTaskStepWorkerVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                processTaskStepWorkerVo.setUserType(ProcessUserType.MAJOR.getValue());
+                processTaskStepWorkerVo.setUuid(userUuid);
+                processTaskStepWorkerVo.setType(GroupSearch.USER.getValue());
+                processTaskCrossoverMapper.insertIgnoreProcessTaskStepWorker(processTaskStepWorkerVo);
+            }
+
+            processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
             currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_RECOVER);
             /* 触发通知 **/
@@ -1611,6 +1624,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 .build()
                 .checkAndNoPermissionThrowException();
         try {
+            IProcessStepInternalHandler processStepUtilHandler = ProcessStepInternalHandlerFactory.getHandler(this.getHandler());
+            if (processStepUtilHandler == null) {
+                throw new ProcessStepUtilHandlerNotFoundException(this.getHandler());
+            }
             stepMajorUserRegulate(currentProcessTaskStepVo);
             processStepHandlerCrossoverUtil.saveContentAndFile(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_PAUSE);
             myPause(currentProcessTaskStepVo);
@@ -1618,8 +1635,26 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             /* 更新工单步骤状态为 “已挂起” **/
             currentProcessTaskStepVo.setStatus(ProcessTaskStepStatus.HANG.getValue());
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
-            // processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(),
-            // currentProcessTaskStepVo.getId());
+            /* 判断主处理人是否有步骤暂停权限，如果没有需要将`processtask_step_worker`中主处理人数据删除 **/
+            boolean majorUserHasStepPauseAuth = false;
+            List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskCrossoverMapper.getProcessTaskStepUserByStepId(currentProcessTaskStepVo.getId(), ProcessUserType.MAJOR.getValue());
+            if (CollectionUtils.isNotEmpty(processTaskStepUserList)) {
+                String userUuid = processTaskStepUserList.get(0).getUserUuid();
+                majorUserHasStepPauseAuth = new ProcessAuthManager
+                        .StepOperationChecker(currentProcessTaskStepVo.getId(), ProcessTaskOperationType.STEP_RECOVER)
+                        .withUserUuid(userUuid)
+                        .build()
+                        .check();
+            }
+            if (!majorUserHasStepPauseAuth) {
+                ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
+                processTaskStepWorkerVo.setProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
+                processTaskStepWorkerVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                processTaskStepWorkerVo.setUserType(ProcessUserType.MAJOR.getValue());
+                processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
+            }
+
+            processStepUtilHandler.updateProcessTaskStepUserAndWorker(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
             currentProcessTaskStepVo.getParamObj().put("operateTime", new Date());
             ProcessTaskOperatePostProcessorFactory.invokePostProcessorsAfterProcessTaskStepOperate(currentProcessTaskStepVo, ProcessTaskOperationType.STEP_PAUSE);
             /* 写入时间审计 **/

@@ -33,6 +33,7 @@ public class ProcessTaskStepSqlTable implements ISqlTable {
         STATUS("status", new I18n("步骤状态"), "processTaskStepStatus"),
         CONFIG_HASH("config_hash", new I18n("配置hash"), "processTaskStepConfigHash"),
         IS_ACTIVE("is_active", new I18n("步骤状态"), "processTaskStepIsActive"),
+        PROCESS_STEP_UUID("process_step_uuid", new I18n("步骤uuid"), "processStepUuid"),
         ACTIVE_TIME("active_time", new I18n("激活时间"), "processTaskStepActiveTime");
         private final String name;
         private final I18n text;
