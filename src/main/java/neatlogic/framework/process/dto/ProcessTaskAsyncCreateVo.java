@@ -29,17 +29,9 @@ public class ProcessTaskAsyncCreateVo extends BaseEditorVo {
     private String status;
     private String error;
     private Integer serverId;
-    private JSONObject config;
+    private ProcessTaskCreateVo config;
     @JSONField(serialize = false)
     private String configStr;
-
-    private String tenantUuid;
-
-    public ProcessTaskAsyncCreateVo() {}
-
-    public ProcessTaskAsyncCreateVo(JSONObject config) {
-        this.config = config;
-    }
 
     public Long getId() {
         if (id == null) {
@@ -92,34 +84,25 @@ public class ProcessTaskAsyncCreateVo extends BaseEditorVo {
         this.serverId = serverId;
     }
 
-    public JSONObject getConfig() {
+    public ProcessTaskCreateVo getConfig() {
         if (config == null && configStr != null) {
-            config = JSONObject.parseObject(configStr);
+            config = JSONObject.parseObject(configStr, ProcessTaskCreateVo.class);
         }
         return config;
     }
 
-    public void setConfig(JSONObject config) {
+    public void setConfig(ProcessTaskCreateVo config) {
         this.config = config;
     }
 
     public String getConfigStr() {
         if (configStr == null && config != null) {
-            configStr = config.toJSONString();
+            configStr = JSONObject.toJSONString(config);
         }
         return configStr;
     }
 
     public void setConfigStr(String configStr) {
         this.configStr = configStr;
-    }
-
-    @Override
-    public String getTenantUuid() {
-        return tenantUuid;
-    }
-
-    public void setTenantUuid(String tenantUuid) {
-        this.tenantUuid = tenantUuid;
     }
 }
