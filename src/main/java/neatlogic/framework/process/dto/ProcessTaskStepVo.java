@@ -166,6 +166,8 @@ public class ProcessTaskStepVo extends BasePageVo {
     @EntityField(name = "处理时查看步骤",type= ApiParamType.JSONARRAY)
     private List<String> viewPrevNodeUuidList;
 
+    @EntityField(name = "是否在当前步骤标签中", type = ApiParamType.INTEGER)
+    private Integer isInTheCurrentStepTab;
 
     public ProcessTaskStepVo() {
 
@@ -856,5 +858,13 @@ public class ProcessTaskStepVo extends BasePageVo {
 
     public void setViewPrevNodeUuidList(List<String> viewPrevNodeUuidList) {
         this.viewPrevNodeUuidList = viewPrevNodeUuidList;
+    }
+
+    public Integer getIsInTheCurrentStepTab() {
+        return isInTheCurrentStepTab;
+    }
+
+    public void setIsInTheCurrentStepTab(Integer isInTheCurrentStepTab) {
+        this.isInTheCurrentStepTab = isInTheCurrentStepTab;
     }
 }
