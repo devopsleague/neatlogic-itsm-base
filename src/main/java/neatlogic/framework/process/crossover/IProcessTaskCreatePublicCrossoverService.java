@@ -29,5 +29,5 @@ public interface IProcessTaskCreatePublicCrossoverService extends ICrossoverServ
      * @return
      * @throws Exception
      */
-    JSONObject createProcessTask(ProcessTaskCreateVo processTaskCreateVo) throws Exception;
+    Long createProcessTask(ProcessTaskCreateVo processTaskCreateVo) throws Exception;
 }
