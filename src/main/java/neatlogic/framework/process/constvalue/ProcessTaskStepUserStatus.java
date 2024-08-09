@@ -3,7 +3,9 @@ package neatlogic.framework.process.constvalue;
 public enum ProcessTaskStepUserStatus {
     DOING("doing", "处理中"),
     DONE("done", "处理完毕"),
-    TRANSFERRED("transferred", "已转交");
+    TRANSFERRED("transferred", "已转交"),
+    SOMEONE_TRANSFERRED("someonetransferred", "被转交")
+    ;
 
     private String status;
     private String text;
