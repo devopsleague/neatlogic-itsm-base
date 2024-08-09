@@ -1772,7 +1772,11 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 for (ProcessTaskStepUserVo oldUser : oldUserList) {
                     /* 更新处理人状态 **/
                     oldUser.setUserType(ProcessTaskStepUserType.HISTORY_MAJOR.getValue());
-                    oldUser.setStatus(ProcessTaskStepUserStatus.TRANSFERRED.getValue());
+                    if (Objects.equals(oldUser.getUserUuid(), UserContext.get().getUserUuid(true))) {
+                        oldUser.setStatus(ProcessTaskStepUserStatus.TRANSFERRED.getValue());
+                    } else {
+                        oldUser.setStatus(ProcessTaskStepUserStatus.SOMEONE_TRANSFERRED.getValue());
+                    }
                     oldUser.setEndTime(new Date());
                     processTaskCrossoverMapper.insertIgnoreProcessTaskStepUser(oldUser);
                     if (workerUserUuidList.contains(oldUser.getUserUuid())) {
@@ -1828,6 +1832,14 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     processTaskStepVo.setStatus(ProcessTaskStepStatus.RUNNING.getValue());
                 }
             }
+            JSONArray oldWorkerList = new JSONArray();
+            List<ProcessTaskStepWorkerVo> processTaskStepWorkerList = processTaskCrossoverMapper.getProcessTaskStepWorkerByProcessTaskIdAndProcessTaskStepId(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId());
+            for (ProcessTaskStepWorkerVo workerVo : processTaskStepWorkerList) {
+                if (Objects.equals(workerVo.getUserType(), ProcessUserType.MAJOR.getValue())) {
+                    oldWorkerList.add(workerVo.getType() + "#" + workerVo.getUuid());
+                }
+            }
+            currentProcessTaskStepVo.getParamObj().put(ProcessTaskAuditDetailType.WORKERLIST.getOldDataParamName(), oldWorkerList);
             /* 清空work表，重新写入新数据 **/
             processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
             for (ProcessTaskStepWorkerVo workerVo : workerList) {
