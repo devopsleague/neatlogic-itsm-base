@@ -63,6 +63,26 @@ public class ProcessTaskConditionFactory extends ModuleInitializedListenerBase {
         return resultObj;
     }
 
+    public static JSONObject getConditionParamData(List<String> options, ProcessTaskStepVo processTaskStepVo, String formTag) {
+        JSONObject resultObj = new JSONObject();
+        for (String option : options) {
+            IProcessTaskCondition handler = conditionComponentMap.get(option);
+            if (handler != null) {
+                resultObj.put(option, handler.getConditionParamDataNew(processTaskStepVo, formTag));
+            }
+        }
+        IProcessTaskCondition handler = conditionComponentMap.get(ProcessFieldType.FORM.getValue());
+        if (handler != null) {
+            Object formObj = handler.getConditionParamDataNew(processTaskStepVo, formTag);
+            if (formObj != null) {
+                if (formObj instanceof JSONObject) {
+                    resultObj.putAll((JSONObject) formObj);
+                }
+            }
+        }
+        return resultObj;
+    }
+
     public static JSONObject getConditionParamData(ConditionProcessTaskOptions[] options, ProcessTaskStepVo processTaskStepVo) {
         JSONObject resultObj = new JSONObject();
         for (ConditionProcessTaskOptions option : options) {
