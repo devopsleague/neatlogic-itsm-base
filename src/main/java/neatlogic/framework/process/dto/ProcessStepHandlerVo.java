@@ -47,6 +47,8 @@ public class ProcessStepHandlerVo implements Comparable<ProcessStepHandlerVo>,Se
 	private Boolean isHidden;
 	@EntityField(name = "是否移动端支持处理", type = ApiParamType.BOOLEAN)
 	private Boolean isFitMobile;
+	@EntityField(name = "是否禁用分派处理人", type = ApiParamType.BOOLEAN)
+	private Boolean disableAssign;
 
 	public ProcessStepHandlerVo() {
 	}
@@ -206,5 +208,13 @@ public class ProcessStepHandlerVo implements Comparable<ProcessStepHandlerVo>,Se
 
 	public void setFitMobile(Boolean fitMobile) {
 		isFitMobile = fitMobile;
+	}
+
+	public Boolean getDisableAssign() {
+		return disableAssign;
+	}
+
+	public void setDisableAssign(Boolean disableAssign) {
+		this.disableAssign = disableAssign;
 	}
 }
