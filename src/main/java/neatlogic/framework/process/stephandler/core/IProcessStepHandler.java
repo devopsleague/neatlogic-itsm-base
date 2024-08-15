@@ -361,4 +361,12 @@ public interface IProcessStepHandler {
     default boolean disableAssign() {
         return false;
     }
+
+    /**
+     * 是否允许该类型步骤处理人指派后置步骤的处理人
+     * @return
+     */
+    default boolean allowDispatchStepWorker() {
+        return true;
+    }
 }
