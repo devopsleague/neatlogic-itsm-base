@@ -1,23 +1,44 @@
 package neatlogic.framework.process.notify.constvalue;
 
 import neatlogic.framework.notify.core.INotifyTriggerType;
-import neatlogic.framework.util.I18n;
+import neatlogic.framework.process.constvalue.ProcessTaskGroupSearch;
+import neatlogic.framework.process.constvalue.ProcessUserType;
+import neatlogic.framework.util.$;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public enum ProcessTaskStepTaskNotifyTriggerType implements INotifyTriggerType {
-    CREATETASK("createtask", new I18n("子任务创建"), new I18n("步骤处理人为当前步骤创建子任务时触发通知")),
-    EDITTASK("edittask", new I18n("子任务编辑"), new I18n("步骤处理人编辑子任务内容时触发通知")),
-    DELETETASK("deletetask", new I18n("子任务删除"), new I18n("步骤处理人删除子任务时触发通知")),
-    COMPLETETASK("completetask", new I18n("子任务完成"), new I18n("任务处理人完成子任务时触发通知")),
-    COMPLETEALLTASK("completealltask", new I18n("子任务满足步骤流转"), new I18n("所有子任务满足流转条件时触发通知"));
+    CREATETASK("createtask", "nfpnc.processtasksteptasknotifytriggertype.text.createtask", "nfpnc.processtasksteptasknotifytriggertype.description.createtask",
+            Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.WORKER.getValue())),
+    EDITTASK("edittask", "nfpnc.processtasksteptasknotifytriggertype.text.edittask", "nfpnc.processtasksteptasknotifytriggertype.description.edittask",
+            Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.WORKER.getValue())),
+    DELETETASK("deletetask", "nfpnc.processtasksteptasknotifytriggertype.text.deletetask", "nfpnc.processtasksteptasknotifytriggertype.description.deletetask",
+            Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.MINOR.getValue(),
+                    ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.WORKER.getValue())),
+    COMPLETETASK("completetask", "nfpnc.processtasksteptasknotifytriggertype.text.completetask", "nfpnc.processtasksteptasknotifytriggertype.description.completetask",
+            Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.WORKER.getValue())),
+    COMPLETEALLTASK("completealltask", "nfpnc.processtasksteptasknotifytriggertype.text.completealltask", "nfpnc.processtasksteptasknotifytriggertype.description.completealltask",
+            Arrays.asList(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.WORKER.getValue()));
 
     private String trigger;
-    private I18n text;
-    private I18n description;
+    private String text;
+    private String description;
+    private List<String> excludeList;
 
-    ProcessTaskStepTaskNotifyTriggerType(String _trigger, I18n _text, I18n _description) {
+    ProcessTaskStepTaskNotifyTriggerType(String _trigger, String _text, String _description) {
         this.trigger = _trigger;
         this.text = _text;
         this.description = _description;
+        this.excludeList = new ArrayList<>();
+    }
+
+    ProcessTaskStepTaskNotifyTriggerType(String _trigger, String _text, String _description, List<String> _excludeList) {
+        this.trigger = _trigger;
+        this.text = _text;
+        this.description = _description;
+        this.excludeList = _excludeList;
     }
 
     @Override
@@ -27,12 +48,12 @@ public enum ProcessTaskStepTaskNotifyTriggerType implements INotifyTriggerType {
 
     @Override
     public String getText() {
-        return text.toString();
+        return $.t(text);
     }
 
     @Override
     public String getDescription() {
-        return description.toString();
+        return $.t(description);
     }
 
     public static String getText(String trigger) {
@@ -42,5 +63,10 @@ public enum ProcessTaskStepTaskNotifyTriggerType implements INotifyTriggerType {
             }
         }
         return "";
+    }
+
+    @Override
+    public List<String> getExcludeList() {
+        return excludeList;
     }
 }

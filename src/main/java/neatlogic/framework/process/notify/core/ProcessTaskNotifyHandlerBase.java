@@ -113,5 +113,13 @@ public abstract class ProcessTaskNotifyHandlerBase extends NotifyPolicyHandlerBa
         includeList.add(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.DEFAULT_WORKER.getValue());
         includeList.add(ProcessTaskGroupSearch.PROCESSUSERTYPE.getValue() + "#" + ProcessUserType.FOCUS_USER.getValue());
         config.put("includeList", includeList);
+        myCustomAuthorityConfig(config);
+    }
+
+    /**
+     * 自定义接收对象下拉框选项
+     * @param config
+     */
+    protected void myCustomAuthorityConfig(JSONObject config) {
     }
 }
