@@ -68,7 +68,7 @@ public interface IProcessTaskCondition extends IConditionHandler {
      * @return 数据
      */
     default Object getConditionParamDataForHumanizationNew(ProcessTaskStepVo processTaskStepVo, String formTag) {
-        return getConditionParamDataNew(processTaskStepVo, formTag);
+        return getConditionParamDataForHumanization(processTaskStepVo);
     }
 
 }
