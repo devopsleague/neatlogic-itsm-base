@@ -41,7 +41,7 @@ public enum ProcessTaskStepNotifyParam implements INotifyParam {
             "\t\t\t\t</#list>\n" +
             "\t\t\t</#if>"),
     STEPWORKER("stepWorker", new I18n("步骤处理人"), ParamType.STRING),
-    STEPSTAYTIME("stepStayTime", new I18n("步骤停留时间"), ParamType.ARRAY),
+    STEPSTAYTIME("stepStayTime", new I18n("步骤停留时间"), ParamType.STRING),
     REASON("reason", new I18n("原因"), ParamType.STRING),
     PROCESS_TASK_STEP_PAUSE_CONTENT("processTaskStepPauseContent", new I18n("步骤暂停原因"), ParamType.STRING),
     PROCESS_TASK_STEP_RECOVER_CONTENT("processTaskStepRecoverContent", new I18n("步骤恢复原因"), ParamType.STRING),
