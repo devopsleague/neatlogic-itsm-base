@@ -45,7 +45,9 @@ public abstract class ProcessTaskNotifyParamHandlerBase implements INotifyParamH
     @Override
     public Object getText(Object object, INotifyTriggerType notifyTriggerType) {
         if (object instanceof ProcessTaskStepVo) {
-            return getMyText((ProcessTaskStepVo) object, notifyTriggerType);
+            ProcessTaskStepVo processTaskStepVo = (ProcessTaskStepVo) object;
+            processTaskStepVo.setIsAutoGenerateId(false);
+            return getMyText(processTaskStepVo, notifyTriggerType);
         }
         return null;
     }
