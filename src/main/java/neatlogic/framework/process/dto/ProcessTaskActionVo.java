@@ -1,16 +1,47 @@
 package neatlogic.framework.process.dto;
 
-public class ActionVo {
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.util.SnowflakeUtil;
 
+import java.util.Date;
+
+public class ProcessTaskActionVo {
+
+	private Long id;
+	private Long processTaskId;
 	private Long processTaskStepId;
 	private String processTaskStepName;
 	private String trigger;
 	private String triggerText;
+	private Date triggerTime;
 	private String integrationUuid;
 	private String integrationName;
 	private boolean isSucceed;
+	private String status;
 	private String statusText;
 	private String error;
+	private JSONObject config;
+	private String configStr;
+
+	public Long getId() {
+		if (id == null) {
+			id = SnowflakeUtil.uniqueLong();
+		}
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getProcessTaskId() {
+		return processTaskId;
+	}
+
+	public void setProcessTaskId(Long processTaskId) {
+		this.processTaskId = processTaskId;
+	}
+
 	public Long getProcessTaskStepId() {
 		return processTaskStepId;
 	}
@@ -35,6 +66,15 @@ public class ActionVo {
 	public void setTriggerText(String triggerText) {
 		this.triggerText = triggerText;
 	}
+
+	public Date getTriggerTime() {
+		return triggerTime;
+	}
+
+	public void setTriggerTime(Date triggerTime) {
+		this.triggerTime = triggerTime;
+	}
+
 	public String getIntegrationUuid() {
 		return integrationUuid;
 	}
@@ -53,6 +93,15 @@ public class ActionVo {
 	public void setSucceed(boolean isSucceed) {
 		this.isSucceed = isSucceed;
 	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public String getStatusText() {
 		return statusText;
 	}
@@ -66,5 +115,27 @@ public class ActionVo {
 
 	public void setError(String error) {
 		this.error = error;
+	}
+
+	public JSONObject getConfig() {
+		if (config == null && configStr != null) {
+			config = JSONObject.parseObject(configStr);
+		}
+		return config;
+	}
+
+	public void setConfig(JSONObject config) {
+		this.config = config;
+	}
+
+	public String getConfigStr() {
+		if (configStr == null && config != null) {
+			configStr = config.toJSONString();
+		}
+		return configStr;
+	}
+
+	public void setConfigStr(String configStr) {
+		this.configStr = configStr;
 	}
 }
