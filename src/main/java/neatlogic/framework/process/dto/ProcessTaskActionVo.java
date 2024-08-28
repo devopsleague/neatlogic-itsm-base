@@ -1,6 +1,7 @@
 package neatlogic.framework.process.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.util.SnowflakeUtil;
 
 import java.util.Date;
@@ -21,6 +22,7 @@ public class ProcessTaskActionVo {
 	private String statusText;
 	private String error;
 	private JSONObject config;
+	@JSONField(serialize = false)
 	private String configStr;
 
 	public Long getId() {
