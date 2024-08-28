@@ -87,6 +87,8 @@ public class ProcessTaskStepVo extends BasePageVo {
     private ProcessTaskStepReplyVo comment;
     @EntityField(name = "评论附件列表", type = ApiParamType.JSONARRAY)
     private List<ProcessTaskStepReplyVo> commentList = new ArrayList<>();
+    @EntityField(name = "动作列表", type = ApiParamType.JSONARRAY)
+    private List<ProcessTaskActionVo> actionList = new ArrayList<>();
     @EntityField(name = "是否需要上传文件", type = ApiParamType.INTEGER)
     private Integer isNeedUploadFile;
     @EntityField(name = "是否需要回复框", type = ApiParamType.INTEGER)
@@ -618,6 +620,14 @@ public class ProcessTaskStepVo extends BasePageVo {
 
     public void setCommentList(List<ProcessTaskStepReplyVo> commentList) {
         this.commentList = commentList;
+    }
+
+    public List<ProcessTaskActionVo> getActionList() {
+        return actionList;
+    }
+
+    public void setActionList(List<ProcessTaskActionVo> actionList) {
+        this.actionList = actionList;
     }
 
     public Integer getIsView() {
