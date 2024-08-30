@@ -1796,7 +1796,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
                 processTaskCrossoverMapper.deleteProcessTaskStepUser(processTaskStepUserVo);
             }
-
+            /* 保存表单属性值 **/
+            processStepHandlerCrossoverUtil.saveForm(currentProcessTaskStepVo);
             /* 保存描述内容 **/
             JSONArray contentTargetList = new JSONArray();
             for (ProcessTaskStepWorkerVo workerVo : workerList) {
