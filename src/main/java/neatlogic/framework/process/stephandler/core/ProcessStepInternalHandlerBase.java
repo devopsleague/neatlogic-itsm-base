@@ -158,7 +158,7 @@ public abstract class ProcessStepInternalHandlerBase implements IProcessStepInte
         }
         IProcessStepInternalHandler processStepUtilHandler = ProcessStepInternalHandlerFactory.getHandler(handler);
         if (processStepUtilHandler == null) {
-            throw new ProcessStepUtilHandlerNotFoundException(handler);
+            return null;
         }
         IProcessStepHandlerCrossoverMapper processStepHandlerCrossoverMapper = CrossoverServiceFactory.getApi(IProcessStepHandlerCrossoverMapper.class);
         String processStepHandlerConfig = processStepHandlerCrossoverMapper.getProcessStepHandlerConfigByHandler(handler);
