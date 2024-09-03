@@ -54,6 +54,7 @@ public class ConditionConfigVo extends ConditionConfigBaseVo<ConditionConfigVo.C
             return conditionGroupVo.buildScript();
         }
     }
+
     public static class ConditionGroupVo<T extends ConditionBaseVo> extends ConditionGroupBaseVo<ConditionVo> {
 
         public String buildScript() {
