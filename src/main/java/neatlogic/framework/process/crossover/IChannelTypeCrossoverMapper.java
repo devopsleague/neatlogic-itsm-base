@@ -41,4 +41,6 @@ public interface IChannelTypeCrossoverMapper extends ICrossoverService {
             @Param("parentUuidList") List<String> parentUuidList,
             @Param("channelTypeUuidList") List<String> channelTypeUuidList
     );
+
+    int checkChannelTypeRelationIsExists(Long id);
 }

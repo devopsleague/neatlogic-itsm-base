@@ -29,4 +29,10 @@ public interface IProcessTaskStepTaskCrossoverMapper extends ICrossoverService {
     List<ProcessTaskStepTaskVo> getStepTaskListByProcessTaskStepId(Long processTaskStepId);
 
     List<ProcessTaskStepTaskUserVo> getStepTaskUserByStepTaskIdList(@Param("stepTaskIdList") List<Long> collect);
+
+    ProcessTaskStepTaskVo getStepTaskById(Long processTaskStepTaskId);
+
+    List<ProcessTaskStepTaskUserVo> getStepTaskUserListByStepTaskId(Long processtaskStepTaskId);
+
+    List<ProcessTaskStepTaskVo> getStepTaskByProcessTaskStepId(Long processTaskStepId);
 }

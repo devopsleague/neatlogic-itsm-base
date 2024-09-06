@@ -25,4 +25,6 @@ import java.util.List;
 public interface IProcessTaskAgentCrossoverMapper extends ICrossoverService {
 
     List<ProcessTaskAgentVo> getProcessTaskAgentDetailListByToUserUuid(String toUserUuid);
+
+    List<ProcessTaskAgentVo> getProcessTaskAgentDetailListByFromUserUuidList(List<String> fromUserUuidList);
 }
