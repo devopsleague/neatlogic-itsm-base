@@ -141,6 +141,8 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     List<ProcessTaskStepFileVo> getProcessTaskStepFileListByTaskStepId(Long taskId);
 
+    List<ProcessTaskFormVo> getProcessTaskFormListByProcessTaskIdList(List<Long> existsProcessTaskIdList);
+
     int insertIgnoreProcessTaskConfig(ProcessTaskConfigVo processTaskConfigVo);
 
     int insertProcessTaskForm(ProcessTaskFormVo processTaskFormVo);

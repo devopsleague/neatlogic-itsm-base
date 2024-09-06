@@ -18,6 +18,7 @@
 package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
+import neatlogic.framework.process.dto.ProcessTaskStepTaskUserContentVo;
 import neatlogic.framework.process.dto.ProcessTaskStepTaskUserVo;
 import neatlogic.framework.process.dto.ProcessTaskStepTaskVo;
 import org.apache.ibatis.annotations.Param;
@@ -35,4 +36,8 @@ public interface IProcessTaskStepTaskCrossoverMapper extends ICrossoverService {
     List<ProcessTaskStepTaskUserVo> getStepTaskUserListByStepTaskId(Long processtaskStepTaskId);
 
     List<ProcessTaskStepTaskVo> getStepTaskByProcessTaskStepId(Long processTaskStepId);
+
+    List<ProcessTaskStepTaskUserVo> getStepTaskUserByTaskIdAndUserUuid(@Param("processTaskStepTaskId") Long processTaskStepTaskId, @Param("userUuid") String userUuid);
+
+    ProcessTaskStepTaskUserContentVo getStepTaskUserContentByStepTaskUserId(Long processTaskStepTaskUserId);
 }
