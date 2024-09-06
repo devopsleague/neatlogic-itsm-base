@@ -339,7 +339,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         Set<ProcessTaskStepWorkerVo> workerSet = new HashSet<>();
         /* 如果已经存在过处理人，则继续使用旧处理人，否则启用分派 **/
         List<ProcessTaskStepUserVo> oldUserList = processTaskCrossoverMapper.getProcessTaskStepUserByStepId(currentProcessTaskStepVo.getId(), ProcessUserType.MAJOR.getValue());
-        if (oldUserList.size() > 0) {
+        if (!oldUserList.isEmpty()) {
             ProcessTaskStepUserVo oldUserVo = oldUserList.get(0);
             ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo(
                     currentProcessTaskStepVo.getProcessTaskId(),
@@ -1526,7 +1526,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             /* 如果已经存在过处理人，则继续使用旧处理人，否则重新分派 **/
             Set<ProcessTaskStepWorkerVo> workerSet = new HashSet<>();
             List<ProcessTaskStepUserVo> oldUserList = processTaskCrossoverMapper.getProcessTaskStepUserByStepId(currentProcessTaskStepVo.getId(), ProcessUserType.MAJOR.getValue());
-            if (oldUserList.size() > 0) {
+            if (!oldUserList.isEmpty()) {
                 ProcessTaskStepUserVo oldUserVo = oldUserList.get(0);
                 ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo(
                         currentProcessTaskStepVo.getProcessTaskId(),
@@ -2426,7 +2426,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
             nextStepSet = myGetNext(currentProcessTaskStepVo, nextStepIdList, nextStepId);
         } catch (ProcessTaskException ex) {
             logger.error(ex.getMessage(), ex);
-            if (ex.getMessage() != null && !ex.getMessage().equals("")) {
+            if (ex.getMessage() != null && !ex.getMessage().isEmpty()) {
                 currentProcessTaskStepVo.appendError(ex.getMessage());
             } else {
                 currentProcessTaskStepVo.appendError(ExceptionUtils.getStackTrace(ex));
@@ -2517,10 +2517,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
     }
 
-    /**
-     * 标识失效步骤，将失效步骤的正向流转连线isHit设置为-1
-     *
-     * @param currentProcessTaskStepId 当前步骤id
+    /*
+      标识失效步骤，将失效步骤的正向流转连线isHit设置为-1
+
+      @param currentProcessTaskStepId 当前步骤id
      * @param activeStepIdSet          激活步骤列表
      */
 //    private void doIdentifyPostInvalidStepRelIsHit(Long currentProcessTaskStepId, Set<Long> activeStepIdSet) {
@@ -2618,10 +2618,10 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
     }
 
-    /**
-     * 将当前步骤的所有后续步骤间的连线的isHit设置为0
-     *
-     * @param currentProcessTaskStepId 当前步骤id
+    /*
+      将当前步骤的所有后续步骤间的连线的isHit设置为0
+
+      @param currentProcessTaskStepId 当前步骤id
      * @param avoidCyclingStepIdList 避免循环步骤id列表
      */
 //    private void doResetPostStepRelIsHit(Long currentProcessTaskStepId, List<Long> avoidCyclingStepIdList) {
@@ -2646,7 +2646,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     /**
      * 将当前步骤的所有后续步骤中流转过的步骤都进行挂起操作
      *
-     * @param currentProcessTaskStepVo
+     * @param currentProcessTaskStepVo 步骤信息
      */
     private void hangPostStep(ProcessTaskStepVo currentProcessTaskStepVo) {
 ////        if (!currentProcessTaskStepVo.getId().equals(currentProcessTaskStepVo.getStartProcessTaskStepId())) {
@@ -2806,7 +2806,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 }
             }
         }
-        if (convergeIdList.size() > 0) {
+        if (!convergeIdList.isEmpty()) {
             List<ProcessTaskConvergeVo> processTaskConvergeList = new ArrayList<>();
             for (Long convergeId : convergeIdList) {
                 ProcessTaskConvergeVo processTaskStepConvergeVo = new ProcessTaskConvergeVo(nextStepVo.getProcessTaskId(), nextStepVo.getId(), convergeId);
@@ -2889,7 +2889,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                     processTaskStepThread.getProcessTaskStepId(),
                     operationTypeValue
             );
-            /** 后台异步操作步骤前，在`processtask_step_in_operation`表中插入一条数据，标识该步骤正在后台处理中，异步处理完删除 **/
+            /* 后台异步操作步骤前，在`processtask_step_in_operation`表中插入一条数据，标识该步骤正在后台处理中，异步处理完删除 **/
             IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
             processTaskCrossoverMapper.insertProcessTaskStepInOperation(processTaskStepInOperationVo);
             processTaskStepThread.setInOperationId(processTaskStepInOperationVo.getId());
@@ -2897,7 +2897,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         }
     }
 
-    protected synchronized static void doNext(ProcessTaskOperationType operationType, ProcessStepThread thread) {
+    protected static synchronized void doNext(ProcessTaskOperationType operationType, ProcessStepThread thread) {
         String operationTypeValue = "";
         if (operationType != null) {
             operationTypeValue = operationType.getValue();
@@ -2912,7 +2912,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
         if (processStepInternalHandler == null) {
             throw new ProcessStepUtilHandlerNotFoundException(processTaskStepVo.getHandler());
         }
-        /** 后台异步操作步骤前，在`processtask_step_in_operation`表中插入一条数据，标识该步骤正在后台处理中，异步处理完删除 **/
+        /* 后台异步操作步骤前，在`processtask_step_in_operation`表中插入一条数据，标识该步骤正在后台处理中，异步处理完删除 **/
         processStepInternalHandler.insertProcessTaskStepInOperation(processTaskStepInOperationVo);
         thread.setSupplier(() -> {
             IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
@@ -2927,7 +2927,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     /**
      * handle方法异步模式会调用这个方法
      **/
-    protected synchronized static void doNext(ProcessStepThread thread) {
+    protected static synchronized void doNext(ProcessStepThread thread) {
         doNext(null, thread);
     }
 
@@ -3068,9 +3068,8 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
     }
 
     /**
-     * @param currentProcessTaskStepVo
+     * @param currentProcessTaskStepVo 步骤信息
      * @return void
-     * @Time:2020年9月30日
      * @Description: 步骤主处理人校正操作 判断当前用户是否是代办人，如果不是就什么都不做，如果是，进行下面3个操作 1.往processtask_step_agent表中插入一条数据，记录该步骤的原主处理人和代办人
      * 2.将processtask_step_worker表中该步骤的主处理人uuid改为代办人(当前用户)
      * 3.将processtask_step_user表中该步骤的主处理人user_uuid改为代办人(当前用户)
@@ -3096,7 +3095,6 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
                 flag = processTaskCrossoverMapper.checkIsProcessTaskStepUser(searchVo);
             } else {
                 AuthenticationInfoVo authenticationInfoVo = UserContext.get().getAuthenticationInfoVo();
-                ;
                 flag = processTaskCrossoverMapper.checkIsWorker(currentProcessTaskStepVo.getProcessTaskId(), currentProcessTaskStepVo.getId(), ProcessUserType.MAJOR.getValue(), authenticationInfoVo);
             }
 
