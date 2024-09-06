@@ -133,6 +133,14 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     List<ProcessTaskVo> getProcessTaskListByOwner(ProcessTaskVo vo);
 
+    List<ProcessTaskStepVo> getProcessTaskActiveStepByProcessTaskIdAndProcessStepType(
+            @Param("processTaskId") Long processTaskId, @Param("processStepTypeList") List<String> processStepTypeList,
+            @Param("isActive") Integer isActive);
+
+    List<Long> getFromProcessTaskStepIdListByToId(Long toProcessTaskStepId);
+
+    List<ProcessTaskStepFileVo> getProcessTaskStepFileListByTaskStepId(Long taskId);
+
     int insertIgnoreProcessTaskConfig(ProcessTaskConfigVo processTaskConfigVo);
 
     int insertProcessTaskForm(ProcessTaskFormVo processTaskFormVo);
