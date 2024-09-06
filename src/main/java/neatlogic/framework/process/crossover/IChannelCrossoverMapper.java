@@ -24,5 +24,11 @@ public interface IChannelCrossoverMapper extends ICrossoverService {
 
     ChannelVo getChannelByUuid(String channelUuid);
 
+    ChannelVo getChannelByName(String channelName);
+
     String getWorktimeUuidByChannelUuid(String channelUuid);
+
+    String getProcessUuidByChannelUuid(String channelUuid);
+
+    int checkChannelNameIsRepeat(ChannelVo channelVo);
 }

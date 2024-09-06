@@ -19,6 +19,7 @@ package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.dto.AuthenticationInfoVo;
+import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.process.dto.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -109,6 +110,28 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
     List<ProcessTaskVo> getProcessTaskStepVoListByFileId(Long fileId);
 
     ProcessTaskInvokeVo getInvokeByProcessTaskId(Long processTaskId);
+
+    ProcessTaskStepVo getStartProcessTaskStepByProcessTaskId(Long processTaskId);
+
+    /**
+     * 获取工单基本信息（已删除则忽略）
+     *
+     * @param processTaskId
+     * @return
+     */
+    ProcessTaskVo getProcessTaskBaseInfoById(Long processTaskId);
+
+    List<FileVo> getFileListByProcessTaskId(Long processTaskId);
+
+    List<ProcessTaskStepFileVo> getProcessTaskStepFileListByTaskId(Long taskId);
+
+    List<Long> checkProcessTaskIdListIsExists(List<Long> processTaskIdList);
+
+    List<ProcessTaskStepContentVo> getProcessTaskStepContentByProcessTaskStepId(Long processTaskStepId);
+
+    int getProcessTaskCountByOwner(ProcessTaskVo vo);
+
+    List<ProcessTaskVo> getProcessTaskListByOwner(ProcessTaskVo vo);
 
     int insertIgnoreProcessTaskConfig(ProcessTaskConfigVo processTaskConfigVo);
 
