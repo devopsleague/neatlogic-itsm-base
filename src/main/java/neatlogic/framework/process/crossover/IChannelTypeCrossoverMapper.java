@@ -43,4 +43,6 @@ public interface IChannelTypeCrossoverMapper extends ICrossoverService {
     );
 
     int checkChannelTypeRelationIsExists(Long id);
+
+    List<String> getChannelTypeRelationTargetListByChannelTypeRelationId(Long channelTypeRelationId);
 }

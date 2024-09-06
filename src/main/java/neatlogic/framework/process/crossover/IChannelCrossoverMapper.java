@@ -18,7 +18,10 @@
 package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
+import neatlogic.framework.process.dto.ChannelRelationVo;
 import neatlogic.framework.process.dto.ChannelVo;
+
+import java.util.List;
 
 public interface IChannelCrossoverMapper extends ICrossoverService {
 
@@ -31,4 +34,10 @@ public interface IChannelCrossoverMapper extends ICrossoverService {
     String getProcessUuidByChannelUuid(String channelUuid);
 
     int checkChannelNameIsRepeat(ChannelVo channelVo);
+
+    List<ChannelRelationVo> getChannelRelationTargetList(ChannelRelationVo channelRelationVo);
+
+    int searchChannelCount(ChannelVo channelVo);
+
+    List<ChannelVo> searchChannelList(ChannelVo channelVo);
 }

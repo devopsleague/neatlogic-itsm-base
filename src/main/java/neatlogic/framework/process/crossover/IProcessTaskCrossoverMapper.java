@@ -191,6 +191,16 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     int replaceProcessTaskRelation(ProcessTaskRelationVo processTaskRelationVo);
 
+    int replaceProcessTaskStep(ProcessTaskStepVo processTaskStepVo);
+
+    int insertProcessTaskStepContent(ProcessTaskStepContentVo processTaskStepContentVo);
+
+    int batchInsertProcessTaskStepAudit(List<ProcessTaskStepAuditVo> list);
+
+    int batchInsertProcessTaskStepAuditDetail(List<ProcessTaskStepAuditDetailVo> list);
+
+    int batchInsertIgnoreProcessTaskContent(List<ProcessTaskContentVo> list);
+
     int updateProcessTaskStepStatus(ProcessTaskStepVo processTaskStepVo);
 
     int updateProcessTaskStatus(ProcessTaskVo processTaskVo);
