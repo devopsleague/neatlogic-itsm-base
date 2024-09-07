@@ -179,5 +179,13 @@ public interface IProcessTaskCrossoverService extends ICrossoverService {
      * @throws Exception
      */
     void startProcessTaskStep(JSONObject paramObj) throws Exception;
+
+    /**
+     * 根据工单id和表单属性uuid获取表单属性数据
+     * @param processTaskId 工单id
+     * @param attributeUuid 表单属性uuid
+     * @return
+     */
+    ProcessTaskFormAttributeDataVo getProcessTaskFormAttributeDataByProcessTaskIdAndAttributeUuid(Long processTaskId, String attributeUuid);
 }
 
