@@ -17,6 +17,7 @@ package neatlogic.framework.process.exception.processtask;
 
 import neatlogic.framework.exception.core.ApiException;
 import neatlogic.framework.util.$;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class ProcessTaskException extends ApiException {
 
@@ -24,6 +25,10 @@ public class ProcessTaskException extends ApiException {
 
 	public ProcessTaskException() {
 		super();
+	}
+
+	public ProcessTaskException(Exception e) {
+		super(ExceptionUtils.getStackTrace(e));
 	}
 
 	public ProcessTaskException(String msg) {
