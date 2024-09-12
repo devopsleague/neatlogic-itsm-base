@@ -19,12 +19,15 @@ package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.process.dto.ProcessTaskConfigVo;
+import neatlogic.framework.process.dto.ProcessTaskContentVo;
 
 import java.util.List;
 
 public interface ISelectContentByHashCrossoverMapper extends ICrossoverService {
 
     String getProcessTaskStepConfigByHash(String hash);
+
+    ProcessTaskContentVo getProcessTaskContentByHash(String hash);
 
     String getProcessTaskContentStringByHash(String hash);
 

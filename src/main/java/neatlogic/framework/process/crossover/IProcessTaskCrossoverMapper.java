@@ -19,6 +19,7 @@ package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.dto.AuthenticationInfoVo;
+import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.process.dto.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -110,6 +111,38 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
 
     ProcessTaskInvokeVo getInvokeByProcessTaskId(Long processTaskId);
 
+    ProcessTaskStepVo getStartProcessTaskStepByProcessTaskId(Long processTaskId);
+
+    /**
+     * 获取工单基本信息（已删除则忽略）
+     *
+     * @param processTaskId
+     * @return
+     */
+    ProcessTaskVo getProcessTaskBaseInfoById(Long processTaskId);
+
+    List<FileVo> getFileListByProcessTaskId(Long processTaskId);
+
+    List<ProcessTaskStepFileVo> getProcessTaskStepFileListByTaskId(Long taskId);
+
+    List<Long> checkProcessTaskIdListIsExists(List<Long> processTaskIdList);
+
+    List<ProcessTaskStepContentVo> getProcessTaskStepContentByProcessTaskStepId(Long processTaskStepId);
+
+    int getProcessTaskCountByOwner(ProcessTaskVo vo);
+
+    List<ProcessTaskVo> getProcessTaskListByOwner(ProcessTaskVo vo);
+
+    List<ProcessTaskStepVo> getProcessTaskActiveStepByProcessTaskIdAndProcessStepType(
+            @Param("processTaskId") Long processTaskId, @Param("processStepTypeList") List<String> processStepTypeList,
+            @Param("isActive") Integer isActive);
+
+    List<Long> getFromProcessTaskStepIdListByToId(Long toProcessTaskStepId);
+
+    List<ProcessTaskStepFileVo> getProcessTaskStepFileListByTaskStepId(Long taskId);
+
+    List<ProcessTaskFormVo> getProcessTaskFormListByProcessTaskIdList(List<Long> existsProcessTaskIdList);
+
     int insertIgnoreProcessTaskConfig(ProcessTaskConfigVo processTaskConfigVo);
 
     int insertProcessTaskForm(ProcessTaskFormVo processTaskFormVo);
@@ -165,6 +198,18 @@ public interface IProcessTaskCrossoverMapper extends ICrossoverService {
     void insertProcessTaskTimeCost(ProcessTaskTimeCostVo processTaskTimeCostVo);
 
     int insertProcessTaskInvoke(@Param("processTaskId") Long processTaskId, @Param("source") String invoke, @Param("sourceType") String invokeType, @Param("invokeId") Long invokeId);
+
+    int replaceProcessTaskRelation(ProcessTaskRelationVo processTaskRelationVo);
+
+    int replaceProcessTaskStep(ProcessTaskStepVo processTaskStepVo);
+
+    int insertProcessTaskStepContent(ProcessTaskStepContentVo processTaskStepContentVo);
+
+    int batchInsertProcessTaskStepAudit(List<ProcessTaskStepAuditVo> list);
+
+    int batchInsertProcessTaskStepAuditDetail(List<ProcessTaskStepAuditDetailVo> list);
+
+    int batchInsertIgnoreProcessTaskContent(List<ProcessTaskContentVo> list);
 
     int updateProcessTaskStepStatus(ProcessTaskStepVo processTaskStepVo);
 

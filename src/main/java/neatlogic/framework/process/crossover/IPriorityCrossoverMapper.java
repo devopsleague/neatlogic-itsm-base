@@ -18,26 +18,11 @@
 package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
-import neatlogic.framework.process.dto.ChannelRelationVo;
-import neatlogic.framework.process.dto.ChannelVo;
+import neatlogic.framework.process.dto.PriorityVo;
 
-import java.util.List;
+public interface IPriorityCrossoverMapper extends ICrossoverService {
 
-public interface IChannelCrossoverMapper extends ICrossoverService {
+    PriorityVo getPriorityByUuid(String uuid);
 
-    ChannelVo getChannelByUuid(String channelUuid);
-
-    ChannelVo getChannelByName(String channelName);
-
-    String getWorktimeUuidByChannelUuid(String channelUuid);
-
-    String getProcessUuidByChannelUuid(String channelUuid);
-
-    int checkChannelNameIsRepeat(ChannelVo channelVo);
-
-    List<ChannelRelationVo> getChannelRelationTargetList(ChannelRelationVo channelRelationVo);
-
-    int searchChannelCount(ChannelVo channelVo);
-
-    List<ChannelVo> searchChannelList(ChannelVo channelVo);
+    PriorityVo getPriorityByName(String objValue);
 }

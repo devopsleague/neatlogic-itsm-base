@@ -161,5 +161,31 @@ public interface IProcessTaskCrossoverService extends ICrossoverService {
      * @return
      */
     List<ProcessTaskFormAttributeDataVo> getProcessTaskFormAttributeDataListByProcessTaskIdAndTagNew(Long processTaskId, String tag);
+
+    /**
+     * 完成工单步骤
+     *
+     * @param paramObj 参数结构见processtask/complete接口
+     * @return
+     * @throws Exception
+     */
+    void completeProcessTaskStep(JSONObject paramObj) throws Exception;
+
+    /**
+     * 开始工单步骤
+     *
+     * @param paramObj 参数结构见processtask/start接口
+     * @return
+     * @throws Exception
+     */
+    void startProcessTaskStep(JSONObject paramObj) throws Exception;
+
+    /**
+     * 根据工单id和表单属性uuid获取表单属性数据
+     * @param processTaskId 工单id
+     * @param attributeUuid 表单属性uuid
+     * @return
+     */
+    ProcessTaskFormAttributeDataVo getProcessTaskFormAttributeDataByProcessTaskIdAndAttributeUuid(Long processTaskId, String attributeUuid);
 }
 

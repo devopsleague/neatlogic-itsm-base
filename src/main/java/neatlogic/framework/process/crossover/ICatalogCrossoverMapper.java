@@ -27,6 +27,19 @@ public interface ICatalogCrossoverMapper extends ICrossoverService {
 
     CatalogVo getCatalogByUuid(String uuid);
 
+    List<CatalogVo> getCatalogByName(String name);
+
     List<String> getUpwardUuidListByLftRht(@Param("lft") Integer lft, @Param("rht") Integer rht);
+
+    List<String> getCatalogUuidListByLftRht(@Param("lft") Integer lft, @Param("rht")Integer rht);
+    /**
+     *
+     * @Time:2020年7月7日
+     * @Description: 根据左右编码查出目录及所有上级目录
+     * @param lft 左编码
+     * @param rht 右编码
+     * @return List<CatalogVo>
+     */
+    List<CatalogVo> getAncestorsAndSelfByLftRht(@Param("lft") Integer lft, @Param("rht") Integer rht);
 
 }

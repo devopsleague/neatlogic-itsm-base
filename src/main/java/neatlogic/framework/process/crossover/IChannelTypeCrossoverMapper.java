@@ -19,8 +19,30 @@ package neatlogic.framework.process.crossover;
 
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.process.dto.ChannelTypeVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface IChannelTypeCrossoverMapper extends ICrossoverService {
 
     ChannelTypeVo getChannelTypeByUuid(String uuid);
+
+    ChannelTypeVo getChannelTypeByName(String name);
+
+    List<Long> getAuthorizedChannelTypeRelationIdListBySourceChannelUuid(
+            @Param("source") String source,
+            @Param("userUuid") String userUuid,
+            @Param("teamUuidList") List<String> teamUuidList,
+            @Param("roleUuidList") List<String> roleUuidList,
+            @Param("processUserTypeList") List<String> processUserTypeList
+    );
+
+    List<String> getChannelUuidListByParentUuidListAndChannelTypeUuidList(
+            @Param("parentUuidList") List<String> parentUuidList,
+            @Param("channelTypeUuidList") List<String> channelTypeUuidList
+    );
+
+    int checkChannelTypeRelationIsExists(Long id);
+
+    List<String> getChannelTypeRelationTargetListByChannelTypeRelationId(Long channelTypeRelationId);
 }
