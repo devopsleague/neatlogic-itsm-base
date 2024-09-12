@@ -832,6 +832,7 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 //            currentProcessTaskStepVo.setUpdateStartTime(0);
 //        }
         IProcessTaskCrossoverMapper processTaskCrossoverMapper = CrossoverServiceFactory.getApi(IProcessTaskCrossoverMapper.class);
+        System.out.println("currentProcessTaskStepVo.getError() = " + currentProcessTaskStepVo.getError());
         processTaskCrossoverMapper.updateProcessTaskStepStatus(currentProcessTaskStepVo);
         updateProcessTaskStatus(currentProcessTaskStepVo.getProcessTaskId());
         return 1;
