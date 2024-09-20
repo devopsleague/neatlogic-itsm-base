@@ -632,7 +632,18 @@ public abstract class ProcessStepHandlerBase implements IProcessStepHandler {
 
             // 获取流转过的路径
             hangPostStep(currentProcessTaskStepVo);
-
+            ProcessTaskStepWorkerVo processTaskStepWorkerVo = new ProcessTaskStepWorkerVo();
+            processTaskStepWorkerVo.setProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
+            processTaskStepWorkerVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+            processTaskCrossoverMapper.deleteProcessTaskStepWorker(processTaskStepWorkerVo);
+            ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+            processTaskStepUserVo.setProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
+            processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+            processTaskStepUserVo.setStatus(ProcessTaskStepUserStatus.DONE.getValue());
+            processTaskStepUserVo.setUserType(ProcessUserType.MAJOR.getValue());
+            processTaskCrossoverMapper.updateProcessTaskStepUserStatus(processTaskStepUserVo);
+            processTaskStepUserVo.setUserType(ProcessUserType.MINOR.getValue());
+            processTaskCrossoverMapper.updateProcessTaskStepUserStatus(processTaskStepUserVo);
             currentProcessTaskStepVo.setIsActive(0);
             currentProcessTaskStepVo.setStatus(ProcessTaskStepStatus.HANG.getValue());
             updateProcessTaskStepStatus(currentProcessTaskStepVo);
