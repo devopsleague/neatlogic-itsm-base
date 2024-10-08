@@ -8,7 +8,7 @@ public enum ProcessTaskStepRemindType implements IProcessTaskStepRemindType {
     REDO("redo", "回退提醒", "回退了工单，原因"),
     TRANSFER("transfer", "转交提醒", ""),
     ERROR("error", "异常提醒", ""),
-    AUTOMATIC_ERROR("automaticerror", "自动处理异常提醒", "");
+    AUTOMATIC_ERROR("automaticerror", "外部调用异常提醒", "");
     private String value;
     private String text;
     private String title;
