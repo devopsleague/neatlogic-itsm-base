@@ -36,10 +36,15 @@ public class WorkerDispatcherFactory extends ModuleInitializedListenerBase {
 	private static final Map<String, String> className2ModuleIdMap = new HashMap<>();
 
 	public static IWorkerDispatcher getDispatcher(String name) {
-		if (!componentMap.containsKey(name) || componentMap.get(name) == null) {
+		IWorkerDispatcher workerDispatcher = componentMap.get(name);
+		if (workerDispatcher == null) {
+			int index = name.lastIndexOf(".");
+			workerDispatcher = componentMap.get(name.substring(index + 1));
+		}
+		if (workerDispatcher == null) {
             throw new HandlerDispatchComponentTypeNotFoundException(name);
 		}
-		return componentMap.get(name);
+		return workerDispatcher;
 	}
 
 	public static List<WorkerDispatcherVo> getAllActiveWorkerDispatcher() {
@@ -79,9 +84,12 @@ public class WorkerDispatcherFactory extends ModuleInitializedListenerBase {
 		Map<String, IWorkerDispatcher> myMap = context.getBeansOfType(IWorkerDispatcher.class);
 		for (Map.Entry<String, IWorkerDispatcher> entry : myMap.entrySet()) {
 			IWorkerDispatcher component = entry.getValue();
-			if (StringUtils.isNotBlank(component.getClassName())) {
-				componentMap.put(component.getClassName(), component);
-				className2ModuleIdMap.put(component.getClassName(), context.getId());
+			String className = component.getClassName();
+			if (StringUtils.isNotBlank(className)) {
+				componentMap.put(className, component);
+				int index = className.lastIndexOf(".");
+				componentMap.put(className.substring(index + 1), component);
+				className2ModuleIdMap.put(className, context.getId());
 			}
 		}
 	}
