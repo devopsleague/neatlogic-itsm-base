@@ -32,7 +32,12 @@ public class ProcessTaskSerialNumberPolicyHandlerFactory extends ModuleInitializ
     private static final List<ProcessTaskSerialNumberPolicyVo> policyList = new ArrayList<>();
 
     public static IProcessTaskSerialNumberPolicyHandler getHandler(String handler) {
-        return policyMap.get(handler);
+        IProcessTaskSerialNumberPolicyHandler processTaskSerialNumberPolicyHandler = policyMap.get(handler);
+        if (processTaskSerialNumberPolicyHandler == null) {
+            int index = handler.lastIndexOf(".");
+            processTaskSerialNumberPolicyHandler = policyMap.get(handler.substring(index + 1));
+        }
+        return processTaskSerialNumberPolicyHandler;
     }
 
     public static List<ProcessTaskSerialNumberPolicyVo> getPolicyHandlerList() {
@@ -45,9 +50,12 @@ public class ProcessTaskSerialNumberPolicyHandlerFactory extends ModuleInitializ
                 context.getBeansOfType(IProcessTaskSerialNumberPolicyHandler.class);
         for (Map.Entry<String, IProcessTaskSerialNumberPolicyHandler> entry : map.entrySet()) {
             IProcessTaskSerialNumberPolicyHandler numberPolicy = entry.getValue();
-            policyMap.put(numberPolicy.getHandler(), numberPolicy);
+            String handler = numberPolicy.getHandler();
+            int index = handler.lastIndexOf(".");
+            policyMap.put(handler, numberPolicy);
+            policyMap.put(handler.substring(index + 1), numberPolicy);
             ProcessTaskSerialNumberPolicyVo policy = new ProcessTaskSerialNumberPolicyVo();
-            policy.setHandler(numberPolicy.getHandler());
+            policy.setHandler(handler);
             policy.setName(numberPolicy.getName());
             policy.setFormAttributeList(numberPolicy.makeupFormAttributeList());
             policyList.add(policy);
