@@ -84,12 +84,12 @@ public class WorkerDispatcherFactory extends ModuleInitializedListenerBase {
 		Map<String, IWorkerDispatcher> myMap = context.getBeansOfType(IWorkerDispatcher.class);
 		for (Map.Entry<String, IWorkerDispatcher> entry : myMap.entrySet()) {
 			IWorkerDispatcher component = entry.getValue();
-			if (StringUtils.isNotBlank(component.getClassName())) {
-				String className = component.getClassName();
+			String className = component.getClassName();
+			if (StringUtils.isNotBlank(className)) {
 				componentMap.put(className, component);
 				int index = className.lastIndexOf(".");
 				componentMap.put(className.substring(index + 1), component);
-				className2ModuleIdMap.put(component.getClassName(), context.getId());
+				className2ModuleIdMap.put(className, context.getId());
 			}
 		}
 	}
