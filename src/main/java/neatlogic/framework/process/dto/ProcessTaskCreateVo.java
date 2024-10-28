@@ -32,7 +32,7 @@ public class ProcessTaskCreateVo {
     private String content;
     private String filePathPrefix;
     private JSONArray filePathList;
-    private String fileIdList;
+    private JSONArray fileIdList;
     private JSONObject handlerStepInfo;
     private String source;
     private String region;
@@ -126,11 +126,11 @@ public class ProcessTaskCreateVo {
         this.filePathList = filePathList;
     }
 
-    public String getFileIdList() {
+    public JSONArray getFileIdList() {
         return fileIdList;
     }
 
-    public void setFileIdList(String fileIdList) {
+    public void setFileIdList(JSONArray fileIdList) {
         this.fileIdList = fileIdList;
     }
 
