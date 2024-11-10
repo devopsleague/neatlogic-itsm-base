@@ -24,6 +24,7 @@ import java.util.List;
 public class ActionConfigActionVo {
     private String integrationUuid;
     private String trigger;
+    private String formTag;
     private AssertionConfigVo successCondition;
     private List<IntegrationParamMappingVo> paramMappingList;
 
@@ -41,6 +42,14 @@ public class ActionConfigActionVo {
 
     public void setTrigger(String trigger) {
         this.trigger = trigger;
+    }
+
+    public String getFormTag() {
+        return formTag;
+    }
+
+    public void setFormTag(String formTag) {
+        this.formTag = formTag;
     }
 
     public AssertionConfigVo getSuccessCondition() {
