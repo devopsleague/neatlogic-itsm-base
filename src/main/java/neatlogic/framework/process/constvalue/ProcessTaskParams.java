@@ -19,6 +19,7 @@ public enum ProcessTaskParams {
     OWNERLEVEL("ownerlevel", "上报人级别"),
     STEPTASK("steptask", "子任务"),
     ACTIONTRIGGERUSER("actiontriggeruser", "动作触发人"),
+    ACTIONTRIGGERUSERID("actiontriggeruserid", "动作触发人用户ID"),
     STEPTASKID("steptaskid", "子任务ID");
 
     private String value;
