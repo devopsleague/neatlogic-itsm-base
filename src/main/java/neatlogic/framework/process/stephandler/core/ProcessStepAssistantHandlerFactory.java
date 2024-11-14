@@ -15,37 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package neatlogic.framework.process.steptaskhandler.core;
+package neatlogic.framework.process.stephandler.core;
 
 import neatlogic.framework.applicationlistener.core.ModuleInitializedListenerBase;
 import neatlogic.framework.bootstrap.NeatLogicWebApplicationContext;
 import neatlogic.framework.common.RootComponent;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.core.annotation.Order;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RootComponent
 @Order(10)
-public class ProcessStepTaskHandlerFactory extends ModuleInitializedListenerBase {
-    private static final Map<String, IProcessStepTaskHandler> componentMap = new HashMap<>();
+public class ProcessStepAssistantHandlerFactory extends ModuleInitializedListenerBase {
+    private static Map<String, IProcessStepAssistantHandler> componentMap = new HashMap<>();
 
-    public static IProcessStepTaskHandler getHandler(String handler) {
+    public static IProcessStepAssistantHandler getHandler(String handler) {
         return componentMap.get(handler);
     }
 
     @Override
     protected void onInitialized(NeatLogicWebApplicationContext context) {
-        Map<String, IProcessStepTaskHandler> myMap = context.getBeansOfType(IProcessStepTaskHandler.class);
-        for (Map.Entry<String, IProcessStepTaskHandler> entry : myMap.entrySet()) {
-            IProcessStepTaskHandler component = entry.getValue();
-            List<String> handlerList = component.getHandlerList();
-            if (CollectionUtils.isNotEmpty(handlerList)) {
-                for (String handler : handlerList) {
-                    componentMap.put(handler, component);
-                }
+        Map<String, IProcessStepAssistantHandler> myMap = context.getBeansOfType(IProcessStepAssistantHandler.class);
+        for (Map.Entry<String, IProcessStepAssistantHandler> entry : myMap.entrySet()) {
+            IProcessStepAssistantHandler component = entry.getValue();
+            if (component.getHandler() != null) {
+                componentMap.put(component.getHandler(), component);
             }
         }
     }

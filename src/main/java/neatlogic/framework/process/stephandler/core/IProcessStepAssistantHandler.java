@@ -15,20 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package neatlogic.framework.process.steptaskhandler.core;
+package neatlogic.framework.process.stephandler.core;
 
 import neatlogic.framework.process.dto.ProcessTaskStepUserVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 
 import java.util.List;
 
-public interface IProcessStepTaskHandler {
-    /**
-     * 返回控件
-     *
-     * @return 控件名
-     */
-    List<String> getHandlerList();
+/**
+ * 用于获取步骤任务的协助处理人
+ */
+public interface IProcessStepAssistantHandler {
+
+    String getHandler();
 
     /**
      * 获取协助处理人列表，用于通知接收人
