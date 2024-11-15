@@ -5,6 +5,8 @@ import neatlogic.framework.util.$;
 public enum ConditionProcessTaskOptions {
     TASKID("id", "工单ID"),
     STEPID("stepid", "步骤ID"),
+    STEPNAME("stepname", "步骤名称"),
+
     TITLE("title", "标题"),
     CHANNELTYPE("channeltype", "服务类型"),
     CONTENT("content", "上报内容"),
@@ -16,6 +18,7 @@ public enum ConditionProcessTaskOptions {
     OWNERCOMPANY("ownercompany", "上报人公司"),
     OWNERCENTER("ownercenter", "上报人中心"),
     OWNERDEPARTMENT("ownerdepartment", "上报人部门"),
+    OWNERDEPARTMENTPATH("ownerdepartmentpath", "上报人部门(完整)"),
     OWNERTEAM("ownerteam", "上报人组"),
     OWNERROLE("ownerrole", "上报人角色"),
     OWNERLEVEL("ownerlevel", "上报人级别"),
