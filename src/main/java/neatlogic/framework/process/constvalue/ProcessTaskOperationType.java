@@ -2,6 +2,7 @@ package neatlogic.framework.process.constvalue;
 
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.constvalue.UserType;
+import neatlogic.framework.process.operationauth.core.OperationAuthHandlerType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -115,6 +116,11 @@ public enum ProcessTaskOperationType implements IOperationType {
     @Override
     public String getText() {
         return text;
+    }
+
+    @Override
+    public OperationAuthHandlerType getOperationAuthHandlerType() {
+        return OperationAuthHandlerType.TASK;
     }
 
     public List<String> getDefaultValue() {

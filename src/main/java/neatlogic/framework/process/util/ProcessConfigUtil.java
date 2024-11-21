@@ -146,10 +146,10 @@ public class ProcessConfigUtil {
      * @param stepActions   权限集合
      * @return
      */
-    public static JSONArray regulateAuthorityList(JSONArray authorityList, ProcessTaskOperationType[] stepActions) {
+    public static JSONArray regulateAuthorityList(JSONArray authorityList, IOperationType[] stepActions) {
         JSONArray authorityArray = new JSONArray();
         if (stepActions != null) {
-            for (ProcessTaskOperationType stepAction : stepActions) {
+            for (IOperationType stepAction : stepActions) {
                 authorityArray.add(new JSONObject() {{
                     this.put("action", stepAction.getValue());
                     this.put("text", stepAction.getText());
