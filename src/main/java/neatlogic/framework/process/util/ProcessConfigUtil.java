@@ -24,6 +24,7 @@ import neatlogic.framework.form.constvalue.FormAttributeAuthType;
 import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.exception.process.ProcessConfigException;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessMessageManager;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;

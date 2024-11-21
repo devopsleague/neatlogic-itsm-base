@@ -3,7 +3,6 @@ package neatlogic.framework.process.operationauth.core;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
-import neatlogic.framework.process.constvalue.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.crossover.*;
 import neatlogic.framework.process.dto.*;

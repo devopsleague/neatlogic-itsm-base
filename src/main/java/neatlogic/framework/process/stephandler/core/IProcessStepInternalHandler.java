@@ -2,7 +2,7 @@ package neatlogic.framework.process.stephandler.core;
 
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.notify.core.INotifyPolicyHandler;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.dto.ProcessStepVo;
 import neatlogic.framework.process.dto.ProcessTaskStepDataVo;

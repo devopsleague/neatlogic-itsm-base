@@ -1,7 +1,5 @@
 package neatlogic.framework.process.operationauth.core;
 
-import neatlogic.framework.process.constvalue.IOperationType;
-
 import java.util.List;
 
 public interface IOperationAuthHandlerType {

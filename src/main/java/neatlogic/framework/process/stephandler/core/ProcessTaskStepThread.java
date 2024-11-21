@@ -19,7 +19,7 @@ package neatlogic.framework.process.stephandler.core;
 
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessStepMode;
 import neatlogic.framework.process.crossover.IProcessTaskCrossoverMapper;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;

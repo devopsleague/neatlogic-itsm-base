@@ -20,7 +20,7 @@ package neatlogic.framework.process.crossover;
 import neatlogic.framework.crossover.ICrossoverService;
 import neatlogic.framework.notify.core.INotifyTriggerType;
 import neatlogic.framework.process.audithandler.core.IProcessTaskAuditType;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.stepremind.core.IProcessTaskStepRemindType;
