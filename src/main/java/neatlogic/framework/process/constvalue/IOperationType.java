@@ -15,11 +15,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.process.constvalue;
 
+import neatlogic.framework.process.operationauth.core.OperationAuthHandlerType;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author linbq
  * @since 2021/5/17 14:17
  **/
 public interface IOperationType {
     String getValue();
+
     String getText();
+
+    default List<String> getDefaultValue() {
+        return new ArrayList<>();
+    }
+
+    default List<String> getGroupList() {
+        return new ArrayList<>();
+    }
+
+    default OperationAuthHandlerType getOperationAuthHandlerType() {
+        return null;
+    }
 }
