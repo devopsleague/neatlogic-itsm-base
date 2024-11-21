@@ -2,6 +2,7 @@ package neatlogic.framework.process.constvalue;
 
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.common.constvalue.UserType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.OperationAuthHandlerType;
 
 import java.util.Arrays;
